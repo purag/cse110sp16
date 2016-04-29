@@ -8,7 +8,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.cs110.lit.adventour.LoginActivity">
+    tools:context="com.cs110.lit.adventour.LoginActivity"
+    android:weightSum="1">
 
     <!-- Login progress -->
     <ProgressBar
@@ -20,14 +21,16 @@
         android:visibility="gone" />
 
     <ImageView
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="75pt"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:src="@drawable/logo_400" />
 
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/email_login_form"
@@ -69,26 +72,32 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
-                android:textStyle="bold"
-                android:onClick="showMapView" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Skip"
-                android:id="@+id/textView"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="0.66" />
-
         </LinearLayout>
     </ScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/email_sign_in_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/action_sign_in"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal|top" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Skip"
+            android:id="@+id/textView"
+            android:layout_gravity="center"
+            android:layout_weight="0.05"
+            android:onClick="showMapView" />
+    </FrameLayout>
 
 </LinearLayout>
