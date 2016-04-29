@@ -13,4 +13,8 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <!-- Strings related to the map view -->
+    <string name="title_activity_map"> Adventour Map </string>
+
 </resources>
