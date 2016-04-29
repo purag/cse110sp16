@@ -1,9 +1,16 @@
 package com.cs110.lit.adventour;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,6 +29,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // for communication with the last/previews view
         Intent intent = getIntent();
     }
 
@@ -29,9 +38,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(32.880760, -117.232700);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        ///// -------------- adding listener ---------------///
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                // makeUseOfNewLocation(location);
+            }
+        };
+
+        /////---------- permission check -------------////
+        // Register the listener with the Location Manager to receive location updates
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+        String locationGPSProvider = LocationManager.GPS_PROVIDER;
+
+        //locationManager.requestLocationUpdates(locationNetworkProvider, 0, 0, (android.location.LocationListener) locationListener);
+        //locationManager.requestLocationUpdates(locationNetworkProvider, 0, 0, (android.location.LocationListener) locationListener);
+        //locationManager.requestLocationUpdates(locationGPSProvider, 0, 0, (android.location.LocationListener) locationListener);
+        // Remove the listener you previously added
+        //locationManager.removeUpdates((android.location.LocationListener) locationListener);
+
+
+        Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+
+
+        ////----------- display the map with marker on current location -----------//
+        // Add a marker in current location, and move the camera.
+        LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
+        // zoom in to the current location in camera view
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,13));
     }
 }
