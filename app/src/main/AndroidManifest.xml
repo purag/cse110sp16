@@ -31,7 +31,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs110.lit.adventour.LoginActivity" />
         </activity>
-
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyCsagHwPQQtPmot7WpLY9x7uv5tD4YBa44"/>
     </application>
 
 </manifest>
