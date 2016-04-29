@@ -22,6 +22,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.cs110.lit.adventour.MapsActivity"
+            android:label="@string/title_activity_map"
+            android:parentActivityName="com.cs110.lit.adventour.LoginActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cs110.lit.adventour.LoginActivity" />
+        </activity>
+
     </application>
 
 </manifest>
