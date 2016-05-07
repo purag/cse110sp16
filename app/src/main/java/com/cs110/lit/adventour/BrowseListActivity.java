@@ -20,9 +20,9 @@ public class BrowseListActivity extends Activity {
     } ;
 
     String[] TourDescription = {
-            "First Object test description. This is Garfield",
-            "Second Object test description. This is Pusheen",
-            "Third Object test description. This is Doriamon"
+            "\nFirst Object test description. This is Garfield\n",
+            "\nSecond Object test description. This is Pusheen\n",
+            "\nThird Object test description. This is Doriamon\n"
     };
 
     Integer[] imageId = {

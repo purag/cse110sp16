@@ -43,7 +43,7 @@ public class CustomList extends ArrayAdapter<String>{
         txtTitle.setText(TourTitle[position]);
         Typeface customFont = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
         txtTitle.setTypeface(customFont);
-        
+
         txtDescription.setText(TourDescription[position]);
 
         // imageView.setImageResource(imageId[position]);
