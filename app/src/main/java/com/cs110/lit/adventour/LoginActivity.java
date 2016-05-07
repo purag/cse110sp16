@@ -296,6 +296,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void showMapView(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
+
+    }
+
+    /**
+     * Test if the list activity works properly
+     */
+    public void showBrowseListView(View view) {
+        Intent intent = new Intent(this, BrowseListActivity.class);
+        startActivity(intent);
     }
 
 
