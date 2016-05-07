@@ -1,5 +1,7 @@
 package com.cs110.lit.adventour.model;
 
+import java.util.ArrayList;
+
 public class Tour {
 	
 	/* Private member variables */
@@ -9,16 +11,19 @@ public class Tour {
 	private String title;
 	private String summary;
 	private Boolean visibility;
+    
+    private ArrayList<Checkpoint> listOfCheckpoints;
 
 	public Tour() {}
 
 	public Tour(int tour_id, int user_id, String title, String summary,
-		 Boolean visibility) {
+		 Boolean visibility, ArrayList<Checkpoint> listOfCheckpoints) {
 		this.tour_id = tour_id;
 		this.user_id = user_id;
 		this.title = title;
 		this.summary = summary;
 		this.visibility = visibility;
+        this.listOfCheckpoints = listOfCheckpoints;
 	}
 
 	/* Public Setters */
@@ -42,7 +47,10 @@ public class Tour {
 	public void setVisibility(Boolean visibility){
 	   this.visibility = visibility;
 	}
-	
+    public void setListOfCheckpoints(ArrayList<Checkpoint> listOfCheckpoints){
+        this.listOfCheckpoints= listOfCheckpoints;
+    }
+    
 	
 	/* Public Getters */
 	
@@ -65,6 +73,9 @@ public class Tour {
 	public Boolean getVisibility(){
 	   return visibility;
 	}
+    public ArrayList<Checkpoint> getListOfCheckpoints(){
+        return listOfCheckpoints;
+    }
 	
 
 } /* end of tour class */
