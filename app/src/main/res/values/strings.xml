@@ -22,6 +22,7 @@
 
     <!-- Strings in menu resource -->
     <string name="search_title">Search Tour</string>
+    <string name="search_hint">San Diego</string>
 
 
 </resources>
