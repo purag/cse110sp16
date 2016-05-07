@@ -18,7 +18,7 @@ public class Checkpoint {
     public Checkpoint() { }
 
     // Intializer Constructor
-    public Checkpoint(int checkpoint_id, Location location, inttour_id, String title,String description, String photo, int order_num) {
+    public Checkpoint(int checkpoint_id, Location location, int tour_id, String title,String description, String photo, int order_num) {
         this.checkpoint_id = checkpoint_id;
         this.location = location;
         this.tour_id = tour_id;
