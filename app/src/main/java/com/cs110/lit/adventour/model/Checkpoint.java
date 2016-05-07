@@ -15,10 +15,10 @@ public class Checkpoint {
 	private int order_num; 
 
     // Default Constructor
-    Checkpoint() { }
+    public Checkpoint() { }
 
     // Intializer Constructor
-    Checkpoint(String checkpoint_id, Location location, String tour_id, String title,
+    public Checkpoint(String checkpoint_id, Location location, String tour_id, String title,
                String description, String photo, int order_num) {
         this.checkpoint_id = checkpoint_id;
         this.location = location;
