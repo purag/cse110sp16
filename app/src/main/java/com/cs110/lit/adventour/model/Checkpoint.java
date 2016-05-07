@@ -6,9 +6,9 @@ public class Checkpoint {
 	
 	/* Private member variables */
 	
-	private String checkpoint_id;
+	private int checkpoint_id;
 	private Location location;
-	private String tour_id;
+	private int tour_id;
 	private String title;
 	private String description;
 	private String photo;
@@ -18,8 +18,7 @@ public class Checkpoint {
     public Checkpoint() { }
 
     // Intializer Constructor
-    public Checkpoint(String checkpoint_id, Location location, String tour_id, String title,
-               String description, String photo, int order_num) {
+    public Checkpoint(int checkpoint_id, Location location, inttour_id, String title,String description, String photo, int order_num) {
         this.checkpoint_id = checkpoint_id;
         this.location = location;
         this.tour_id = tour_id;
@@ -31,7 +30,7 @@ public class Checkpoint {
 
 	/* Public Setters */
 
-	public void setCheckpoint_id(String checkpoint_id){
+	public void setCheckpoint_id(int checkpoint_id){
 	   this.checkpoint_id = checkpoint_id;
 	}
 	
@@ -39,7 +38,7 @@ public class Checkpoint {
 	   this.location = location;
 	}
 	
-	public void setTour_id(String tour_id){
+	public void setTour_id(int tour_id){
 	   this.tour_id = tour_id;
 	}
 	
@@ -61,7 +60,7 @@ public class Checkpoint {
 	
 	/* Public Getters */
 	
-	public String getCheckpoint_id(){
+	public int getCheckpoint_id(){
 	   return checkpoint_id;
 	}
 	
@@ -69,7 +68,7 @@ public class Checkpoint {
 	   return location;
 	}
 	
-	public String getTour_id(){
+	public int getTour_id(){
 	   return tour_id;
 	}
 	
