@@ -13,23 +13,40 @@ import android.app.Activity;
 
 public class BrowseListActivity extends Activity {
     ListView list;
+
+    // NOTE:
+    // Those data are from the database, need to implement function to grab those data
+    // TourTitle array, TourDescription array and imageId array
+    // should be the same size!!!!
+
     String[] TourTitle = {
             "Garfield",
             "Pusheen",
-            "Doriamon"
+            "Doriamon",
+            "eeve",
+            "foxmon",
+            "squirtle",
+            "bobabso"
     } ;
 
     String[] TourDescription = {
             "\nFirst Object test description. This is Garfield\n",
             "\nSecond Object test description. This is Pusheen\n",
+            "\nThird Object test description. This is Doriamon\n",
+            "\nFirst Object test description. This is Garfield\n",
+            "\nSecond Object test description. This is Pusheen\n",
+            "\nThird Object test description. This is Doriamon\n",
             "\nThird Object test description. This is Doriamon\n"
     };
 
     Integer[] imageId = {
             R.drawable.cat1,
             R.drawable.cat2,
-            R.drawable.cat3
-
+            R.drawable.cat3,
+            R.drawable.eeve,
+            R.drawable.foxmon,
+            R.drawable.squirtle,
+            R.drawable.bobabso
     };
 
 
