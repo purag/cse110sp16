@@ -1,8 +1,4 @@
-package com.cs110.lit.adventour.model;
-
-import android.location.Location;
-
-public class User {
+public class user {
 	
 	/* Private member variables */
 	
@@ -11,19 +7,8 @@ public class User {
 	private String password;
 	private String email;
 	private int create_date;
-	private Location last_location;
-
-    public User() {}
-
-    public User(String user_id, String name, String password, String email,
-         int create_date, Location last_location) {
-        this.user_id = user_id;
-        this.name = name;
-        this.password = password;
-        this.email = email;
-        this.create_date = create_date;
-        this.last_location = last_location;
-    }
+	private coordinate last_location;
+	
 		
 	/* Public Setters */
 
@@ -47,7 +32,7 @@ public class User {
 	   this.create_date = create_date;
 	}
 	
-	public void setLast_location(Location last_location){
+	public void setLast_location(coordinate last_location){
 	   this.last_location = last_location;
 	}
 	
@@ -73,7 +58,7 @@ public class User {
 	   return create_date;
 	}
 	
-	public Location getLast_location(){
+	public coordinate getLast_location(){
 	   return last_location;
 	}
 
