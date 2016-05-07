@@ -17,6 +17,15 @@ public class Tour {
 	public Tour() {}
 
 	public Tour(int tour_id, int user_id, String title, String summary,
+				Boolean visibility) {
+		this.tour_id = tour_id;
+		this.user_id = user_id;
+		this.title = title;
+		this.summary = summary;
+		this.visibility = visibility;
+	}
+
+	public Tour(int tour_id, int user_id, String title, String summary,
 		 Boolean visibility, ArrayList<Checkpoint> listOfCheckpoints) {
 		this.tour_id = tour_id;
 		this.user_id = user_id;
