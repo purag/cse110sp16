@@ -300,6 +300,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
     /**
+     * Test if the map activity works properly
+     */
+    public void showOverviewView(View view) {
+        Intent intent = new Intent(this, OverviewActivity.class);
+        startActivity(intent);
+    }
+
+    /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
