@@ -13,11 +13,18 @@ import android.app.Activity;
 
 public class BrowseListActivity extends Activity {
     ListView list;
-    String[] web = {
+    String[] TourTitle = {
             "Garfield",
             "Pusheen",
             "Doriamon"
     } ;
+
+    String[] TourDescription = {
+            "First Object test description. This is Garfield",
+            "Second Object test description. This is Pusheen",
+            "Third Object test description. This is Doriamon"
+    };
+
     Integer[] imageId = {
             R.drawable.cat1,
             R.drawable.cat2,
@@ -25,13 +32,14 @@ public class BrowseListActivity extends Activity {
 
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_list);
 
         CustomList adapter = new
-                CustomList(BrowseListActivity.this, web, imageId);
+                CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
         list=(ListView)findViewById(R.id.browse_list);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -39,7 +47,7 @@ public class BrowseListActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Toast.makeText(BrowseListActivity.this, "You Clicked at " +web[+ position], Toast.LENGTH_SHORT).show();
+                Toast.makeText(BrowseListActivity.this, "You Clicked at " +TourTitle[+ position], Toast.LENGTH_SHORT).show();
 
             }
         });
