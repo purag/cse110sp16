@@ -11,9 +11,9 @@ public class Tour {
 	private Boolean visibility;
 	private Boolean completed;
 
-	Tour() {}
+	public Tour() {}
 
-	Tour(String tour_id, String user_id, String title, String summary,
+	public Tour(String tour_id, String user_id, String title, String summary,
 		 Boolean visibility, Boolean completed) {
 		this.tour_id = tour_id;
 		this.user_id = user_id;

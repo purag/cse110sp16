@@ -13,9 +13,9 @@ public class User {
 	private int create_date;
 	private Location last_location;
 
-    User() {}
+    public User() {}
 
-    User(String user_id, String name, String password, String email,
+    public User(String user_id, String name, String password, String email,
          int create_date, Location last_location) {
         this.user_id = user_id;
         this.name = name;
