@@ -28,6 +28,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.cs110.lit.adventour.model.Tour;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,9 +62,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private Tour tourObject;
+    private DB toursDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("wtf");
+        DB.getTourById(1, this, new DB.DBCallback<Tour>() {
+            @Override public void onSuccess (Tour t) {
+                System.out.println("got the tour!");
+                System.out.println("Tour name: " + t.getTitle());
+                System.out.println("Tour summary: " + t.getSummary());
+            }
+        });
+        System.out.println("no tour yet!");
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
