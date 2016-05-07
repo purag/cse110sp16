@@ -3,7 +3,10 @@ package com.cs110.lit.adventour;
 /**
  * Created by achen on 5/6/16.
  */
+
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +36,18 @@ public class CustomList extends ArrayAdapter<String>{
         ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
         txtTitle.setText(web[position]);
 
-        imageView.setImageResource(imageId[position]);
+        // imageView.setImageResource(imageId[position]);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inDither = false;
+        options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        options.inSampleSize = 10;
+
+        Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
+                imageId[position],options);
+
+        imageView.setImageBitmap(icon);
+
         return rowView;
     }
 }

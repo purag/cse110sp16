@@ -6,9 +6,9 @@
     android:background="#e2e4fe">
 
     <ListView
+        android:id="@+id/browse_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/browse_list"
         ></ListView>
 
 </RelativeLayout>
