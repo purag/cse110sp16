@@ -7,6 +7,7 @@ package com.cs110.lit.adventour;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +18,15 @@ import android.widget.TextView;
 public class CustomList extends ArrayAdapter<String>{
 
     private final Activity context;
-    private final String[] web;
+    private final String[] TourTitle;
+    private final String[] TourDescription;
     private final Integer[] imageId;
     public CustomList(Activity context,
-                      String[] web, Integer[] imageId) {
-        super(context, R.layout.list_single, web);
+                      String[] TourTitle, String[] TourDescription, Integer[] imageId) {
+        super(context, R.layout.list_single, TourTitle);
         this.context = context;
-        this.web = web;
+        this.TourTitle = TourTitle;
+        this.TourDescription = TourDescription;
         this.imageId = imageId;
 
     }
@@ -31,10 +34,17 @@ public class CustomList extends ArrayAdapter<String>{
     public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
         View rowView= inflater.inflate(R.layout.list_single, null, true);
-        TextView txtTitle = (TextView) rowView.findViewById(R.id.txt);
 
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
-        txtTitle.setText(web[position]);
+        TextView txtTitle = (TextView) rowView.findViewById(R.id.list_txt_title);
+        TextView txtDescription = (TextView) rowView.findViewById(R.id.list_txt_description);
+
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.list_img);
+
+        txtTitle.setText(TourTitle[position]);
+        Typeface customFont = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
+        txtTitle.setTypeface(customFont);
+        
+        txtDescription.setText(TourDescription[position]);
 
         // imageView.setImageResource(imageId[position]);
         BitmapFactory.Options options = new BitmapFactory.Options();

@@ -4,12 +4,21 @@
     android:layout_height="match_parent" >
     <TableRow>
         <ImageView
-            android:id="@+id/img"
+            android:id="@+id/list_img"
+            android:paddingRight="20dp"
+            android:paddingLeft="15dp"
             android:layout_width="100dp"
             android:layout_height="100dp"/>
 
         <TextView
-            android:id="@+id/txt"
+            android:id="@+id/list_txt_title"
+            android:paddingTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/list_txt_description"
+            android:paddingTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="100dp" />
 
