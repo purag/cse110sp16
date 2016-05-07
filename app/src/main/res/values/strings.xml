@@ -17,4 +17,7 @@
     <!-- Strings related to the map view -->
     <string name="title_activity_map"> Adventour Map </string>
 
+    <!-- Strings related to the browse view -->
+    <string name="title_browse_list">Adventour List</string>
+
 </resources>
