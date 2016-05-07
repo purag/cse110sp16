@@ -6,7 +6,7 @@ public class User {
 	
 	/* Private member variables */
 	
-	private String user_id;
+	private int user_id;
 	private String name;
 	private String password;
 	private String email;
@@ -15,7 +15,7 @@ public class User {
 
     public User() {}
 
-    public User(String user_id, String name, String password, String email,
+    public User(int user_id, String name, String password, String email,
          int create_date, Location last_location) {
         this.user_id = user_id;
         this.name = name;
@@ -27,7 +27,7 @@ public class User {
 		
 	/* Public Setters */
 
-	public void setUser_id(String user_id){
+	public void setUser_id(int user_id){
 	   this.user_id = user_id;
 	}
 	
@@ -53,7 +53,7 @@ public class User {
 	
 	/* Public Getters */
 	
-	public String getUser_id(){
+	public int getUser_id(){
 	   return user_id;
 	}
 	
