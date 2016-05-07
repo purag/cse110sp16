@@ -1,41 +1,22 @@
-package com.cs110.lit.adventour.model;
-
-import android.location.Location;
-
-public class Checkpoint {
+public class checkpoint {
 	
 	/* Private member variables */
 	
 	private String checkpoint_id;
-	private Location location;
+	private coordinate location;
 	private String tour_id;
 	private String title;
 	private String description;
 	private String photo;
 	private int order_num; 
-
-    // Default Constructor
-    public Checkpoint() { }
-
-    // Intializer Constructor
-    public Checkpoint(String checkpoint_id, Location location, String tour_id, String title,
-               String description, String photo, int order_num) {
-        this.checkpoint_id = checkpoint_id;
-        this.location = location;
-        this.tour_id = tour_id;
-        this.title = title;
-        this.description = description;
-        this.photo = photo;
-        this.order_num = order_num;
-    }
-
+		
 	/* Public Setters */
 
 	public void setCheckpoint_id(String checkpoint_id){
 	   this.checkpoint_id = checkpoint_id;
 	}
 	
-	public void setLocation(Location location){
+	public void setLocation(coordinate location){
 	   this.location = location;
 	}
 	
@@ -65,7 +46,7 @@ public class Checkpoint {
 	   return checkpoint_id;
 	}
 	
-	public Location getLocation(){
+	public coordinate getLocation(){
 	   return location;
 	}
 	

@@ -1,6 +1,4 @@
-package com.cs110.lit.adventour.model;
-
-public class Tour {
+public class tour {
 	
 	/* Private member variables */
 	
@@ -9,20 +7,8 @@ public class Tour {
 	private String title;
 	private String summary;
 	private Boolean visibility;
-	private Boolean completed;
-
-	public Tour() {}
-
-	public Tour(String tour_id, String user_id, String title, String summary,
-		 Boolean visibility, Boolean completed) {
-		this.tour_id = tour_id;
-		this.user_id = user_id;
-		this.title = title;
-		this.summary = summary;
-		this.visibility = visibility;
-		this.completed = completed;
-	}
-
+	private Boolean compleated; 
+		
 	/* Public Setters */
 
 	public void setTour_id(String tour_id){
@@ -45,8 +31,8 @@ public class Tour {
 	   this.visibility = visibility;
 	}
 	
-	public void setCompleted(Boolean completed){
-	   this.completed = completed;
+	public void setCompleated(Boolean compleated){
+	   this.compleated = compleated;
 	}
 	
 	/* Public Getters */
@@ -71,8 +57,8 @@ public class Tour {
 	   return visibility;
 	}
 	
-	public Boolean getCompleted(){
-	   return completed;
+	public Boolean getCompleated(){
+	   return compleated;
 	}
 
 } /* end of tour class */
