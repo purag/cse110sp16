@@ -77,6 +77,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
         System.out.println("no tour yet!");
 
+        DB.getToursNearLoc(10.3234, 76.3232, 25.0, this, new DB.DBCallback<ArrayList<Tour>>() {
+            @Override
+            public void onSuccess(ArrayList<Tour> tours) {
+                for (Tour t : tours) {
+                    System.out.println("Tour name: " + t.getTitle());
+                    System.out.println("Tour summary: " + t.getSummary());
+                }
+            }
+        });
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);

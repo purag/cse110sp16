@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.cs110.lit.adventour.model.*;
 import java.util.ArrayList;
@@ -33,30 +34,24 @@ public class DB {
 
     private static String base = "http://107.170.197.108/";
 
-    public DB() {}
-
     public static void getTourById (int id, Context c, final DBCallback<Tour> cb) {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
-        System.out.println("HEREE");
         String reqUrl = base + "tours/" + id;
 
-        JsonObjectRequest req = new JsonObjectRequest(reqUrl, null, /*future, future);*/
-        new Response.Listener<JSONObject>() {
+        JsonObjectRequest req = new JsonObjectRequest(reqUrl, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                // successfull
+                // successful
                 Tour t = null;
                 try {
-                    JSONObject tourJson = new JSONObject(response.toString());
-                        t = new Tour(
-                        tourJson.getInt("tour_id"),
-                        tourJson.getInt("user_id"),
-                        tourJson.getString("tour_title"),
-                        tourJson.getString("tour_summary"),
-                        tourJson.getBoolean("tour_visibility")
+                    t = new Tour(
+                            response.getInt("tour_id"),
+                            response.getInt("user_id"),
+                            response.getString("tour_title"),
+                            response.getString("tour_summary"),
+                            response.getInt("tour_visibility") == 1 ? true : false
                     );
-
-                }catch (JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 cb.onSuccess(t);
@@ -70,50 +65,57 @@ public class DB {
         });
 
         requestQueue.add(req);
-        /*System.out.println("HERE@");
-        try {
-            System.out.println("before");
-            JSONObject response = future.get();
-            System.out.println("after");// this will block (forever)
-            System.out.println(response.toString());
-        } catch (InterruptedException e) {
-            // exception handling
-            System.out.println("interrupted");
-        } catch (ExecutionException e) {
-            // exception handling
-            System.out.println("execution exception");
-        }catch (TimeoutException e) {
-            // exception handling
-            System.out.println("timout");
-        }*/
-
-        // request to server
-        // parse json response
-        // return new Tour();
     }
 
-    public static ArrayList<Tour> getToursNearLoc (double lat, double lon, double dist, Context c) {
-        RequestQueue queue = Volley.newRequestQueue(c);
-        // request to server
-        // parse json response
-        // return new ArrayList<Tour>();
-        return null;
+    public static void getToursNearLoc (double lat, double lon, double dist, Context c,
+            final DBCallback<ArrayList<Tour>> cb) {
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+        String reqUrl = base + "tours/near/" + lat + "/" + lon + "/" + dist;
+
+        JsonArrayRequest req = new JsonArrayRequest(reqUrl, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                // successful
+                ArrayList<Tour> tours = new ArrayList<>();
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject tour = response.optJSONObject(i);
+                        tours.add(new Tour(
+                            tour.getInt("tour_id"),
+                            tour.getInt("user_id"),
+                            tour.getString("tour_title"),
+                            tour.getString("tour_summary"),
+                            tour.getInt("tour_visibility") == 1 ? true : false
+                        ));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                cb.onSuccess(tours);
+                System.out.println(response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("Error with tour request");
+            }
+        });
+
+        requestQueue.add(req);
     }
 
-    public static Checkpoint getCheckpointById (int id, Context c) {
+    public static void getCheckpointById (int id, Context c) {
         RequestQueue queue = Volley.newRequestQueue(c);
         // request to server
         // parse json response
         // return new Checkpoint();
-        return null;
     }
 
-    public static Checkpoint getCheckpointByTourOrderNum (int tourId, int orderNum, Context c) {
+    public static void getCheckpointByTourOrderNum (int tourId, int orderNum, Context c) {
         RequestQueue queue = Volley.newRequestQueue(c);
         // request to server
         // parse json response
         // return new Checkpoint();
-        return null;
     }
 
     public interface DBCallback<T> {
