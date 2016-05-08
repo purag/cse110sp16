@@ -326,6 +326,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     /**
      * Test if the list activity works properly
+     * TODO: call this function when successfully logged in
      */
     public void showBrowseListView(View view) {
         Intent intent = new Intent(this, BrowseListActivity.class);

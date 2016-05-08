@@ -20,4 +20,9 @@
     <!-- Strings related to the browse view -->
     <string name="title_browse_list">Adventour List</string>
 
+    <!-- Strings in menu resource -->
+    <string name="search_title">Search Tour</string>
+    <string name="search_hint">San Diego</string>
+
+
 </resources>
