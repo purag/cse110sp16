@@ -32,7 +32,7 @@ public class BrowseListActivity extends Activity implements OnQueryTextListener 
             "Doriamon",
             "eeve",
             "foxmon",
-            "squirtle",
+            "Squirtle",
             "bobabso"
     } ;
 
