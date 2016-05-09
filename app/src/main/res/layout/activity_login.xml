@@ -97,7 +97,7 @@
             android:id="@+id/textView"
             android:layout_gravity="center"
             android:layout_weight="0.05"
-            android:onClick="showMapView" />
+            android:onClick="showBrowseListView" />
     </FrameLayout>
 
 </LinearLayout>
