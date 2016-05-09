@@ -26,7 +26,7 @@ public class BrowseListActivity extends Activity {
             "Doriamon",
             "eeve",
             "foxmon",
-            "squirtle",
+            "Squirtle",
             "bobabso"
     } ;
 
@@ -46,7 +46,7 @@ public class BrowseListActivity extends Activity {
             R.drawable.cat1,
             R.drawable.cat2,
             R.drawable.cat3,
-            R.drawable.eeve,
+            R.drawable.eevee,
             R.drawable.foxmon,
             R.drawable.squirtle,
             R.drawable.bobabso
