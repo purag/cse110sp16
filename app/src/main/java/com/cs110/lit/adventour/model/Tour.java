@@ -1,35 +1,47 @@
 package com.cs110.lit.adventour.model;
 
+import java.util.ArrayList;
+
 public class Tour {
 	
 	/* Private member variables */
 	
-	private String tour_id;
-	private String user_id;
+	private int tour_id;
+	private int user_id;
 	private String title;
 	private String summary;
 	private Boolean visibility;
-	private Boolean completed;
+    
+    private ArrayList<Checkpoint> listOfCheckpoints;
 
-	Tour() {}
+	public Tour() {}
 
-	Tour(String tour_id, String user_id, String title, String summary,
-		 Boolean visibility, Boolean completed) {
+	public Tour(int tour_id, int user_id, String title, String summary,
+				Boolean visibility) {
 		this.tour_id = tour_id;
 		this.user_id = user_id;
 		this.title = title;
 		this.summary = summary;
 		this.visibility = visibility;
-		this.completed = completed;
+	}
+
+	public Tour(int tour_id, int user_id, String title, String summary,
+		 Boolean visibility, ArrayList<Checkpoint> listOfCheckpoints) {
+		this.tour_id = tour_id;
+		this.user_id = user_id;
+		this.title = title;
+		this.summary = summary;
+		this.visibility = visibility;
+        this.listOfCheckpoints = listOfCheckpoints;
 	}
 
 	/* Public Setters */
 
-	public void setTour_id(String tour_id){
+	public void setTour_id(int tour_id){
 	   this.tour_id = tour_id;
 	}
 	
-	public void setUser_id(String user_id){
+	public void setUser_id(int user_id){
 	   this.user_id = user_id;
 	}
 	
@@ -44,18 +56,18 @@ public class Tour {
 	public void setVisibility(Boolean visibility){
 	   this.visibility = visibility;
 	}
-	
-	public void setCompleted(Boolean completed){
-	   this.completed = completed;
-	}
+    public void setListOfCheckpoints(ArrayList<Checkpoint> listOfCheckpoints){
+        this.listOfCheckpoints= listOfCheckpoints;
+    }
+    
 	
 	/* Public Getters */
 	
-	public String getTour_id(){
+	public int getTour_id(){
 	   return tour_id;
 	}
 	
-	public String getUser_id(){
+	public int getUser_id(){
 	   return user_id;
 	}
 	
@@ -70,9 +82,9 @@ public class Tour {
 	public Boolean getVisibility(){
 	   return visibility;
 	}
+    public ArrayList<Checkpoint> getListOfCheckpoints(){
+        return listOfCheckpoints;
+    }
 	
-	public Boolean getCompleted(){
-	   return completed;
-	}
 
 } /* end of tour class */
