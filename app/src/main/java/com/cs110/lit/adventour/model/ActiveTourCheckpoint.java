@@ -12,9 +12,6 @@ public class ActiveTourCheckpoint extends Checkpoint {
     private boolean reachedPoint;
     private boolean upcomingPoint;
 
-    // Default Constructor
-    public ActiveTourCheckpoint() { super();}
-
     // Intializer Constructor
     public ActiveTourCheckpoint(int checkpoint_id, Location location, int tour_id, String title, String description, String photo, int order_num, boolean startPoint, boolean finishPoint, boolean reachedPoint, boolean upcomingPoint) {
         
