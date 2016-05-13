@@ -44,7 +44,6 @@
                 android:resource="@xml/searchable"/>
         </activity>
 
-        <!--
         <activity
             android:name="com.cs110.lit.adventour.OverviewActivity"
             android:label="@string/text_content"
@@ -53,7 +52,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs110.lit.adventour.LoginActivity" />
         </activity>
-        -->
 
         <!--<activity android:name=".SearchableActivity"
             android:launchMode="singleTop" >
