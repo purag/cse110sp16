@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             getSupportActionBar().hide();
 
         Random r = new Random(System.currentTimeMillis());
-        int i = r.nextInt(8);
+        int i = r.nextInt(login_bg_imgs.length);
         ImageView login_bg = (ImageView) findViewById(R.id.login_bg);
         TextView login_title = (TextView) findViewById(R.id.login_title);
         Typeface t = Typeface.createFromAsset(getAssets(), "fonts/BerninoSansCondensedEB.ttf");

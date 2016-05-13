@@ -26,24 +26,43 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-/**
- * Created by Purag on 5/6/2016.
- */
 
+/**
+ * A database class to manage calls to the REST API and parse their responses into model instances.
+ * The class is non-instantiable and its methods are static.
+ */
 public class DB {
 
+    /**
+     * The base URL of the REST API service.
+     */
     private static String base = "http://107.170.197.108/";
 
+    /**
+     * Private constructor -- enforces non-instantiability.
+     */
+    private DB () {}
+
+    /**
+     * Fetch a specific tour by its ID from the database.
+     *
+     * @param id the ID of the tour to fetch
+     * @param c the context (activity) from which this database access is being made
+     * @param cb the callback object (implementing the onSuccess method)
+     */
     public static void getTourById (int id, Context c, final DBCallback<Tour> cb) {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "tours/" + id;
 
+        /* Prepare the request for the JSON-formatted response text. */
         JsonObjectRequest req = new JsonObjectRequest(reqUrl, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                // successful
                 Tour t = null;
                 try {
+                    /* Loop through the checkpoint JSON array and create an ArrayList of model
+                     * instances.
+                     */
                     JSONArray checkpointsRes = response.getJSONArray("checkpoints");
                     ArrayList<Checkpoint> checkpoints = new ArrayList<>();
                     for (int i = 0; i < checkpointsRes.length(); i++) {
@@ -59,6 +78,8 @@ public class DB {
                                 checkpointRes.getInt("checkpoint_order_num")
                         ));
                     }
+
+                    /* Using the tour data and checkpoints ArrayList, instantiate a tour. */
                     t = new Tour(
                             response.getInt("tour_id"),
                             response.getInt("user_id"),
@@ -70,6 +91,8 @@ public class DB {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                /* Delegate to the callback. */
                 cb.onSuccess(t);
                 System.out.println(response.toString());
             }
@@ -80,23 +103,35 @@ public class DB {
             }
         });
 
+        /* Actually make the request. */
         requestQueue.add(req);
     }
 
-    public static void getToursNearLoc (double lat, double lon, double dist, Context c,
+    /**
+     * Fetch the top [lim] tours within [dist] miles of ([lat], [lon]).
+     *
+     * @param lat the latitude around which to search for tours
+     * @param lon the longitude around which to search for tours
+     * @param dist the maximum distance from (lat, lon) to search
+     * @param lim the maximum number of tours to fetch
+     * @param c the context (activity) from which this database access is being made
+     * @param cb the callback object (implementing the onSuccess method)
+     */
+    public static void getToursNearLoc (double lat, double lon, double dist, int lim, Context c,
                                         final DBCallback<ArrayList<Tour>> cb) {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
-        String reqUrl = base + "tours/near/" + lat + "/" + lon + "/" + dist;
+        String reqUrl = base + "tours/near/" + lat + "/" + lon + "/" + dist + "/limit/" + lim;
 
+        /* Prepare the request for the JSON-formatted response text. */
         JsonArrayRequest req = new JsonArrayRequest(reqUrl, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                // successful
+                /* Populate the ArrayList of tours from the JSON array. */
                 ArrayList<Tour> tours = new ArrayList<>();
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject tour = response.optJSONObject(i);
-                        tours.add(new Tour(
+                        tours.add(i, new Tour(
                                 tour.getInt("tour_id"),
                                 tour.getInt("user_id"),
                                 tour.getString("tour_title"),
@@ -109,6 +144,8 @@ public class DB {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                /* Delegate to the callback. */
                 cb.onSuccess(tours);
                 System.out.println(response.toString());
             }
@@ -119,6 +156,7 @@ public class DB {
             }
         });
 
+        /* Actually make the request. */
         requestQueue.add(req);
     }
 
