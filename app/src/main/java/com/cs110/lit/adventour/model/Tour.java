@@ -82,8 +82,16 @@ public class Tour {
 	public String getSummary(){
 	   return summary;
 	}
-	
-	public Boolean getVisibility(){
+
+    public double getStarting_lat() {
+        return starting_lat;
+    }
+
+    public double getStarting_lon() {
+        return starting_lon;
+    }
+
+    public Boolean getVisibility(){
 	   return visibility;
 	}
     public ArrayList<Checkpoint> getListOfCheckpoints(){
