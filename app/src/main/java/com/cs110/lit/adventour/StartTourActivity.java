@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.location.LocationListener;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,6 +34,9 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
     private LocationListener locationListener;
 
     private GoogleMap mMap;
+
+    // Fragment Manager for checkpoint displays.
+    public final FragmentManager fManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
