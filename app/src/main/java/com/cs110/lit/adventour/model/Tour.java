@@ -11,18 +11,22 @@ public class Tour {
 	private String title;
 	private String summary;
 	private Boolean visibility;
+	private double starting_lat;
+	private double starting_lon;
     
     private ArrayList<Checkpoint> listOfCheckpoints;
 
 	public Tour() {}
 
 	public Tour(int tour_id, int user_id, String title, String summary,
-				Boolean visibility) {
+				Boolean visibility, double starting_lat, double starting_lon) {
 		this.tour_id = tour_id;
 		this.user_id = user_id;
 		this.title = title;
 		this.summary = summary;
 		this.visibility = visibility;
+		this.starting_lat = starting_lat;
+		this.starting_lon = starting_lon;
 	}
 
 	public Tour(int tour_id, int user_id, String title, String summary,
