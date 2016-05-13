@@ -38,7 +38,6 @@
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
-        <!--
         <activity
             android:name="com.cs110.lit.adventour.OverviewActivity"
             android:label="@string/text_content"
@@ -50,7 +49,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs110.lit.adventour.LoginActivity" />
         </activity>
-        -->
 
         <!--
         <activity android:name=".SearchableActivity"
