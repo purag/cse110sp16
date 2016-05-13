@@ -27,4 +27,7 @@
 
     <!-- Strings related to the tour overview view -->
     <string name="text_content">filler text </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
