@@ -44,12 +44,28 @@ public class DB {
                 // successful
                 Tour t = null;
                 try {
+                    JSONArray checkpointsRes = response.getJSONArray("checkpoints");
+                    ArrayList<Checkpoint> checkpoints = new ArrayList<>();
+                    for (int i = 0; i < checkpointsRes.length(); i++) {
+                        JSONObject checkpointRes = checkpointsRes.getJSONObject(i);
+                        checkpoints.add(i, new Checkpoint(
+                                checkpointRes.getInt("checkpoint_id"),
+                                checkpointRes.getDouble("checkpoint_lat"),
+                                checkpointRes.getDouble("checkpoint_long"),
+                                checkpointRes.getInt("tour_id"),
+                                checkpointRes.getString("checkpoint_title"),
+                                checkpointRes.getString("checkpoint_description"),
+                                checkpointRes.getString("checkpoint_photo"),
+                                checkpointRes.getInt("checkpoint_order_num")
+                        ));
+                    }
                     t = new Tour(
                             response.getInt("tour_id"),
                             response.getInt("user_id"),
                             response.getString("tour_title"),
                             response.getString("tour_summary"),
-                            response.getInt("tour_visibility") == 1 ? true : false
+                            response.getInt("tour_visibility") == 1 ? true : false,
+                            checkpoints
                     );
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -68,7 +84,7 @@ public class DB {
     }
 
     public static void getToursNearLoc (double lat, double lon, double dist, Context c,
-            final DBCallback<ArrayList<Tour>> cb) {
+                                        final DBCallback<ArrayList<Tour>> cb) {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "tours/near/" + lat + "/" + lon + "/" + dist;
 
@@ -81,11 +97,13 @@ public class DB {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject tour = response.optJSONObject(i);
                         tours.add(new Tour(
-                            tour.getInt("tour_id"),
-                            tour.getInt("user_id"),
-                            tour.getString("tour_title"),
-                            tour.getString("tour_summary"),
-                            tour.getInt("tour_visibility") == 1 ? true : false
+                                tour.getInt("tour_id"),
+                                tour.getInt("user_id"),
+                                tour.getString("tour_title"),
+                                tour.getString("tour_summary"),
+                                tour.getInt("tour_visibility") == 1 ? true : false,
+                                tour.getDouble("starting_lat"),
+                                tour.getDouble("starting_lon")
                         ));
                     }
                 } catch (JSONException e) {
