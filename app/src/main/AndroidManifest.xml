@@ -42,11 +42,18 @@
             </intent-filter>
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
+        </activity>
 
+        <!--
+        <activity
+            android:name="com.cs110.lit.adventour.OverviewActivity"
+            android:label="@string/text_content"
+            android:parentActivityName="com.cs110.lit.adventour.LoginActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs110.lit.adventour.LoginActivity" />
         </activity>
+        -->
 
         <!--<activity android:name=".SearchableActivity"
             android:launchMode="singleTop" >
@@ -56,6 +63,7 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
         </activity>-->
+
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
