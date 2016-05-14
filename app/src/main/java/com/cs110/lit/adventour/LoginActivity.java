@@ -367,6 +367,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         startActivity(intent);
     }
 
+    //Sean's map bullshit
+    public void showBrowseMapView(View view) {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
 
     /**
      * Test if the map activity works properly
