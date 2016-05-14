@@ -153,8 +153,6 @@ public class DB {
      */
     public static void getToursNearLoc (double lat, double lon, double dist, int lim, Context c,
                                         final Callback<ArrayList<Tour>> cb) {
-
-        System.out.println("Inside get tour near location!!!!!!!!!!!!!!!!!");
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "tours/near/" + lat + "/" + lon + "/" + dist + "/limit/" + lim;
 

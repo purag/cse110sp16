@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.cs110.lit.adventour.model.Tour;
 
@@ -28,45 +29,9 @@ import java.util.ArrayList;
 
 public class BrowseListActivity extends AppCompatActivity implements OnQueryTextListener {
     ListView list;
-    private ArrayList<Tour> nearbyTours;
-
-    // NOTE:
-    // Those data are from the database, need to implement function to grab those data
-    // TourTitle array, TourDescription array and imageId array
-    // should be the same size!!!!
-
-    String[] TourTitleX = {
-            "Garfield",
-            "Pusheen",
-            "Doriamon",
-            "eeve",
-            "foxmon",
-            "Squirtle",
-            "bobabso"
-    };
-
-    String[] TourDescriptionX = {
-            "\nFirst Object test description. This is Garfield. this is a very very very very very very " +
-                    "very very very very very very very very very very very very very very very very very " +
-                    "very very very very very very very very very long text for the description\n",
-            "\nSecond Object test description. This is Pusheen\n",
-            "\nThird Object test description. This is Doriamon\n",
-            "\nFirst Object test description. This is Garfield\n",
-            "\nSecond Object test description. This is Pusheen\n",
-            "\nThird Object test description. This is Doriamon\n",
-            "\nThird Object test description. This is Doriamon\n"
-    };
-
-    Integer[] imageIdX = {
-            R.drawable.cat1,
-            R.drawable.cat2,
-            R.drawable.cat3,
-            R.drawable.eevee,
-            R.drawable.foxmon,
-            R.drawable.squirtle,
-            R.drawable.bobabso
-    };
-
+    private final ArrayList<String> TourTitle = new ArrayList<>();
+    private final ArrayList<String> TourDescription = new ArrayList<>();
+    private final ArrayList<Integer> imageId = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,64 +45,58 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             return;
         }
         Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
-        System.out.println("Location latitude " + mlocation.getLatitude());
-        System.out.println("Location longitude " + mlocation.getLongitude());
 
+        // added some test vaiable just for testing!!
+        this.TourTitle.add("Garfield");
+        this.TourDescription.add("Test object");
+        this.imageId.add(R.drawable.cat3);
 
-        ArrayList<String> TourTitle = new ArrayList<>();
-        TourTitle.add("Garfield");
-
-        ArrayList<String> TourDescription = new ArrayList<>();
-        TourDescription.add("Test object");
-
-        ArrayList<Integer> imageId = new ArrayList<>();
-        imageId.add(R.drawable.bobabso);
-        imageId.add(R.drawable.squirtle);
-        imageId.add(R.drawable.eevee);
-        imageId.add(R.drawable.cat1);
-
-
-        NearbyTours(mlocation, TourTitle, TourDescription, imageId);
-            CustomList adapter = new
-                CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
-
+        NearbyTours(mlocation);
 
         // create list view
         list = (ListView)findViewById(R.id.browse_list);
 
+        // create list items
+        CustomList adapter = new CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                //Toast.makeText(BrowseListActivity.this, "You Clicked at " +TourTitle[+ position], Toast.LENGTH_SHORT).show();
+                Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
 
             }
         });
 
     }
 
-    private void NearbyTours(Location myLocation, final ArrayList<String> TourTitle, final ArrayList<String> TourDescription, final ArrayList<Integer> imageId){
+    private void NearbyTours(Location myLocation) {
         //grab data
+        double testLatitude = 33;
+        double testLongitude = 117;
+        double testDist = 5000;
+        int testLim = 10;
 
-        System.out.println("Inside Nearby location!!!!");
-        DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 300.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
+        //DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
-            public void onSuccess(ArrayList<Tour> tours) {
-                System.out.println("Inside on successss");
-                int count = 0;
-                for (Tour t : tours) {
-                    TourTitle.add(t.getTitle());
-                    TourDescription.add(t.getSummary());
-                    count ++ ;
-                    System.out.println("Tour Title: " + t.getTitle());
-                    System.out.println("Tour summary: " + t.getSummary());
-                    //System.out.println("Tour lat/lon: (" + t.getStarting_lat() +
-                            //"," + t.getStarting_lon() + ")");
-                }
+            public void onSuccess(ArrayList<Tour> tours){
                 //get the tours
-                nearbyTours = tours;
+                for (int i = 0; i< tours.size(); i++) {
+                    if (tours.get(i).getTitle() != null)
+                        TourTitle.add(tours.get(i).getTitle());
+                    else
+                        TourTitle.add("Unknown");
+                    if (tours.get(i).getSummary() != null)
+                        TourDescription.add(tours.get(i).getSummary());
+                    else
+                        TourDescription.add("There is no summary available");
+                    //if (tours.get(i).getImage() != null)
+                      //  imageId.add(tours.get(i).getImage());
+                    //else
+                    imageId.add(R.drawable.logo_400);
+                }
             }
 
             @Override
