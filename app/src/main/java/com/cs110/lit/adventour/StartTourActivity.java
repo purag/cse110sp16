@@ -42,11 +42,28 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
     private LocationListener locationListener;
 
     /* Tour Model Related */
-    private int tourID = 0;
+    private int tourID = 1;
     private ArrayList<Checkpoint> checkpoints;
 
     // Fragment Manager for checkpoint displays.
     public final FragmentManager fManager = getSupportFragmentManager();
+
+    class CheckpointCallBack implements DB.DBCallback<Tour>{
+        public ArrayList<Checkpoint> checkpointList;
+
+        public ArrayList<Checkpoint> getCheckpoints(){
+            return this.checkpointList;
+        }
+
+        @Override
+        public void onSuccess(Tour tour) {
+            this.checkpointList = tour.getListOfCheckpoints();
+            // Display markers.
+            for(Checkpoint points : checkpoints) {
+                addMarkerAtMyLocation(new LatLng(points.getLatitude(), points.getLongitude()));
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +78,19 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
         // Grab our database.
         //tourID = intent.getIntExtra("tourID", 0);
 
+        CheckpointCallBack callBack = new CheckpointCallBack();
         // Get tour, son!
-        DB.getTourById(1, this, new DB.DBCallback<Tour>() {
-            @Override public void onSuccess (Tour tour) {
-                checkpoints = tour.getListOfCheckpoints();
+        DB.getTourById(tourID, this, new DB.DBCallback<Tour>(){
+            @Override
+            public void onSuccess(Tour tour){
+                ArrayList<Checkpoint> checkpoints = tour.getListOfCheckpoints();
                 // Display markers.
-                for(Checkpoint points : checkpoints)
-                    mMap.addMarker(new MarkerOptions().position(
-                            new LatLng(points.getLatitude(), points.getLongitude())
-                    ));
+                for(Checkpoint points : checkpoints) {
+                    addMarkerAtMyLocation(new LatLng(points.getLatitude(), points.getLongitude()));
+                }
             }
         });
-
-
+        this.checkpoints = callBack.getCheckpoints();
     }
 
     @Override
@@ -119,21 +136,19 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
         ////----------- display the map with marker on current location -----------//
-        addMarkerAtMyLocation(lastKnownLocation);
+        addMarkerAtMyLocation(new LatLng(lastKnownLocation.getLatitude(),
+            lastKnownLocation.getLongitude()));
     }
 
     /**
      * Simple helper function to set a marker at your current location.
      */
-    private void addMarkerAtMyLocation(Location loc) {
-        if(loc == null)
+    private void addMarkerAtMyLocation(LatLng latLng) {
+        if(latLng == null)
             return;
-        // Add a marker in current location, and move the camera.
-        LatLng myLocation =
-                new LatLng(loc.getLatitude(), loc.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
+        mMap.addMarker(new MarkerOptions().position(latLng));
         // zoom in to the current location in camera view
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
     }
 
 
@@ -195,7 +210,8 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
                             locationManager.getLastKnownLocation(locationNetworkProvider);
 
                     ////----------- display the map with marker on current location -----------//
-                    addMarkerAtMyLocation(lastKnownLocation);
+                    addMarkerAtMyLocation(new LatLng(lastKnownLocation.getLatitude(),
+                            lastKnownLocation.getLongitude()));
                 } else {
                     // Permission denied, return silently.
                     return;
