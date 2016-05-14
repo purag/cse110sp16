@@ -8,8 +8,20 @@
     <ListView
         android:id="@+id/browse_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/searchView">
     </ListView>
+
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchView"
+        android:background="#f6bdfc"
+        android:queryHint="@string/search_hint"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:imeOptions= "actionSearch"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
 
