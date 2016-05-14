@@ -1,5 +1,6 @@
 package com.cs110.lit.adventour;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -39,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private EditText mEmailView;
     private EditText mPasswordView;
     private View mLoginFormView;
 
@@ -98,14 +99,14 @@ public class LoginActivity extends AppCompatActivity {
 
         boolean auth = prefs.getBoolean("auth", false);
 
-        if (auth) {
+        /*if (auth) {
             showMapView();
             return;
-        }
+        }*/
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mEmailView = (EditText) findViewById(R.id.email);
 
         if (getSupportActionBar() != null)
             getSupportActionBar().hide();
@@ -177,9 +178,14 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (!cancel) {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Authenticating...");
+            progressDialog.show();
             DB.authenticateUser(email, md5(password), this, new DB.Callback<User>() {
                 @Override
                 public void onSuccess (User u) {
+                    progressDialog.hide();
                     System.out.println("logged " + u.getUser_email() + " in successfully");
                     editor.putBoolean("auth", true);
                     editor.putInt("uid", u.getUser_id());
@@ -190,6 +196,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure (User u) {
+                    progressDialog.hide();
                     System.out.println("authentication failed");
                     mPasswordView.setError("Incorrect username or password.");
                 }
