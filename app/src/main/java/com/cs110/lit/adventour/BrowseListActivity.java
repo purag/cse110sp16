@@ -30,43 +30,6 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
     ListView list;
     private ArrayList<Tour> nearbyTours;
 
-    // NOTE:
-    // Those data are from the database, need to implement function to grab those data
-    // TourTitle array, TourDescription array and imageId array
-    // should be the same size!!!!
-
-    String[] TourTitleX = {
-            "Garfield",
-            "Pusheen",
-            "Doriamon",
-            "eeve",
-            "foxmon",
-            "Squirtle",
-            "bobabso"
-    };
-
-    String[] TourDescriptionX = {
-            "\nFirst Object test description. This is Garfield. this is a very very very very very very " +
-                    "very very very very very very very very very very very very very very very very very " +
-                    "very very very very very very very very very long text for the description\n",
-            "\nSecond Object test description. This is Pusheen\n",
-            "\nThird Object test description. This is Doriamon\n",
-            "\nFirst Object test description. This is Garfield\n",
-            "\nSecond Object test description. This is Pusheen\n",
-            "\nThird Object test description. This is Doriamon\n",
-            "\nThird Object test description. This is Doriamon\n"
-    };
-
-    Integer[] imageIdX = {
-            R.drawable.cat1,
-            R.drawable.cat2,
-            R.drawable.cat3,
-            R.drawable.eevee,
-            R.drawable.foxmon,
-            R.drawable.squirtle,
-            R.drawable.bobabso
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +43,6 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             return;
         }
         Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
-        System.out.println("Location latitude " + mlocation.getLatitude());
-        System.out.println("Location longitude " + mlocation.getLongitude());
 
 
         ArrayList<String> TourTitle = new ArrayList<>();
@@ -91,9 +52,6 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         TourDescription.add("Test object");
 
         ArrayList<Integer> imageId = new ArrayList<>();
-        imageId.add(R.drawable.bobabso);
-        imageId.add(R.drawable.squirtle);
-        imageId.add(R.drawable.eevee);
         imageId.add(R.drawable.cat1);
 
 
@@ -120,21 +78,23 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
 
     private void NearbyTours(Location myLocation, final ArrayList<String> TourTitle, final ArrayList<String> TourDescription, final ArrayList<Integer> imageId){
         //grab data
-
-        System.out.println("Inside Nearby location!!!!");
         DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 300.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
-                System.out.println("Inside on successss");
-                int count = 0;
                 for (Tour t : tours) {
-                    TourTitle.add(t.getTitle());
-                    TourDescription.add(t.getSummary());
-                    count ++ ;
-                    System.out.println("Tour Title: " + t.getTitle());
-                    System.out.println("Tour summary: " + t.getSummary());
-                    //System.out.println("Tour lat/lon: (" + t.getStarting_lat() +
-                            //"," + t.getStarting_lon() + ")");
+                    if (t.getTitle() != null)
+                        TourTitle.add(t.getTitle());
+                    else
+                        TourTitle.add("Unknown");
+                    if (t.getSummary() != null)
+                        TourDescription.add(t.getSummary());
+                    else
+                        TourDescription.add("There is no summary available");
+                    //if (t.getImage() != null)
+                    //    imageId.add(t.getImage());
+                    //else
+                        imageId.add(R.drawable.logo_400);
+
                 }
                 //get the tours
                 nearbyTours = tours;
