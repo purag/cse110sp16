@@ -157,7 +157,7 @@
                 android:textColor="@color/white"
                 android:text="Skip"
                 android:id="@+id/textView"
-                android:onClick="showBrowseListViewSkip"
+                android:onClick="showBrowseMapView"
                 android:layout_gravity="center_horizontal" />
 
             <TextView
