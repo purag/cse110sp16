@@ -17,13 +17,13 @@
     </string>
 
     <!-- Strings related to the map view -->
-    <string name="title_activity_map"> Adventour Map </string>
+    <string name="title_activity_map">Map</string>
 
     <!-- Strings related to the browse view -->
-    <string name="title_browse_list">Adventour List</string>
+    <string name="title_browse_list">List</string>
 
     <!-- Strings in menu resource -->
-    <string name="search_title">Search Tour</string>
+    <string name="action_search">Search Tour</string>
     <string name="search_hint">San Diego</string>
 
 

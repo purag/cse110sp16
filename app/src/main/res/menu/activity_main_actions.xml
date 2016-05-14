@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Back Item
+    <item android:id="@+id/action_back"
+        android:icon="@drawable/ic_action_back"
+        android:title="Back"
+        android:showAsAction="ifRoom" />-->
+
+    <!-- Search / will display always -->
+    <item android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_search"
+        android:title="@string/action_search"
+        app:showAsAction="ifRoom"/>
+
+    <!-- Location Found -->
+    <item android:id="@+id/action_location_found"
+        android:icon="@drawable/ic_action_location_found"
+        android:title="Local"
+        app:showAsAction="ifRoom" />
+
+    <!-- Refresh -->
+    <item android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="Refresh"
+        android:showAsAction="ifRoom" />
+
+    <!-- Help -->
+    <item android:id="@+id/action_help"
+        android:icon="@drawable/ic_action_help"
+        android:title="Help"
+        android:showAsAction="never"/>
+
+
+
+</menu>

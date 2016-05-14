@@ -135,27 +135,11 @@
                     android:text="@string/action_sign_in_short"
                     android:textStyle="bold"
                     android:backgroundTint="@color/colorAccentTrans"
-                    android:textColor="@color/darkyellow"/>
+                    android:textColor="@color/darkyellow"/><![CDATA[
 
-                <!--<TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/white"
-                    android:text="Skip"
-                    android:id="@+id/textView"
-                    android:onClick="showBrowseMapView" />
+                -->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/white"
-                    android:text="tourMetadata"
-                    android:id="@+id/tourMetadatabtn"
-                    android:onClick="showOverviewView"
-                    android:layout_gravity="center_horizontal|top" />-->
-
+            ]]>
             </FrameLayout>
 
             <TextView
@@ -165,6 +149,26 @@
                 android:text="@string/forgot_password"
                 android:textColor="@color/whiteTrans"
                 android:textSize="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:text="Skip"
+                android:id="@+id/textView"
+                android:onClick="showBrowseListViewSkip"
+                android:layout_gravity="center_horizontal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:text="tourMetadata"
+                android:id="@+id/tourMetadatabtn"
+                android:onClick="showOverviewView"
+                android:layout_gravity="center_horizontal" />
 
         </LinearLayout>
 
