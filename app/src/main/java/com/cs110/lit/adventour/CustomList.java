@@ -15,14 +15,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class CustomList extends ArrayAdapter<String>{
 
     private final Activity context;
-    private final String[] TourTitle;
-    private final String[] TourDescription;
-    private final Integer[] imageId;
+    private final ArrayList<String> TourTitle;
+    private final ArrayList<String> TourDescription;
+    private final ArrayList<Integer> imageId;
     public CustomList(Activity context,
-                      String[] TourTitle, String[] TourDescription, Integer[] imageId) {
+                      ArrayList<String> TourTitle, ArrayList<String> TourDescription, ArrayList<Integer> imageId) {
         super(context, R.layout.list_single, TourTitle);
         this.context = context;
         this.TourTitle = TourTitle;
@@ -40,11 +42,11 @@ public class CustomList extends ArrayAdapter<String>{
 
         ImageView imageView = (ImageView) rowView.findViewById(R.id.list_img);
 
-        txtTitle.setText(TourTitle[position]);
+        txtTitle.setText(TourTitle.get(position));
         Typeface customFont = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
         txtTitle.setTypeface(customFont);
 
-        txtDescription.setText(TourDescription[position]);
+        txtDescription.setText(TourDescription.get(position));
 
         // imageView.setImageResource(imageId[position]);
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -54,7 +56,7 @@ public class CustomList extends ArrayAdapter<String>{
         options.inSampleSize = 10;
 
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
-                imageId[position],options);
+                imageId.get(position),options);
 
         imageView.setImageBitmap(icon);
 
