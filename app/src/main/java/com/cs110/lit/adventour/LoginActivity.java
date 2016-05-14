@@ -190,14 +190,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Test if the map activity works properly
-     */
-    public void showMapView (View view) {
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
-    }
-
-    /**
      * Test if the list activity works properly
      * TODO: call this function when successfully logged in
      */
