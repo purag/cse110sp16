@@ -21,17 +21,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.cs110.lit.adventour.model.Tour;
+
+import java.util.ArrayList;
 
 public class BrowseListActivity extends AppCompatActivity implements OnQueryTextListener {
     ListView list;
+    private ArrayList<Tour> nearbyTours;
 
     // NOTE:
     // Those data are from the database, need to implement function to grab those data
     // TourTitle array, TourDescription array and imageId array
     // should be the same size!!!!
 
-    String[] TourTitle = {
+    String[] TourTitleX = {
             "Garfield",
             "Pusheen",
             "Doriamon",
@@ -41,7 +45,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             "bobabso"
     };
 
-    String[] TourDescription = {
+    String[] TourDescriptionX = {
             "\nFirst Object test description. This is Garfield. this is a very very very very very very " +
                     "very very very very very very very very very very very very very very very very very " +
                     "very very very very very very very very very long text for the description\n",
@@ -53,7 +57,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             "\nThird Object test description. This is Doriamon\n"
     };
 
-    Integer[] imageId = {
+    Integer[] imageIdX = {
             R.drawable.cat1,
             R.drawable.cat2,
             R.drawable.cat3,
@@ -69,9 +73,6 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_list);
 
-        CustomList adapter = new
-                CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
-
         // --------- Find current location --------------//
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
@@ -79,6 +80,26 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             return;
         }
         Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        System.out.println("Location latitude " + mlocation.getLatitude());
+        System.out.println("Location longitude " + mlocation.getLongitude());
+
+
+        ArrayList<String> TourTitle = new ArrayList<>();
+        TourTitle.add("Garfield");
+
+        ArrayList<String> TourDescription = new ArrayList<>();
+        TourDescription.add("Test object");
+
+        ArrayList<Integer> imageId = new ArrayList<>();
+        imageId.add(R.drawable.bobabso);
+        imageId.add(R.drawable.squirtle);
+        imageId.add(R.drawable.eevee);
+        imageId.add(R.drawable.cat1);
+
+
+        NearbyTours(mlocation, TourTitle, TourDescription, imageId);
+            CustomList adapter = new
+                CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
 
 
         // create list view
@@ -90,11 +111,40 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Toast.makeText(BrowseListActivity.this, "You Clicked at " +TourTitle[+ position], Toast.LENGTH_SHORT).show();
+                //Toast.makeText(BrowseListActivity.this, "You Clicked at " +TourTitle[+ position], Toast.LENGTH_SHORT).show();
 
             }
         });
 
+    }
+
+    private void NearbyTours(Location myLocation, final ArrayList<String> TourTitle, final ArrayList<String> TourDescription, final ArrayList<Integer> imageId){
+        //grab data
+
+        System.out.println("Inside Nearby location!!!!");
+        DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 300.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
+            @Override
+            public void onSuccess(ArrayList<Tour> tours) {
+                System.out.println("Inside on successss");
+                int count = 0;
+                for (Tour t : tours) {
+                    TourTitle.add(t.getTitle());
+                    TourDescription.add(t.getSummary());
+                    count ++ ;
+                    System.out.println("Tour Title: " + t.getTitle());
+                    System.out.println("Tour summary: " + t.getSummary());
+                    //System.out.println("Tour lat/lon: (" + t.getStarting_lat() +
+                            //"," + t.getStarting_lon() + ")");
+                }
+                //get the tours
+                nearbyTours = tours;
+            }
+
+            @Override
+            public void onFailure(ArrayList<Tour> tours) {
+                System.out.println("On failure happened\n");
+            }
+        });
     }
 
     /**
