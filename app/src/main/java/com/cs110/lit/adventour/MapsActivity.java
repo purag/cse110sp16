@@ -77,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
      private void displayNearbyTours(LatLng myLocation, final GoogleMap mMap){
          //grab data
-         DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 25.0, 10, this, new DB.DBCallback<ArrayList<Tour>>() {
+         DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 25.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
              @Override
              public void onSuccess(ArrayList<Tour> tours) {
                  for (Tour t : tours) {
@@ -101,7 +101,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
              }
 
-
+             @Override
+             public void onFailure(ArrayList<Tour> tours) {
+                 System.out.println("On failure happened\n");
+             }
          });
      }
 }
