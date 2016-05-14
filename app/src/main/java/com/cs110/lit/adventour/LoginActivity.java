@@ -178,6 +178,7 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putInt("uid", u.getUser_id());
                     editor.putString("user", u.getUser_email());
                     editor.commit();
+                    showMapView();
                 }
 
                 @Override
@@ -200,7 +201,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Test if the map activity works properly
      */
-    public void showMapView (View view) {
+    public void showMapView () {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
