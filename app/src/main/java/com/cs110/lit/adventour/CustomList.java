@@ -23,8 +23,9 @@ public class CustomList extends ArrayAdapter<String>{
     private final ArrayList<String> TourTitle;
     private final ArrayList<String> TourDescription;
     private final ArrayList<Integer> imageId;
-    public CustomList(Activity context,
-                      ArrayList<String> TourTitle, ArrayList<String> TourDescription, ArrayList<Integer> imageId) {
+
+    public CustomList(Activity context,ArrayList<String> TourTitle, ArrayList<String> TourDescription, ArrayList<Integer> imageId)
+    {
         super(context, R.layout.list_single, TourTitle);
         this.context = context;
         this.TourTitle = TourTitle;
@@ -32,8 +33,10 @@ public class CustomList extends ArrayAdapter<String>{
         this.imageId = imageId;
 
     }
+
     @Override
     public View getView(int position, View view, ViewGroup parent) {
+
         LayoutInflater inflater = context.getLayoutInflater();
         View rowView= inflater.inflate(R.layout.list_single, null, true);
 
@@ -53,10 +56,9 @@ public class CustomList extends ArrayAdapter<String>{
         options.inDither = false;
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        options.inSampleSize = 10;
+        options.inSampleSize = 5;
 
-        Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
-                imageId.get(position),options);
+        Bitmap icon = BitmapFactory.decodeResource(context.getResources(), imageId.get(position),options);
 
         imageView.setImageBitmap(icon);
 

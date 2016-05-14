@@ -29,8 +29,9 @@ import java.util.ArrayList;
 
 public class BrowseListActivity extends AppCompatActivity implements OnQueryTextListener {
     ListView list;
-    private ArrayList<Tour> nearbyTours;
-
+    private final ArrayList<String> TourTitle = new ArrayList<>();
+    private final ArrayList<String> TourDescription = new ArrayList<>();
+    private final ArrayList<Integer> imageId = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,25 +46,18 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         }
         Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
+        // added some test vaiable just for testing!!
+        this.TourTitle.add("Garfield");
+        this.TourDescription.add("Test object");
+        this.imageId.add(R.drawable.cat3);
 
-        final ArrayList<String> TourTitle = new ArrayList<>();
-        TourTitle.add("Garfield");
-
-        final ArrayList<String> TourDescription = new ArrayList<>();
-        TourDescription.add("Test object");
-
-        final ArrayList<Integer> imageId = new ArrayList<>();
-        imageId.add(R.drawable.cat1);
-
-
-        NearbyTours(mlocation, TourTitle, TourDescription, imageId);
-            CustomList adapter = new
-                CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
-
+        NearbyTours(mlocation);
 
         // create list view
         list = (ListView)findViewById(R.id.browse_list);
 
+        // create list items
+        CustomList adapter = new CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -77,7 +71,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
 
     }
 
-    private void NearbyTours(Location myLocation, final ArrayList<String> TourTitle, final ArrayList<String> TourDescription, final ArrayList<Integer> imageId){
+    private void NearbyTours(Location myLocation) {
         //grab data
         double testLatitude = 33;
         double testLongitude = 117;
@@ -87,24 +81,22 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
         //DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
-            public void onSuccess(ArrayList<Tour> tours) {
-                for (Tour t : tours) {
-                    if (t.getTitle() != null)
-                        TourTitle.add(t.getTitle());
+            public void onSuccess(ArrayList<Tour> tours){
+                //get the tours
+                for (int i = 0; i< tours.size(); i++) {
+                    if (tours.get(i).getTitle() != null)
+                        TourTitle.add(tours.get(i).getTitle());
                     else
                         TourTitle.add("Unknown");
-                    if (t.getSummary() != null)
-                        TourDescription.add(t.getSummary());
+                    if (tours.get(i).getSummary() != null)
+                        TourDescription.add(tours.get(i).getSummary());
                     else
                         TourDescription.add("There is no summary available");
-                    //if (t.getImage() != null)
-                    //    imageId.add(t.getImage());
+                    //if (tours.get(i).getImage() != null)
+                      //  imageId.add(tours.get(i).getImage());
                     //else
-                        imageId.add(R.drawable.logo_400);
-
+                    imageId.add(R.drawable.logo_400);
                 }
-                //get the tours
-                nearbyTours = tours;
             }
 
             @Override
