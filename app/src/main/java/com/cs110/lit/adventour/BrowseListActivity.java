@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.cs110.lit.adventour.model.Tour;
 
@@ -45,13 +46,13 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
 
-        ArrayList<String> TourTitle = new ArrayList<>();
+        final ArrayList<String> TourTitle = new ArrayList<>();
         TourTitle.add("Garfield");
 
-        ArrayList<String> TourDescription = new ArrayList<>();
+        final ArrayList<String> TourDescription = new ArrayList<>();
         TourDescription.add("Test object");
 
-        ArrayList<Integer> imageId = new ArrayList<>();
+        final ArrayList<Integer> imageId = new ArrayList<>();
         imageId.add(R.drawable.cat1);
 
 
@@ -69,7 +70,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                //Toast.makeText(BrowseListActivity.this, "You Clicked at " +TourTitle[+ position], Toast.LENGTH_SHORT).show();
+                Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -78,7 +79,13 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
 
     private void NearbyTours(Location myLocation, final ArrayList<String> TourTitle, final ArrayList<String> TourDescription, final ArrayList<Integer> imageId){
         //grab data
-        DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 300.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        double testLatitude = 33;
+        double testLongitude = 117;
+        double testDist = 5000;
+        int testLim = 10;
+
+        DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
+        //DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 for (Tour t : tours) {
