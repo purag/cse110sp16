@@ -25,4 +25,6 @@
     <string name="search_hint">San Diego</string>
 
 
+    <!-- Strings related to the tour overview view -->
+    <string name="text_content">filler text </string>
 </resources>
