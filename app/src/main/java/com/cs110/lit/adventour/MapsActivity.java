@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 
 import com.cs110.lit.adventour.model.Tour;
 import com.google.android.gms.location.LocationListener;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    // Request Constant.
+    private static final int LOCATION_REQUEST_CODE = 0;
     private GoogleMap mMap;
     private ArrayList<Tour> nearbyTours;
 
@@ -42,6 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        System.out.println("Gee I'm trying\n");
         ///// -------------- adding listener ---------------///
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -54,26 +58,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
 
-        /////---------- permission check -------------////
-        // Register the listener with the Location Manager to receive location updates
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
 
         String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            return;
+        }      System.out.println("got permission?");
+
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+
+        if(lastKnownLocation == null){
+            System.out.println("NULL");
+        }
 
         ////----------- display the map with marker on current location -----------//
         // Add a marker in current location, and move the camera.
         LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
 
-
+        //print
+        System.out.println("Gee I'm trying\n");
 
         //grab data
         displayNearbyTours(myLocation, mMap);
 
 
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        System.out.println("at request permission result" + grantResults[0] + "\n");
+        return;
+    }
+
 
      private void displayNearbyTours(LatLng myLocation, final GoogleMap mMap){
          //grab data
@@ -107,4 +128,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
              }
          });
      }
+
+
 }
