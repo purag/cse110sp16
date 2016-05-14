@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.cs110.lit.adventour.model.*;
+
+import java.util.ArrayList;
 import java.util.Random;
 
 import java.security.MessageDigest;
@@ -29,12 +31,12 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * To record that a user session has been registered.
      */
-    SharedPreferences prefs = getApplicationContext().getSharedPreferences("Login", 0);
+    SharedPreferences prefs;
 
     /**
      * The object in which we record the user's active session.
      */
-    SharedPreferences.Editor editor = prefs.edit();
+    SharedPreferences.Editor editor;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -55,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate (Bundle savedInstanceState) {
 
-        /*DB.getTourById(1, this, new DB.Callback<Tour>() {
+        DB.getTourById(1, this, new DB.Callback<Tour>() {
             @Override public void onSuccess (Tour t) {
                 System.out.println("got the tour!");
                 System.out.println("Tour name: " + t.getTitle());
@@ -87,9 +89,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(ArrayList<Tour> tours) {
                 System.out.println("Couldn't get tour due to network error.");
             }
-        });*/
+        });
 
         super.onCreate(savedInstanceState);
+
+        prefs =  getApplicationContext().getSharedPreferences("Login", 0);
+        editor = prefs.edit();
+
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -171,11 +177,14 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putBoolean("auth", true);
                     editor.putInt("uid", u.getUser_id());
                     editor.putString("user", u.getUser_email());
+                    editor.commit();
+                    showBrowseListView();
                 }
 
                 @Override
                 public void onFailure (User u) {
                     System.out.println("authentication failed");
+                    mPasswordView.setError("Incorrect username or password.");
                 }
             });
         }
@@ -193,8 +202,18 @@ public class LoginActivity extends AppCompatActivity {
      * Test if the list activity works properly
      * TODO: call this function when successfully logged in
      */
-    public void showBrowseListView (View view) {
+    public void showBrowseListView () {
         Intent intent = new Intent(this, BrowseListActivity.class);
+        startActivity(intent);
+    }
+    public void showBrowseListViewSkip (View view) {
+        Intent intent = new Intent(this, BrowseListActivity.class);
+        startActivity(intent);
+    }
+
+    //Sean's map bullshit
+    public void showBrowseMapView(View view) {
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
 
