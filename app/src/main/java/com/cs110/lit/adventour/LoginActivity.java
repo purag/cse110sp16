@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -21,17 +22,20 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cs110.lit.adventour.model.Tour;
+import com.cs110.lit.adventour.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -65,34 +69,64 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private Tour tourObject;
     private DB toursDatabase;
 
+    Integer[] login_bg_imgs = new Integer[]{
+        R.drawable.login_bg_0,
+        R.drawable.login_bg_1,
+        R.drawable.login_bg_2,
+        R.drawable.login_bg_3,
+        R.drawable.login_bg_4,
+        R.drawable.login_bg_5,
+        R.drawable.login_bg_6,
+        R.drawable.login_bg_7,
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         System.out.println("wtf");
         DB.getTourById(1, this, new DB.DBCallback<Tour>() {
             @Override public void onSuccess (Tour t) {
                 System.out.println("got the tour!");
                 System.out.println("Tour name: " + t.getTitle());
                 System.out.println("Tour summary: " + t.getSummary());
+                for (Checkpoint c : t.getListOfCheckpoints()) {
+                    System.out.println("Checkpoint " + c.getOrder_num() + " title: " + c.getTitle());
+                }
             }
         });
         System.out.println("no tour yet!");
 
-        DB.getToursNearLoc(10.3234, 76.3232, 25.0, this, new DB.DBCallback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(10.3234, 76.3232, 25.0, 10, this, new DB.DBCallback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 for (Tour t : tours) {
                     System.out.println("Tour name: " + t.getTitle());
                     System.out.println("Tour summary: " + t.getSummary());
+                    System.out.println("Tour lat/lon: (" + t.getStarting_lat() +
+                        "," + t.getStarting_lon() + ")");
                 }
             }
         });
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+
+        if (getSupportActionBar() != null)
+            getSupportActionBar().hide();
+
+        Random r = new Random(System.currentTimeMillis());
+        int i = r.nextInt(login_bg_imgs.length);
+        ImageView login_bg = (ImageView) findViewById(R.id.login_bg);
+        TextView login_title = (TextView) findViewById(R.id.login_title);
+        Typeface t = Typeface.createFromAsset(getAssets(), "fonts/BerninoSansCondensedEB.ttf");
+
+        login_bg.setImageResource(login_bg_imgs[i]);
+        login_title.setTypeface(t);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -115,7 +149,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        //mProgressView = findViewById(R.id.login_progress);
     }
 
     private void populateAutoComplete() {
@@ -333,6 +367,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         startActivity(intent);
     }
 
+
+    /**
+     * Test if the map activity works properly
+     */
+    public void showOverviewView(View view) {
+        Intent intent = new Intent(this, OverviewActivity.class);
+        startActivity(intent);
+    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
