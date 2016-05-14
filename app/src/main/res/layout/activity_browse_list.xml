@@ -8,14 +8,44 @@
     tools:context=".BrowseListActivity"
     android:weightSum="1">
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Map"
-        android:id="@+id/goto_map_button"
-        android:layout_gravity="right"
-        android:onClick="showMapView"/>
+        android:background="#2230e7">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Map"
+            android:id="@+id/goto_map_button"
+            android:layout_gravity="right"
+            android:layout_marginLeft="180dp"
+            android:onClick="showMapView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Adventour"
+            android:id="@+id/header_list"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/login_bg_list"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="250dp"
+            android:src="@drawable/logo_400"
+            android:layout_alignTop="@+id/header_list" />
+
+    </RelativeLayout>
 
     <SearchView
         android:layout_width="match_parent"
