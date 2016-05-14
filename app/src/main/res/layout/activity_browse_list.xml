@@ -1,84 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    tools:context=".BrowseListActivity"
-    android:weightSum="1">
+    android:background="#e2e4fe">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
+    <ListView
+        android:id="@+id/browse_list"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:layout_height="match_parent">
+    </ListView>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#2230e7">
-
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Map"
-            android:id="@+id/goto_map_button"
-            android:layout_gravity="right"
-            android:layout_marginLeft="180dp"
-            android:onClick="showMapView"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Adventour"
-            android:id="@+id/header_list"
-            android:textColor="@color/white"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/login_bg_list"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="250dp"
-            android:src="@drawable/logo_400"
-            android:layout_alignTop="@+id/header_list" />
-
-    </RelativeLayout>
-
-    <SearchView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/searchView"
-        android:background="#f6bdfc"
-        android:queryHint="@string/search_hint"
-        android:showAsAction="collapseActionView|ifRoom"
-        android:imeOptions= "actionSearch"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#e2e4fe">
-
-        <ListView
-            android:id="@+id/browse_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/searchView">
-        </ListView>
-
-    </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
