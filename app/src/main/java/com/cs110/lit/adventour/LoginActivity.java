@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate (Bundle savedInstanceState) {
 
-        DB.getTourById(1, this, new DB.Callback<Tour>() {
+        /*DB.getTourById(1, this, new DB.Callback<Tour>() {
             @Override public void onSuccess (Tour t) {
                 System.out.println("got the tour!");
                 System.out.println("Tour name: " + t.getTitle());
@@ -89,12 +89,19 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(ArrayList<Tour> tours) {
                 System.out.println("Couldn't get tour due to network error.");
             }
-        });
+        });*/
 
         super.onCreate(savedInstanceState);
 
         prefs =  getApplicationContext().getSharedPreferences("Login", 0);
         editor = prefs.edit();
+
+        boolean auth = prefs.getBoolean("auth", false);
+
+        if (auth) {
+            showMapView();
+            return;
+        }
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
