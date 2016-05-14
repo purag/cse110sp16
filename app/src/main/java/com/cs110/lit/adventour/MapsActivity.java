@@ -66,8 +66,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ////----------- display the map with marker on current location -----------//
         // Add a marker in current location, and move the camera.
         LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,13));
 
+        //print
+        System.out.println("Gee I'm trying\n");
 
         //grab data
         displayNearbyTours(myLocation, mMap);
