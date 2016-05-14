@@ -28,6 +28,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_REQUEST_CODE = 0;
     private GoogleMap mMap;
     private ArrayList<Tour> nearbyTours;
+    private Location lastKnownLocation;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,44 +47,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        System.out.println("Gee I'm trying\n");
         ///// -------------- adding listener ---------------///
         // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
-                // makeUseOfNewLocation(location);
             }
         };
 
 
         String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+
+        //check fine
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             return;
-        }      System.out.println("got permission?");
+        }      System.out.println("got fine permission");
+
+        //check coarse
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_REQUEST_CODE);
+            return;
+        }      System.out.println("got coarse permission");
 
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
         if(lastKnownLocation == null){
-            System.out.println("NULL");
+            System.out.println("NULL location");
+            ////----------- display the map with marker on current location -----------//
+            // Add a marker in current location, and move the camera.
+            LatLng myLocation = new LatLng(33.812, 117.919);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            //mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
+
+            //print
+            System.out.println("Gee I'm trying\n");
+
+            //grab data
+            displayNearbyTours(myLocation, mMap);
         }
+        else{
 
-        ////----------- display the map with marker on current location -----------//
-        // Add a marker in current location, and move the camera.
-        LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-        mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
+          ////----------- display the map with marker on current location -----------//
+            // Add a marker in current location, and move the camera.
+            LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
 
-        //print
-        System.out.println("Gee I'm trying\n");
+            //print
+            System.out.println("Gee I'm trying\n");
 
-        //grab data
-        displayNearbyTours(myLocation, mMap);
+            //grab data
+            displayNearbyTours(myLocation, mMap);
+        }
 
 
     }
@@ -91,14 +112,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        System.out.println("at request permission result" + grantResults[0] + "\n");
+        //show me what you got
+        int i = 0;
+        for( String s : permissions){
+            System.out.println("at request permission result" + s + grantResults[i] + "\n");
+            i++;
+        }
+        System.out.println("Trying again");
+        onMapReady(mMap);
         return;
+
     }
 
 
-     private void displayNearbyTours(LatLng myLocation, final GoogleMap mMap){
-         //grab data
-         DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 25.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
+     private void displayNearbyTours(final LatLng myLocation, final GoogleMap mMap){
+         mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+         mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+
+         System.out.println("attempting to grab data\n");
+         DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 50000.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
              @Override
              public void onSuccess(ArrayList<Tour> tours) {
                  for (Tour t : tours) {
@@ -113,6 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                  //display them
                  for (Tour t : nearbyTours) {
+                     System.out.println("Let's drop some pins");
                      LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
                      mMap.addMarker(new MarkerOptions().position(location)
                              .title(t.getTitle())
@@ -127,7 +160,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                  System.out.println("On failure happened\n");
              }
          });
+
      }
+
+
 
 
 }
