@@ -54,6 +54,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
+                //I wonder if this will work
+                displayNearbyTours(new LatLng(location.getLatitude(),location.getLongitude()), mMap);
             }
         };
 
