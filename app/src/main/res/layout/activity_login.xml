@@ -118,7 +118,7 @@
                     android:textColor="@color/white"
                     android:text="Skip"
                     android:id="@+id/textView"
-                    android:onClick="showBrowseListView" />
+                    android:onClick="showBrowseMapView" />
 
             </FrameLayout>
 
