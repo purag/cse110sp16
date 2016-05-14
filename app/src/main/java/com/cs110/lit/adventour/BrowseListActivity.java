@@ -6,13 +6,11 @@ package com.cs110.lit.adventour;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -64,8 +62,6 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_list);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
 
         CustomList adapter = new
                 CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
@@ -89,14 +85,38 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search_menu, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_actions, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.menu_item_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        //MenuItem searchItem = menu.findItem(R.id.action_search);
+        //SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Configure the search info and add any event listeners...
-
         return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Take appropriate action for each action item click
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                // search action
+                return true;
+            case R.id.action_location_found:
+                // location found
+                //LocationFound();
+                showMapView();
+                return true;
+            case R.id.action_refresh:
+                // refresh
+                return true;
+            case R.id.action_help:
+                // help action
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -125,7 +145,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
     /**
      * Test if the map activity works properly
      */
-    public void showMapView (View view) {
+    public void showMapView () {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }

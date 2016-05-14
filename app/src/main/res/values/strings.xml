@@ -23,7 +23,7 @@
     <string name="title_browse_list">List</string>
 
     <!-- Strings in menu resource -->
-    <string name="search_title">Search Tour</string>
+    <string name="action_search">Search Tour</string>
     <string name="search_hint">San Diego</string>
 
 
