@@ -191,7 +191,7 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putInt("uid", u.getUser_id());
                     editor.putString("user", u.getUser_email());
                     editor.commit();
-                    showMapView();
+                    showBrowseListView();
                 }
 
                 @Override
@@ -213,18 +213,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Test if the map activity works properly
-     */
-    public void showMapView () {
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
-    }
-
-    /**
      * Test if the list activity works properly
      * TODO: call this function when successfully logged in
      */
-    public void showBrowseListView (View view) {
+    public void showBrowseListView () {
+        Intent intent = new Intent(this, BrowseListActivity.class);
+        startActivity(intent);
+    }
+    public void showBrowseListViewSkip (View view) {
         Intent intent = new Intent(this, BrowseListActivity.class);
         startActivity(intent);
     }
