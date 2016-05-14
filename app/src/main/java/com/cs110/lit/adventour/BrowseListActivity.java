@@ -5,20 +5,14 @@ package com.cs110.lit.adventour;
  */
 
 import android.app.Activity;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
 import android.widget.Toast;
 
-public class BrowseListActivity extends Activity implements OnQueryTextListener {
+public class BrowseListActivity extends Activity {
     ListView list;
 
     // NOTE:
@@ -78,45 +72,9 @@ public class BrowseListActivity extends Activity implements OnQueryTextListener 
             }
         });
 
-        // for communication with the last/previews view
         Intent intent = getIntent();
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.search_menu, menu);
-        SearchManager searchManager = (SearchManager) getSystemService( Context.SEARCH_SERVICE );
-        SearchView searchView = (SearchView) menu.findItem(R.id.menu_item_search).getActionView();
-
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(this);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText)
-    {
-        // this is your adapter that will be filtered
-        if (TextUtils.isEmpty(newText))
-        {
-            list.clearTextFilter();
-        }
-        else
-        {
-            list.setFilterText(newText.toString());
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
 }
