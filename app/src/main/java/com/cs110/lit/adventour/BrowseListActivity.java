@@ -7,10 +7,12 @@ package com.cs110.lit.adventour;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 public class BrowseListActivity extends Activity {
@@ -63,7 +65,29 @@ public class BrowseListActivity extends Activity {
         CustomList adapter = new
                 CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
         list=(ListView)findViewById(R.id.browse_list);
-        //mSearchView = (SearchView) findViewById(R.id.searchView)
+        mSearchView = (SearchView) findViewById(R.id.searchView);
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (TextUtils.isEmpty(newText)) {
+                    list.clearTextFilter();
+                } else {
+                    Log.i("WSM",newText);
+                    list.setFilterText(newText.toString());
+                }
+                return true;
+
+            }
+        });
+
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
