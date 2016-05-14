@@ -10,10 +10,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 public class BrowseListActivity extends Activity {
     ListView list;
+    SearchView mSearchView;
 
     // NOTE:
     // Those data are from the database, need to implement function to grab those data
@@ -61,6 +63,7 @@ public class BrowseListActivity extends Activity {
         CustomList adapter = new
                 CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
         list=(ListView)findViewById(R.id.browse_list);
+        //mSearchView = (SearchView) findViewById(R.id.searchView)
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
