@@ -4,7 +4,6 @@ package com.cs110.lit.adventour;
  * Created by achen on 5/6/16.
  */
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -94,8 +93,6 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
 
         MenuItem searchItem = menu.findItem(R.id.menu_item_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         // Configure the search info and add any event listeners...
 
