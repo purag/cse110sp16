@@ -24,7 +24,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class StartTourActivity extends FragmentActivity implements OnMapReadyCallback{
+public class StartTourActivity extends FragmentActivity implements OnMapReadyCallback,
+    DB.DBCallback<Tour>{
 
     /* Constants */
     // Time before refresh (miliseconds).
@@ -43,27 +44,10 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
 
     /* Tour Model Related */
     private int tourID = 1;
-    private ArrayList<Checkpoint> checkpoints;
 
     // Fragment Manager for checkpoint displays.
     public final FragmentManager fManager = getSupportFragmentManager();
 
-    class CheckpointCallBack implements DB.DBCallback<Tour>{
-        public ArrayList<Checkpoint> checkpointList;
-
-        public ArrayList<Checkpoint> getCheckpoints(){
-            return this.checkpointList;
-        }
-
-        @Override
-        public void onSuccess(Tour tour) {
-            this.checkpointList = tour.getListOfCheckpoints();
-            // Display markers.
-            for(Checkpoint points : checkpoints) {
-                addMarkerAtMyLocation(new LatLng(points.getLatitude(), points.getLongitude()));
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,19 +62,6 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
         // Grab our database.
         //tourID = intent.getIntExtra("tourID", 0);
 
-        CheckpointCallBack callBack = new CheckpointCallBack();
-        // Get tour, son!
-        DB.getTourById(tourID, this, new DB.DBCallback<Tour>(){
-            @Override
-            public void onSuccess(Tour tour){
-                ArrayList<Checkpoint> checkpoints = tour.getListOfCheckpoints();
-                // Display markers.
-                for(Checkpoint points : checkpoints) {
-                    addMarkerAtMyLocation(new LatLng(points.getLatitude(), points.getLongitude()));
-                }
-            }
-        });
-        this.checkpoints = callBack.getCheckpoints();
     }
 
     @Override
@@ -102,21 +73,7 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
         locationManager =
                 (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        // Define a listener that responds to location updates
-        locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
-            }
 
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            public void onProviderEnabled(String provider) {
-            }
-
-            public void onProviderDisabled(String provider) {
-            }
-        };
 
         /////---------- permission check -------------////
         // Register the listener with the Location Manager to receive location updates
@@ -127,17 +84,9 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
             return;
         }
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, locationListener);
 
-        String locationNetworkProvider = LocationManager.GPS_PROVIDER;
-
-        // Return could be null but addMarkerAtMyLocation checks for this.
-        Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
-
-        ////----------- display the map with marker on current location -----------//
-        addMarkerAtMyLocation(new LatLng(lastKnownLocation.getLatitude(),
-            lastKnownLocation.getLongitude()));
+        // Get tour, son!
+        DB.getTourById(tourID, this, this);
     }
 
     /**
@@ -197,27 +146,52 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
 
                 // If request is cancelled, the result arrays are empty.
                 if (hasMapPermission()) {
-
-                    // Set the location listener.
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                            LOCATION_REFRESH_DISTANCE, locationListener);
-
-                    // More GPS setup.
-                    String locationNetworkProvider = LocationManager.GPS_PROVIDER;
-
-                    // Return could be null but addMarkerAtMyLocation checks for this.
-                    Location lastKnownLocation =
-                            locationManager.getLastKnownLocation(locationNetworkProvider);
-
-                    ////----------- display the map with marker on current location -----------//
-                    addMarkerAtMyLocation(new LatLng(lastKnownLocation.getLatitude(),
-                            lastKnownLocation.getLongitude()));
+                    // Get tour, son!
+                    DB.getTourById(tourID, this, this);
                 } else {
                     // Permission denied, return silently.
                     return;
                 }
                 return;
             }
+        }
+    }
+
+    @Override
+    public void onSuccess(Tour tour) {
+        // Define a listener that responds to location updates
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, locationListener);
+
+        String locationNetworkProvider = LocationManager.GPS_PROVIDER;
+
+        // Return could be null but addMarkerAtMyLocation checks for this.
+        Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+
+        ////----------- display the map with marker on current location -----------//
+        //addMarkerAtMyLocation(new LatLng(lastKnownLocation.getLatitude(),
+        //        lastKnownLocation.getLongitude()));
+
+
+        ArrayList<Checkpoint> checkpointList = tour.getListOfCheckpoints();
+        // Display markers.
+        for(Checkpoint points : checkpointList) {
+            addMarkerAtMyLocation(new LatLng(points.getLatitude(), points.getLongitude()));
         }
     }
 }
