@@ -4,8 +4,14 @@ package com.cs110.lit.adventour;
  * Created by achen on 5/6/16.
  */
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.text.TextUtils;
@@ -33,7 +39,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             "foxmon",
             "Squirtle",
             "bobabso"
-    } ;
+    };
 
     String[] TourDescription = {
             "\nFirst Object test description. This is Garfield. this is a very very very very very very " +
@@ -66,7 +72,17 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         CustomList adapter = new
                 CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
 
-        list=(ListView)findViewById(R.id.browse_list);
+        // --------- Find current location --------------//
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+
+
+        // create list view
+        list = (ListView)findViewById(R.id.browse_list);
 
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,23 +95,24 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             }
         });
 
-        Intent intent = getIntent();
-
     }
 
+    /**
+     * Create option menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main_actions, menu);
-
-        //MenuItem searchItem = menu.findItem(R.id.action_search);
-        //SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Configure the search info and add any event listeners...
         return super.onCreateOptionsMenu(menu);
     }
 
 
+    /**
+     * Case selection for option menu
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Take appropriate action for each action item click
@@ -104,8 +121,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
                 // search action
                 return true;
             case R.id.action_location_found:
-                // location found
-                //LocationFound();
+                // jump to the map view
                 showMapView();
                 return true;
             case R.id.action_refresh:
@@ -143,7 +159,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
     }
 
     /**
-     * Test if the map activity works properly
+     * load map action
      */
     public void showMapView () {
         Intent intent = new Intent(this, MapsActivity.class);
