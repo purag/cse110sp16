@@ -2,32 +2,22 @@ package com.cs110.lit.adventour;
 
 import android.content.Context;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.cs110.lit.adventour.model.*;
-import java.util.ArrayList;
 import com.android.volley.toolbox.Volley;
-import com.android.volley.Request;
-import com.android.volley.VolleyLog;
-import com.android.volley.RequestQueue;
-import android.content.Context;
-import android.os.AsyncTask;
+import com.cs110.lit.adventour.model.Checkpoint;
+import com.cs110.lit.adventour.model.Tour;
+import com.cs110.lit.adventour.model.User;
 
-import org.json.JSONException;
-import com.android.volley.toolbox.RequestFuture;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.ArrayList;
 
 /**
  * A database class to manage calls to the REST API and parse their responses into model instances.
@@ -163,6 +153,8 @@ public class DB {
      */
     public static void getToursNearLoc (double lat, double lon, double dist, int lim, Context c,
                                         final Callback<ArrayList<Tour>> cb) {
+
+        System.out.println("Inside get tour near location!!!!!!!!!!!!!!!!!");
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "tours/near/" + lat + "/" + lon + "/" + dist + "/limit/" + lim;
 
