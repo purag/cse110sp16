@@ -4,9 +4,9 @@ package com.cs110.lit.adventour;
  * Created by achen on 5/6/16.
  */
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-public class BrowseListActivity extends Activity {
+public class BrowseListActivity extends AppCompatActivity {
     ListView list;
     SearchView mSearchView;
 
