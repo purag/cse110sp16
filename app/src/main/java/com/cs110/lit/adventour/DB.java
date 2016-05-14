@@ -48,17 +48,17 @@ public class DB {
     /**
      * Fetch a specific tour by its ID from the database.
      *
-     * @param username the name of the user to authenticate
+     * @param email the email address of the user to authenticate
      * @param password the encrypted password of the user to authenticate
      * @param cb the callback object (implementing the onSuccess method)
      */
-    public static void authenticateUser(final String username, final String password, Context c, final Callback<User> cb){
+    public static void authenticateUser(final String email, final String password, Context c, final Callback<User> cb){
         RequestQueue requestQueue = Volley.newRequestQueue(c);
 
         /* Prepare the request body. */
         JSONObject body;
         try {
-            body = new JSONObject("{'username':'" + username + "', 'password':'" + password + "'}");
+            body = new JSONObject("{'email':'" + email + "', 'password':'" + password + "'}");
         } catch (Exception e) {
             body = null;
         }
