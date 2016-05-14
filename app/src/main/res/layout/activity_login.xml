@@ -118,9 +118,9 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white"
-                    android:text="listView"
-                    android:id="@+id/listViewBtn"
-                    android:onClick="showBrowseListView" />
+                    android:text="Skip"
+                    android:id="@+id/textView"
+                    android:onClick="showBrowseMapView" />
 
                 <TextView
                     android:layout_width="wrap_content"
