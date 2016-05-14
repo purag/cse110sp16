@@ -73,7 +73,8 @@
                             android:hint="@string/prompt_email"
                             android:inputType="textEmailAddress"
                             android:maxLines="1"
-                            android:singleLine="true" />
+                            android:singleLine="true"
+                            android:textColor="@color/white"/>
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -91,7 +92,8 @@
                             android:imeOptions="actionUnspecified"
                             android:inputType="textPassword"
                             android:maxLines="1"
-                            android:singleLine="true" />
+                            android:singleLine="true"
+                            android:textColor="@color/white"/>
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -119,6 +121,16 @@
                     android:text="Skip"
                     android:id="@+id/textView"
                     android:onClick="showBrowseMapView" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:text="tourMetadata"
+                    android:id="@+id/tourMetadatabtn"
+                    android:onClick="showOverviewView"
+                    android:layout_gravity="center_horizontal|top" />
 
             </FrameLayout>
 
