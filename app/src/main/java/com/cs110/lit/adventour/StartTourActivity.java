@@ -13,6 +13,8 @@ import android.location.LocationListener;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 
+import com.cs110.lit.adventour.model.Checkpoint;
+import com.cs110.lit.adventour.model.Tour;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,8 +22,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class StartTourActivity extends FragmentActivity implements OnMapReadyCallback {
+import java.util.ArrayList;
 
+public class StartTourActivity extends FragmentActivity implements OnMapReadyCallback{
+
+    /* Constants */
     // Time before refresh (miliseconds).
     private static final long LOCATION_REFRESH_TIME = 100;
     // Distance change before refresh (meters).
@@ -30,10 +35,15 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
     // Request Constant.
     private static final int LOCATION_REQUEST_CODE = 0;
 
+    /* Google Maps Related */
+    private GoogleMap mMap;
+
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-    private GoogleMap mMap;
+    /* Tour Model Related */
+    private int tourID = 0;
+    private ArrayList<Checkpoint> checkpoints;
 
     // Fragment Manager for checkpoint displays.
     public final FragmentManager fManager = getSupportFragmentManager();
@@ -46,8 +56,24 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // for communication with the last/previews view
+        // For communication with the last/previews view
         Intent intent = getIntent();
+        // Grab our database.
+        //tourID = intent.getIntExtra("tourID", 0);
+
+        // Get tour, son!
+        DB.getTourById(1, this, new DB.DBCallback<Tour>() {
+            @Override public void onSuccess (Tour tour) {
+                checkpoints = tour.getListOfCheckpoints();
+                // Display markers.
+                for(Checkpoint points : checkpoints)
+                    mMap.addMarker(new MarkerOptions().position(
+                            new LatLng(points.getLatitude(), points.getLongitude())
+                    ));
+            }
+        });
+
+
     }
 
     @Override
