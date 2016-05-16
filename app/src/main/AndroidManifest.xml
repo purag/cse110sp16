@@ -55,10 +55,7 @@
         <activity
             android:name="com.cs110.lit.adventour.OverviewActivity"
             android:label="@string/text_content"
-            android:parentActivityName="com.cs110.lit.adventour.LoginActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.cs110.lit.adventour.LoginActivity" />
+            android:parentActivityName="com.cs110.lit.adventour.BrowseListActivity" >
         </activity>
 
         <meta-data
