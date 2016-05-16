@@ -160,16 +160,6 @@
                 android:onClick="showBrowseListViewSkip"
                 android:layout_gravity="center_horizontal" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/white"
-                android:text="tourMetadata"
-                android:id="@+id/tourMetadatabtn"
-                android:onClick="showOverviewView"
-                android:layout_gravity="center_horizontal" />
-
         </LinearLayout>
 
     </RelativeLayout>
