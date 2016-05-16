@@ -5,6 +5,7 @@ package com.cs110.lit.adventour;
  */
 
 import android.Manifest;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -38,6 +40,9 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_list);
 
+        // create list view
+        list = (ListView)findViewById(R.id.browse_list);
+
         // --------- Find current location --------------//
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
@@ -52,22 +57,6 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         this.imageId.add(R.drawable.cat3);
 
         NearbyTours(mlocation);
-
-        // create list view
-        list = (ListView)findViewById(R.id.browse_list);
-
-        // create list items
-        CustomList adapter = new CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
-
-            }
-        });
 
     }
 
@@ -104,6 +93,19 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
                 System.out.println("On failure happened\n");
             }
         });
+
+        // create list items
+        CustomList adapter = new CustomList(BrowseListActivity.this, this.TourTitle, this.TourDescription, this.imageId);
+        list.setAdapter(adapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     /**
@@ -113,6 +115,11 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main_actions, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView)menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         // Configure the search info and add any event listeners...
         return super.onCreateOptionsMenu(menu);
