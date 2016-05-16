@@ -86,6 +86,18 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
                     //else
                     imageId.add(R.drawable.logo_400);
                 }
+
+                // create list items
+                CustomList adapter = new CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
+                list.setAdapter(adapter);
+                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -94,18 +106,6 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
             }
         });
 
-        // create list items
-        CustomList adapter = new CustomList(BrowseListActivity.this, this.TourTitle, this.TourDescription, this.imageId);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
-
-            }
-        });
     }
 
     /**
