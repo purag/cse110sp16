@@ -225,20 +225,6 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //Sean's map bullshit
-    public void showBrowseMapView(View view) {
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * Test if the map activity works properly
-     */
-    public void showOverviewView(View view) {
-        Intent intent = new Intent(this, OverviewActivity.class);
-        startActivity(intent);
-    }
-
     /**
      * Return the md5 encryption of a given string. Used for password hashing.
      *

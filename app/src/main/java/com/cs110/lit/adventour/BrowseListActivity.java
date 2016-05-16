@@ -110,7 +110,8 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
+                        showOverviewView();
                     }
                 });
             }
@@ -194,6 +195,14 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
      */
     public void showMapView () {
         Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Test if the map activity works properly
+     */
+    public void showOverviewView() {
+        Intent intent = new Intent(this, OverviewActivity.class);
         startActivity(intent);
     }
 
