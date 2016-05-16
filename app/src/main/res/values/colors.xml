@@ -7,6 +7,6 @@
     <color name="login_bg_trans">#4F000000</color>
     <color name="white">#FFFFFF</color>
     <color name="whiteTrans">#BFFFFFFF</color>
-    <color name="yellow">#E6A733</color>
+    <color name="yellow">#e6a733</color>
     <color name="darkyellow">#472900</color>
 </resources>
