@@ -38,14 +38,18 @@
             android:name="com.cs110.lit.adventour.BrowseListActivity"
             android:label="@string/title_browse_list"
             android:parentActivityName="com.cs110.lit.adventour.LoginActivity">
+        </activity>
+
+        <!-- Search results activity -->
+        <activity android:name=".SearchResultsActivity"
+            android:parentActivityName="com.cs110.lit.adventour.BrowseListActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <intent-filter >
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
 
         <activity
