@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -57,12 +56,11 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_browse_list);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        actionBar.setBackgroundDrawable(new ColorDrawable(0xFF160203));
+        //actionBar.setBackgroundDrawable(new ColorDrawable(0xFF160203));
 
 
         // create list view
@@ -82,6 +80,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         prefs =  getApplicationContext().getSharedPreferences("Login", 0);
         editor = prefs.edit();
 
+        // Get the user information, and show it in the navigation title
         View header = navigationView.getHeaderView(0);
         TextView name = (TextView) header.findViewById(R.id.nav_header_name);
         TextView email = (TextView) header.findViewById(R.id.nav_header_email);
@@ -90,25 +89,27 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
 
 
 
-        // --------- Find current location --------------//
+        // --------- Get Location --------------//
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
 
-        // -------- Check permission -----------//
+        // check permission
         //check fine
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             return;
         }
-
         //check coarse
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_REQUEST_CODE);
             return;
         }
 
+        // get the local location
         Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
+        // ----------- TEST CODE ------------//
+        // TODO: need more data in the database, and delete this code after we have enought data in the data base
         // added some test vaiable just for testing!!
         this.TourTitle.add("Garfield");
         this.TourDescription.add("Test object");
@@ -125,8 +126,8 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         double testDist = 5000;
         int testLim = 10;
 
-        DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
-        //DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        //DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours){
                 //get the tours
@@ -173,7 +174,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_main_actions, menu);
+        inflater.inflate(R.menu.activity_list_actions, menu);
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);

@@ -1,18 +1,24 @@
 package com.cs110.lit.adventour;
 
 import android.Manifest;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.cs110.lit.adventour.model.Tour;
@@ -29,7 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     // Request Constant.
     private static final int LOCATION_REQUEST_CODE = 0;
@@ -44,6 +50,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private GoogleApiClient client;
 
+    //TODO: THOSE CODE NEED REFACTORING
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+    private DrawerLayout navigationDrawer;
+    private ActionBarDrawerToggle navigationToggle;
+    //todo ends here
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +70,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+
+//        //TODO: THOSE CODE NEED REFACTORING
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+//
+//        // ---------- Navigation Stuff --------------//
+//        navigationDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        navigationToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//
+//        navigationDrawer.addDrawerListener(navigationToggle);
+//        navigationToggle.syncState();
+//
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
+//
+//        prefs =  getApplicationContext().getSharedPreferences("Login", 0);
+//        editor = prefs.edit();
+//
+//        // Get the user information, and show it in the navigation title
+//        View header = navigationView.getHeaderView(0);
+//        TextView name = (TextView) header.findViewById(R.id.nav_header_name);
+//        TextView email = (TextView) header.findViewById(R.id.nav_header_email);
+//        name.setText(prefs.getString("uname", "User"));
+//        email.setText(prefs.getString("uemail", "user@example.com"));
+//        //todo ends here
+
     }
 
     @Override
@@ -239,4 +279,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
+
+
+
+    //-------------------------------------------------------------------------
+    //TODO: THOSE CODE NEED REFACTORING  //////////////////////////////////////
+    //-------------------------------------------------------------------------
+    /**
+     * Create option menu
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_map_actions, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView)menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        // Configure the search info and add any event listeners...
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Case selection for option menu
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        System.out.println("selected an item: " + item.getItemId());
+
+//        if (navigationToggle.onOptionsItemSelected(item)) {
+//            return true;
+//        }
+
+        // Take appropriate action for each action item click
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                // search action
+                return true;
+            case R.id.action_list_view:
+                // jump to the map view
+                showListView ();
+                return true;
+            case R.id.action_refresh:
+                // refresh
+                return true;
+            case R.id.action_help:
+                // help action
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //todo ends here------------------------------------------------
+    //--------------------------------------------------------------
+
+
+
 }
