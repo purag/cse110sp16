@@ -57,41 +57,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
-
-        /*DB.getTourById(1, this, new DB.Callback<Tour>() {
-            @Override public void onSuccess (Tour t) {
-                System.out.println("got the tour!");
-                System.out.println("Tour name: " + t.getTitle());
-                System.out.println("Tour summary: " + t.getSummary());
-                for (Checkpoint c : t.getListOfCheckpoints()) {
-                    System.out.println("Checkpoint " + c.getOrder_num() + " title: " + c.getTitle());
-                }
-            }
-
-            @Override
-            public void onFailure(Tour tour) {
-                System.out.println("Couldn't get the tour due to network error.");
-            }
-        });
-        System.out.println("no tour yet!");
-
-        DB.getToursNearLoc(10.3234, 76.3232, 25.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
-            @Override
-            public void onSuccess(ArrayList<Tour> tours) {
-                for (Tour t : tours) {
-                    System.out.println("Tour name: " + t.getTitle());
-                    System.out.println("Tour summary: " + t.getSummary());
-                    System.out.println("Tour lat/lon: (" + t.getStarting_lat() +
-                        "," + t.getStarting_lon() + ")");
-                }
-            }
-
-            @Override
-            public void onFailure(ArrayList<Tour> tours) {
-                System.out.println("Couldn't get tour due to network error.");
-            }
-        });*/
-
         super.onCreate(savedInstanceState);
 
         prefs =  getApplicationContext().getSharedPreferences("Login", 0);
