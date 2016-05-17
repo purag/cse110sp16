@@ -50,7 +50,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:id="@+id/login_title"
-                android:textSize="14pt"
+                android:textSize="18pt"
                 android:layout_marginBottom="10dp"/>
 
             <ScrollView
@@ -121,7 +121,7 @@
                     android:id="@+id/email_create_account_button"
                     style="?android:textAppearanceLarge"
                     android:layout_width="145dp"
-                    android:layout_height="60dp"
+                    android:layout_height="50dp"
                     android:padding="10dp"
                     android:text="@string/action_register"
                     android:textStyle="bold"/>
@@ -130,30 +130,12 @@
                     android:id="@+id/email_sign_in_button"
                     style="?android:textAppearanceLarge"
                     android:layout_width="145dp"
-                    android:layout_height="60dp"
+                    android:layout_height="50dp"
                     android:padding="10dp"
                     android:text="@string/action_sign_in_short"
                     android:textStyle="bold"
                     android:backgroundTint="@color/colorSecondary"
                     android:layout_gravity="right" />
-                <!--<TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/white"
-                    android:text="Skip"
-                    android:id="@+id/textView"
-                    android:onClick="showBrowseMapView" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/white"
-                    android:text="tourMetadata"
-                    android:id="@+id/tourMetadatabtn"
-                    android:onClick="showOverviewView"
-                    android:layout_gravity="center_horizontal|top" />-->
             </FrameLayout>
 
             <TextView
