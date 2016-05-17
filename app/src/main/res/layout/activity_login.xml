@@ -134,12 +134,7 @@
                     android:padding="20dp"
                     android:text="@string/action_sign_in_short"
                     android:textStyle="bold"
-                    android:backgroundTint="@color/colorAccentTrans"
-                    android:textColor="@color/darkyellow"/><![CDATA[
-
-                -->
-
-            ]]>
+                    android:backgroundTint="@color/colorSecondary"/>
             </FrameLayout>
 
             <TextView
@@ -149,16 +144,6 @@
                 android:text="@string/forgot_password"
                 android:textColor="@color/whiteTrans"
                 android:textSize="16dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/white"
-                android:text="Skip"
-                android:id="@+id/textView"
-                android:onClick="showBrowseListViewSkip"
-                android:layout_gravity="center_horizontal" />
 
         </LinearLayout>
 

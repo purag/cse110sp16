@@ -97,12 +97,10 @@ public class LoginActivity extends AppCompatActivity {
         prefs =  getApplicationContext().getSharedPreferences("Login", 0);
         editor = prefs.edit();
 
-        boolean auth = prefs.getBoolean("auth", false);
-
-        /*if (auth) {
-            showMapView();
+        if (prefs.getBoolean("auth", false)) {
+            showBrowseListView();
             return;
-        }*/
+        }
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
@@ -133,12 +131,15 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mRegisterButton = (Button) findViewById(R.id.email_create_account_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
+        mEmailSignInButton.setTypeface(t);
+        mRegisterButton.setTypeface(t);
 
         mLoginFormView = findViewById(R.id.login_form);
     }
@@ -185,18 +186,19 @@ public class LoginActivity extends AppCompatActivity {
             DB.authenticateUser(email, md5(password), this, new DB.Callback<User>() {
                 @Override
                 public void onSuccess (User u) {
-                    progressDialog.hide();
+                    progressDialog.dismiss();
                     System.out.println("logged " + u.getUser_email() + " in successfully");
                     editor.putBoolean("auth", true);
                     editor.putInt("uid", u.getUser_id());
-                    editor.putString("user", u.getUser_email());
+                    editor.putString("uemail", u.getUser_email());
+                    editor.putString("uname", u.getUser_name());
                     editor.commit();
                     showBrowseListView();
                 }
 
                 @Override
                 public void onFailure (User u) {
-                    progressDialog.hide();
+                    progressDialog.dismiss();
                     System.out.println("authentication failed");
                     mPasswordView.setError("Incorrect username or password.");
                 }
@@ -219,10 +221,23 @@ public class LoginActivity extends AppCompatActivity {
     public void showBrowseListView () {
         Intent intent = new Intent(this, BrowseListActivity.class);
         startActivity(intent);
+        finish();
     }
-    public void showBrowseListViewSkip (View view) {
-        Intent intent = new Intent(this, BrowseListActivity.class);
+
+    //Sean's map bullshit
+    public void showBrowseMapView() {
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
+        finish();
+    }
+
+    /**
+     * Test if the map activity works properly
+     */
+    public void showOverviewView() {
+        Intent intent = new Intent(this, OverviewActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     /**

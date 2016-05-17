@@ -8,6 +8,7 @@ import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.cs110.lit.adventour.model.Tour;
 
@@ -38,11 +40,24 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     private final ArrayList<String> TourDescription = new ArrayList<>();
     private final ArrayList<Integer> imageId = new ArrayList<>();
 
+    /**
+     * To record that a user session has been registered.
+     */
+    SharedPreferences prefs;
+
+    /**
+     * The object in which we record the user's active session.
+     */
+    SharedPreferences.Editor editor;
+
     private static final int LOCATION_REQUEST_CODE = 0;
-    
+    private DrawerLayout navigationDrawer;
+    private ActionBarDrawerToggle navigationToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_browse_list);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -55,14 +70,23 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
 
 
         // ---------- Navigation Stuff --------------//
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        navigationDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        navigationDrawer.addDrawerListener(navigationToggle);
+        navigationToggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        prefs =  getApplicationContext().getSharedPreferences("Login", 0);
+        editor = prefs.edit();
+
+        View header = navigationView.getHeaderView(0);
+        TextView name = (TextView) header.findViewById(R.id.nav_header_name);
+        TextView email = (TextView) header.findViewById(R.id.nav_header_email);
+        name.setText(prefs.getString("uname", "User"));
+        email.setText(prefs.getString("uemail", "user@example.com"));
 
 
 
@@ -167,6 +191,11 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         System.out.println("selected an item: " + item.getItemId());
+
+        if (navigationToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.action_search:
@@ -200,7 +229,11 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         } else if (id == R.id.nav_create) {
 
         } else if (id == R.id.nav_log_out) {
-
+            editor.clear();
+            editor.commit();
+            Intent login = new Intent(this, LoginActivity.class);
+            startActivity(login);
+            finish();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
