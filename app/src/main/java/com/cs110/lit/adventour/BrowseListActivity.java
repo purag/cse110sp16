@@ -12,46 +12,60 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.cs110.lit.adventour.model.Tour;
 
 import java.util.ArrayList;
 
-public class BrowseListActivity extends AppCompatActivity implements OnQueryTextListener {
+public class BrowseListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     ListView list;
     private final ArrayList<String> TourTitle = new ArrayList<>();
     private final ArrayList<String> TourDescription = new ArrayList<>();
     private final ArrayList<Integer> imageId = new ArrayList<>();
 
     private static final int LOCATION_REQUEST_CODE = 0;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_list);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         // create list view
         list = (ListView)findViewById(R.id.browse_list);
 
+
+        // ---------- Navigation Stuff --------------//
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+
         // --------- Find current location --------------//
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        }
 
+        // -------- Check permission -----------//
         //check fine
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
@@ -147,6 +161,7 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        System.out.println("selected an item: " + item.getItemId());
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.action_search:
@@ -167,27 +182,29 @@ public class BrowseListActivity extends AppCompatActivity implements OnQueryText
         }
     }
 
-
+    //-------------------Functions related to navigation stuff ----------------//
     @Override
-    public boolean onQueryTextChange(String newText)
-    {
-        // this is your adapter that will be filtered
-        if (TextUtils.isEmpty(newText))
-        {
-            list.clearTextFilter();
-        }
-        else
-        {
-            list.setFilterText(newText.toString());
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
         }
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     /**
