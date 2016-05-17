@@ -172,7 +172,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
             case R.id.action_search:
                 // search action
                 return true;
-            case R.id.action_location_found:
+            case R.id.action_map_view:
                 // jump to the map view
                 showMapView();
                 return true;

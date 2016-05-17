@@ -14,10 +14,10 @@
         app:showAsAction="always"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
 
-    <!-- Location Found -->
-    <item android:id="@+id/action_location_found"
-        android:icon="@drawable/ic_action_location_found"
-        android:title="Local"
+    <!-- Map View -->
+    <item android:id="@+id/action_map_view"
+        android:icon="@drawable/map_icon"
+        android:title="Map"
         app:showAsAction="ifRoom" />
 
     <!-- Refresh -->
