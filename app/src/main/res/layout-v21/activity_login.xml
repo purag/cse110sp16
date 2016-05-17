@@ -125,7 +125,7 @@
                     android:padding="10dp"
                     android:text="@string/action_sign_in_short"
                     android:textStyle="bold"
-                    android:backgroundTint="@color/colorAccentTrans"
+                    android:backgroundTint="@color/colorAccentOrangeTrans"
                     android:textColor="@color/darkyellow"
                     android:background = "@drawable/roundedbutton"
                     android:layout_gravity="center_horizontal|top" />
