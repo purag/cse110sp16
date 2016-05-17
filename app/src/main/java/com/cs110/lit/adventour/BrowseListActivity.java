@@ -37,7 +37,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     private final ArrayList<Integer> imageId = new ArrayList<>();
 
     private static final int LOCATION_REQUEST_CODE = 0;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +52,8 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         // ---------- Navigation Stuff --------------//
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -160,6 +161,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        System.out.println("selected an item: " + item.getItemId());
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.action_search:
@@ -181,17 +183,6 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     }
 
     //-------------------Functions related to navigation stuff ----------------//
-//    @Override
-//    public void onBackPressed() {
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        if (drawer.isDrawerOpen(GravityCompat.START)) {
-//            drawer.closeDrawer(GravityCompat.START);
-//        } else {
-//            super.onBackPressed();
-//        }
-//    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
