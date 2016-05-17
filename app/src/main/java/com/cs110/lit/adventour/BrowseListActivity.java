@@ -222,11 +222,9 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_my_tour) {
+        if (id == R.id.nav_my_tours) {
             // Handle the camera action
         } else if (id == R.id.nav_browse) {
-
-        } else if (id == R.id.nav_create) {
 
         } else if (id == R.id.nav_log_out) {
             editor.clear();

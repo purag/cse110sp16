@@ -36,7 +36,51 @@ public class DB {
     private DB () {}
 
     /**
-     * Fetch a specific tour by its ID from the database.
+     * Register a user into the database.
+     *
+     * @param email the email address of the user to authenticate
+     * @param password the encrypted password of the user to authenticate
+     * @param cb the callback object (implementing the onSuccess method)
+     */
+    public static void registerUser(final String username, final String email, final String password,
+                                    Context c, final Callback<User> cb){
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+
+        /* Prepare the request body. */
+        JSONObject body;
+        try {
+            body = new JSONObject("{'username':'" + username + "', 'email':'" + email + "', 'password':'" + password + "'}");
+        } catch (Exception e) {
+            body = null;
+        }
+
+        /* Prepare the request with the POST method */
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "register", body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    cb.onSuccess(new User(
+                        response.getInt("user_id"),
+                        response.getString("user_name"),
+                        response.getString("user_email")
+                    ));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                cb.onFailure(null);
+            }
+        });
+
+        /* Actually make the request */
+        requestQueue.add(req);
+    }
+
+    /**
+     * Authenticate a user against the database of registered users.
      *
      * @param email the email address of the user to authenticate
      * @param password the encrypted password of the user to authenticate
