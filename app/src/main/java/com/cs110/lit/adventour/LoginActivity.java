@@ -33,6 +33,8 @@ import java.security.NoSuchAlgorithmException;
 public class LoginActivity extends AppCompatActivity implements
         LoginFragment.LoginFragmentListener, RegisterFragment.RegisterFragmentListener {
 
+    // TODO: Improve the naming scheme of the fragment interface methods
+
     /**
      * To record that a user session has been registered.
      */
@@ -136,12 +138,17 @@ public class LoginActivity extends AppCompatActivity implements
 
                 @Override
                 public void onFailure (User u) {
-                    System.out.println("something is taken.");
+                    mEmailView.setError("This email address is taken.");
                 }
             });
         }
     }
 
+    /**
+     * TODO: PUT THIS IN A SINGLETON "SESSION" CLASS
+     *
+     * @param u
+     */
     private void login(User u) {
         editor.putBoolean("auth", true);
         editor.putInt("uid", u.getUser_id());
@@ -177,6 +184,13 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * TODO
+     * @param mEmailView
+     * @param mUsernameView
+     * @param mPasswordView
+     * @return
+     */
     private boolean validateInput(EditText mEmailView, EditText mUsernameView, EditText mPasswordView) {
         // Reset errors.
         mEmailView.setError(null);
@@ -258,6 +272,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     /**
+     * TODO: Should this go here in LoginActivity?
      * Return the md5 encryption of a given string. Used for password hashing.
      *
      * @param s the string to be encrypted

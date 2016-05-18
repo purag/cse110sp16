@@ -65,9 +65,8 @@ public class RegisterFragment extends Fragment {
         final EditText usernameInput = (EditText) v.findViewById(R.id.reg_username);
         final EditText passInput = (EditText) v.findViewById(R.id.reg_password);
 
-//        Typeface t = Typeface.createFromAsset(getAssets(), "fonts/BerninoSansCondensedEB.ttf");
-//        signInBtn.setTypeface(t);
-//        registerBtn.setTypeface(t);
+        Typeface t = Typeface.createFromAsset(getActivity().getAssets(), "fonts/BerninoSansCondensedEB.ttf");
+        signUpBtn.setTypeface(t);
 
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override

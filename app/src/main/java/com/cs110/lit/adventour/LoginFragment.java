@@ -64,9 +64,9 @@ public class LoginFragment extends Fragment {
         final EditText emailInput = (EditText) v.findViewById(R.id.email);
         final EditText passInput = (EditText) v.findViewById(R.id.password);
 
-//        Typeface t = Typeface.createFromAsset(getAssets(), "fonts/BerninoSansCondensedEB.ttf");
-//        signInBtn.setTypeface(t);
-//        registerBtn.setTypeface(t);
+        Typeface t = Typeface.createFromAsset(getActivity().getAssets(), "fonts/BerninoSansCondensedEB.ttf");
+        signInBtn.setTypeface(t);
+        registerBtn.setTypeface(t);
 
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
