@@ -31,43 +31,75 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.cs110.lit.adventour.model.Tour;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class BrowseListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+
+    /**
+     * Attributes for action bar
+     */
+    private DrawerLayout navigationDrawer;
+    private ActionBarDrawerToggle navigationToggle;
+    private ViewFlipper viewFlipper;
+
+
+    /**
+     * Attributes for the list view
+     */
     ListView list;
     private final ArrayList<String> TourTitle = new ArrayList<>();
     private final ArrayList<String> TourDescription = new ArrayList<>();
     private final ArrayList<Integer> imageId = new ArrayList<>();
 
+
+    /**
+     * Attributes for location
+     */
+    private static final int LOCATION_REQUEST_CODE = 0;
+    private LocationManager locationManager;
+    private Location lastKnownLocation;
+    private String locationNetworkProvider;
+
+    private GoogleMap mMap;
+
+
+
     /**
      * To record that a user session has been registered.
      */
     SharedPreferences prefs;
-
     /**
      * The object in which we record the user's active session.
      */
     SharedPreferences.Editor editor;
 
-    private static final int LOCATION_REQUEST_CODE = 0;
-    private DrawerLayout navigationDrawer;
-    private ActionBarDrawerToggle navigationToggle;
 
-    private ViewFlipper viewFlipper;
-
+    ////////////////////////////////////////////////////////////////
+    /////// ------------ Functions Start HERE ----------------//////
+    ////////////////////////////////////////////////////////////////
+    /**
+     * This is onCreate
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_browse_list);
+        setContentView(R.layout.activity_browse_start);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        //actionBar.setBackgroundDrawable(new ColorDrawable(0xFF160203));
-
 
         viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
-
 
         // create list view
         list = (ListView)findViewById(R.id.browse_list);
@@ -94,10 +126,9 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         email.setText(prefs.getString("uemail", "user@example.com"));
 
 
-
         // --------- Get Location --------------//
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
 
         // check permission
         //check fine
@@ -112,7 +143,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         }
 
         // get the local location
-        Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
         // ----------- TEST CODE ------------//
         // TODO: need more data in the database, and delete this code after we have enought data in the data base
@@ -121,14 +152,14 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         this.TourDescription.add("Test object");
         this.imageId.add(R.drawable.cat3);
 
-        NearbyTours(mlocation);
+        GetNearbyToursForList(lastKnownLocation);
 
     }
 
-    private void NearbyTours(Location myLocation) {
+    private void GetNearbyToursForList(Location myLocation) {
         //grab data
         double testLatitude = 33;
-        double testLongitude = 117;
+        double testLongitude = -117;
         double testDist = 5000;
         int testLim = 10;
 
@@ -153,14 +184,14 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
                 }
 
                 // create list items
-                CustomList adapter = new CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
+                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitle, TourDescription, imageId);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        //Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
                         showOverviewView();
                     }
                 });
@@ -209,9 +240,11 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
                 // search action
                 return true;
             case R.id.action_map_view:
-                // jump to the map view
-                //showMapView();
+                // switch to the map view using view flipper
                 viewFlipper.showNext();
+                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.map);
+                mapFragment.getMapAsync(this);
                 return true;
             case R.id.action_refresh:
                 // refresh
@@ -252,19 +285,102 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     }
 
     /**
-     * load map action
-     */
-    public void showMapView () {
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * Test if the map activity works properly
+     * Show overview of a tour when click list item
+     * TODO: Send data to overview activity
      */
     public void showOverviewView() {
         Intent intent = new Intent(this, OverviewActivity.class);
         startActivity(intent);
     }
 
+
+    ///////////////////////////////////////////////////////////
+    ///-----------THIS IS FOR THE MAP VIEW -----------------///
+    //////////////////////////////////////////////////////////
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+
+        //TODO: Need a better way to do this check (or dont even bother to check this at all)
+        if (lastKnownLocation == null) {
+            System.out.println("NULL location");
+            ////----------- display the map with marker on current location -----------//
+            // Add a marker in current location, and move the camera.
+            LatLng myLocation = new LatLng(33.812, -117.919);
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+            //googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
+
+            //grab data
+            displayNearbyToursInMap(myLocation, mMap);
+        } else {
+
+            ////----------- display the map with marker on current location -----------//
+            // Add a marker in current location, and move the camera.
+            LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
+
+            //grab data
+            displayNearbyToursInMap(myLocation, mMap);
+        }
+    }
+
+
+    private void displayNearbyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+
+        System.out.println("attempting to grab data\n");
+        DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 5000.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
+            @Override
+            public void onSuccess(ArrayList<Tour> tours) {
+                System.out.println("success\n");
+                //display them
+                for (Tour t : tours) {
+                    // System.out.println("Let's drop some pins");
+                    LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
+                    mMap.addMarker(new MarkerOptions().position(location)
+                            .title(t.getTitle())
+                            .snippet(t.getSummary())
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+                }
+            }
+            @Override
+            public void onFailure(ArrayList<Tour> tours) {
+                System.out.println("On failure happened\n");
+            }
+        });
+
+    }
+
+
+    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private final View myContentsView;
+
+        MyInfoWindowAdapter(){
+            myContentsView = getLayoutInflater().inflate(R.layout.custom_window_info_contents, null);
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+
+            TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.title));
+            tvTitle.setText(marker.getTitle());
+            TextView tvSnippet = ((TextView)myContentsView.findViewById(R.id.snippet));
+            tvSnippet.setText(marker.getSnippet());
+
+            return myContentsView;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+    }
 }
