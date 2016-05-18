@@ -11,33 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <SearchView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/searchView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:iconifiedByDefault="false" />
-
-    <ImageButton
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/listButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@+id/searchView"
-        android:layout_toEndOf="@+id/searchView"
-        android:longClickable="true" />
-
     <ZoomButton
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Button"
         android:id="@+id/button2"
-        android:layout_above="@+id/button4"
+        android:layout_above="@+id/button3"
         android:layout_alignParentStart="true" />
 
     <ZoomButton
@@ -48,15 +28,5 @@
         android:id="@+id/button3"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
-
-    <ImageButton
-        style="@android:style/Widget.Holo.Light.ImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button4"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/searchView"
-        android:layout_alignTop="@+id/button3" />
 
 </RelativeLayout>
