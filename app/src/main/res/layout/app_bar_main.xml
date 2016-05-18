@@ -13,6 +13,15 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/browse_list_content" />
+    <!--<include layout="@layout/browse_list_content" />-->
+    <ViewFlipper
+        android:id="@+id/browse_view_flipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/browse_list_content" />
+        <include layout="@layout/activity_maps" />
+
+    </ViewFlipper>
 
 </android.support.design.widget.CoordinatorLayout>
