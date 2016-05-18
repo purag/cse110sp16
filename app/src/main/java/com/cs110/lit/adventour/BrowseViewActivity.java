@@ -17,6 +17,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -153,6 +154,16 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
         GetNearbyToursForList(lastKnownLocation);
 
+        /* Allow user to refresh the list */
+        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                GetNearbyToursForList(lastKnownLocation);
+                refreshLayout.setRefreshing(false);
+            }
+        });
+
     }
 
     private void GetNearbyToursForList(Location myLocation) {
@@ -241,7 +252,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             case R.id.action_map_view:
                 // switch to the map view using view flipper
                 item.setChecked(!item.isChecked());
-                item.setIcon(item.isChecked() ? R.drawable.list_icon : R.drawable.map_icon);
+                item.setIcon(item.isChecked() ? R.drawable.ic_view_list_white : R.drawable.ic_map_white);
                 viewFlipper.showNext();
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.map);
