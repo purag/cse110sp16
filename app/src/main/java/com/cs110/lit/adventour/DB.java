@@ -2,30 +2,22 @@ package com.cs110.lit.adventour;
 
 import android.content.Context;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.cs110.lit.adventour.model.*;
-import java.util.ArrayList;
 import com.android.volley.toolbox.Volley;
-import com.android.volley.Request;
-import com.android.volley.VolleyLog;
-import com.android.volley.RequestQueue;
-import android.content.Context;
-import android.os.AsyncTask;
+import com.cs110.lit.adventour.model.Checkpoint;
+import com.cs110.lit.adventour.model.Tour;
+import com.cs110.lit.adventour.model.User;
 
-import org.json.JSONException;
-import com.android.volley.toolbox.RequestFuture;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.ArrayList;
 
 /**
  * A database class to manage calls to the REST API and parse their responses into model instances.
@@ -44,13 +36,100 @@ public class DB {
     private DB () {}
 
     /**
+     * Register a user into the database.
+     *
+     * @param email the email address of the user to authenticate
+     * @param password the encrypted password of the user to authenticate
+     * @param cb the callback object (implementing the onSuccess method)
+     */
+    public static void registerUser(final String username, final String email, final String password,
+                                    Context c, final Callback<User> cb){
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+
+        /* Prepare the request body. */
+        JSONObject body;
+        try {
+            body = new JSONObject("{'username':'" + username + "', 'email':'" + email + "', 'password':'" + password + "'}");
+        } catch (Exception e) {
+            body = null;
+        }
+
+        /* Prepare the request with the POST method */
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "register", body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    cb.onSuccess(new User(
+                        response.getInt("user_id"),
+                        response.getString("user_name"),
+                        response.getString("user_email")
+                    ));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                cb.onFailure(null);
+            }
+        });
+
+        /* Actually make the request */
+        requestQueue.add(req);
+    }
+
+    /**
+     * Authenticate a user against the database of registered users.
+     *
+     * @param email the email address of the user to authenticate
+     * @param password the encrypted password of the user to authenticate
+     * @param cb the callback object (implementing the onSuccess method)
+     */
+    public static void authenticateUser(final String email, final String password, Context c, final Callback<User> cb){
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+
+        /* Prepare the request body. */
+        JSONObject body;
+        try {
+            body = new JSONObject("{'email':'" + email + "', 'password':'" + password + "'}");
+        } catch (Exception e) {
+            body = null;
+        }
+
+        /* Prepare the request with the POST method */
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "login", body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    cb.onSuccess(new User(
+                        response.getInt("user_id"),
+                        response.getString("user_name"),
+                        response.getString("user_email")
+                    ));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                cb.onFailure(null);
+            }
+        });
+
+        /* Actually make the request */
+        requestQueue.add(req);
+    }
+
+    /**
      * Fetch a specific tour by its ID from the database.
      *
      * @param id the ID of the tour to fetch
      * @param c the context (activity) from which this database access is being made
      * @param cb the callback object (implementing the onSuccess method)
      */
-    public static void getTourById (int id, Context c, final DBCallback<Tour> cb) {
+    public static void getTourById (int id, Context c, final Callback<Tour> cb) {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "tours/" + id;
 
@@ -70,7 +149,7 @@ public class DB {
                         checkpoints.add(i, new Checkpoint(
                                 checkpointRes.getInt("checkpoint_id"),
                                 checkpointRes.getDouble("checkpoint_lat"),
-                                checkpointRes.getDouble("checkpoint_long"),
+                                checkpointRes.getDouble("checkpoint_lng"),
                                 checkpointRes.getInt("tour_id"),
                                 checkpointRes.getString("checkpoint_title"),
                                 checkpointRes.getString("checkpoint_description"),
@@ -94,7 +173,6 @@ public class DB {
 
                 /* Delegate to the callback. */
                 cb.onSuccess(t);
-                System.out.println(response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -118,7 +196,7 @@ public class DB {
      * @param cb the callback object (implementing the onSuccess method)
      */
     public static void getToursNearLoc (double lat, double lon, double dist, int lim, Context c,
-                                        final DBCallback<ArrayList<Tour>> cb) {
+                                        final Callback<ArrayList<Tour>> cb) {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "tours/near/" + lat + "/" + lon + "/" + dist + "/limit/" + lim;
 
@@ -138,7 +216,7 @@ public class DB {
                                 tour.getString("tour_summary"),
                                 tour.getInt("tour_visibility") == 1,
                                 tour.getDouble("starting_lat"),
-                                tour.getDouble("starting_lon")
+                                tour.getDouble("starting_lng")
                         ));
                     }
                 } catch (JSONException e) {
@@ -147,7 +225,6 @@ public class DB {
 
                 /* Delegate to the callback. */
                 cb.onSuccess(tours);
-                System.out.println(response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -174,7 +251,9 @@ public class DB {
         // return new Checkpoint();
     }
 
-    public interface DBCallback<T> {
+    public interface Callback<T> {
         public void onSuccess (T t);
+
+        public void onFailure (T t);
     }
 }
