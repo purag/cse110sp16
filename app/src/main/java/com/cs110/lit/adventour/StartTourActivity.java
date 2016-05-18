@@ -27,7 +27,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
 
 public class StartTourActivity extends FragmentActivity implements OnMapReadyCallback,
-    DB.DBCallback<Tour>{
+    DB.Callback<Tour>{
 
     /* Constants */
     // Time before refresh (miliseconds).
@@ -209,5 +209,10 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
         Polyline line = mMap.addPolyline(lineOptions);
         // If you want to set line settings, do them here with polyline object.
         // Ex) line.color(Color.RED);
+    }
+
+    @Override
+    public void onFailure(Tour tour) {
+        System.out.println("Failed to get tours.");
     }
 }
