@@ -24,7 +24,7 @@
 
                 <ImageView
                     android:id="@+id/list_user_icon"
-                    android:src="@drawable/contact_outline"
+                    android:src="@drawable/user_icon"
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="5dp"
                     android:layout_width="30dp"
