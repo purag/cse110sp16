@@ -395,4 +395,23 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         }
 
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        //show me what you got
+        int i = 0;
+        for (String s : permissions) {
+            System.out.println("at request permission result" + s + grantResults[i] + "\n");
+            i++;
+        }
+
+        System.out.println("Trying again");
+        Intent intent = new Intent(this, BrowseViewActivity.class);
+        startActivity(intent);
+        finish();
+
+        return;
+
+    }
 }
