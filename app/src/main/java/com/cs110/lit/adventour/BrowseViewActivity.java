@@ -36,7 +36,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -241,6 +240,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 return true;
             case R.id.action_map_view:
                 // switch to the map view using view flipper
+                item.setChecked(!item.isChecked());
+                item.setIcon(item.isChecked() ? R.drawable.list_icon : R.drawable.map_icon);
                 viewFlipper.showNext();
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.map);
