@@ -21,6 +21,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 
@@ -157,6 +159,7 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
         }
     }
 
+    /* Function called when everything with settings is kosher. Start setting up markers. */
     @Override
     public void onSuccess(Tour tour) {
         // Define a listener that responds to location updates
@@ -174,6 +177,9 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
             public void onProviderDisabled(String provider) {
             }
         };
+        // Failed requesting tour, silden
+        if(tour == null)
+            return ;
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
                 LOCATION_REFRESH_DISTANCE, locationListener);
@@ -189,9 +195,19 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
 
 
         ArrayList<Checkpoint> checkpointList = tour.getListOfCheckpoints();
+        // Create lines.
+        PolylineOptions lineOptions = new PolylineOptions();
+
         // Display markers.
         for(Checkpoint points : checkpointList) {
-            addMarkerAtMyLocation(new LatLng(points.getLatitude(), points.getLongitude()));
+            LatLng latLng = new LatLng(points.getLatitude(), points.getLongitude());
+            addMarkerAtMyLocation(latLng);
+            lineOptions.add(latLng);
         }
+
+        // Draw the entire line.
+        Polyline line = mMap.addPolyline(lineOptions);
+        // If you want to set line settings, do them here with polyline object.
+        // Ex) line.color(Color.RED);
     }
 }
