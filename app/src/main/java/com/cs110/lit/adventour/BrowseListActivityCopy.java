@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.cs110.lit.adventour.model.Tour;
+import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,62 +46,38 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class BrowseListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
-
-    /**
-     * Attributes for action bar
-     */
-    private DrawerLayout navigationDrawer;
-    private ActionBarDrawerToggle navigationToggle;
-    private ViewFlipper viewFlipper;
-
-
-    /**
-     * Attributes for the list view
-     */
     ListView list;
     private final ArrayList<String> TourTitle = new ArrayList<>();
     private final ArrayList<String> TourDescription = new ArrayList<>();
     private final ArrayList<Integer> imageId = new ArrayList<>();
 
 
-    /**
-     * Attributes for location
-     */
-    private static final int LOCATION_REQUEST_CODE = 0;
-    private LocationManager locationManager;
-    private Location lastKnownLocation;
-    private String locationNetworkProvider;
-
     private GoogleMap mMap;
+    private LocationManager locationManager;
 
-
-
-    ////////////////////////////////////////////////////////////////
-    /////// ------------ AUTO GENERATEED CODE ----------------//////
-    ////////////////////////////////////////////////////////////////
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+
+
     /**
      * To record that a user session has been registered.
      */
     SharedPreferences prefs;
+
     /**
      * The object in which we record the user's active session.
      */
     SharedPreferences.Editor editor;
 
+    private static final int LOCATION_REQUEST_CODE = 0;
+    private DrawerLayout navigationDrawer;
+    private ActionBarDrawerToggle navigationToggle;
 
-    ////////////////////////////////////////////////////////////////
-    /////// ------------ Functions Start HERE ----------------//////
-    ////////////////////////////////////////////////////////////////
-    /**
-     * This is onCreate
-     * @param savedInstanceState
-     */
+    private ViewFlipper viewFlipper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,8 +85,11 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setBackgroundDrawable(new ColorDrawable(0xFF160203));
+
 
         viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
+
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
@@ -137,9 +118,10 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         email.setText(prefs.getString("uemail", "user@example.com"));
 
 
+
         // --------- Get Location --------------//
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+        String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
 
         // check permission
         //check fine
@@ -154,7 +136,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         }
 
         // get the local location
-        lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        Location mlocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
         // ----------- TEST CODE ------------//
         // TODO: need more data in the database, and delete this code after we have enought data in the data base
@@ -163,7 +145,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         this.TourDescription.add("Test object");
         this.imageId.add(R.drawable.cat3);
 
-        NearbyTours(lastKnownLocation);
+        NearbyTours(mlocation);
 
     }
 
@@ -195,7 +177,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
                 }
 
                 // create list items
-                CustomList adapter = new CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
+                CustomList adapter = new CustomList(BrowseListActivityCopy.this, TourTitle, TourDescription, imageId);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -297,7 +279,15 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     }
 
     /**
-     * Show overview of a tour when click list item
+     * load map action
+     */
+    public void showMapView () {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Test if the map activity works properly
      */
     public void showOverviewView() {
         Intent intent = new Intent(this, OverviewActivity.class);
@@ -305,16 +295,36 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     }
 
 
-    ///////////////////////////////////////////////////////////
-    ///-----------THIS IS FOR THE MAPO VIEW ----------------///
-    //////////////////////////////////////////////////////////
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
 
-        //TODO: Need a better way to do this check
+        ///// -------------- adding listener ---------------///
+        // Acquire a reference to the system Location Manager
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+
+        String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+
+        //check fine
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            return;
+        }
+        System.out.println("got fine permission");
+
+        //check coarse
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_REQUEST_CODE);
+            return;
+        }
+        System.out.println("got coarse permission");
+
+        Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+
         if (lastKnownLocation == null) {
             System.out.println("NULL location");
             ////----------- display the map with marker on current location -----------//
@@ -322,6 +332,10 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
             LatLng myLocation = new LatLng(33.812, -117.919);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            //mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
+
+            //print
+            System.out.println("Gee I'm trying\n");
 
             //grab data
             displayNearbyTours(myLocation, mMap);
@@ -334,12 +348,17 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
             mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
 
+            //print
+            System.out.println("Gee I'm trying\n");
+
             //grab data
             displayNearbyTours(myLocation, mMap);
         }
 
 
     }
+
+
 
 
     private void displayNearbyTours(final LatLng myLocation, final GoogleMap mMap) {
@@ -353,7 +372,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
                 System.out.println("success\n");
                 //display them
                 for (Tour t : tours) {
-                    // System.out.println("Let's drop some pins");
+                    System.out.println("Let's drop some pins");
                     LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
                     mMap.addMarker(new MarkerOptions().position(location)
                             .title(t.getTitle())
@@ -367,6 +386,47 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
             }
         });
 
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Maps Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.cs110.lit.adventour/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Maps Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.cs110.lit.adventour/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 
 
