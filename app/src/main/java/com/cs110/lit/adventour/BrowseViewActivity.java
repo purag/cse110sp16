@@ -149,7 +149,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         // added some test vaiable just for testing!!
         this.TourTitle.add("Garfield");
         this.TourDescription.add("Test object");
-        this.imageId.add(R.drawable.cat3);
+        this.imageId.add(R.drawable.santa_cruz_test);
 
         GetNearbyToursForList(lastKnownLocation);
 
