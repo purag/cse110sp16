@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.cs110.lit.adventour.model.Tour;
 import com.google.android.gms.appindexing.Action;
@@ -24,7 +25,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -37,7 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Tour> nearbyTours;
     private Location lastKnownLocation;
     private LocationManager locationManager;
-    private ImageButton listButton;
+    //private ImageButton listButton;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -63,14 +66,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        listButton = (ImageButton) findViewById(R.id.listButton);
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+
+        /*listButton = (ImageButton) findViewById(R.id.listButton);
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("I'm clicked");
                 showListView();
             }
-        });
+        });*/
 
         ///// -------------- adding listener ---------------///
         // Acquire a reference to the system Location Manager
@@ -158,6 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void showListView () {
         Intent intent = new Intent(this, BrowseListActivity.class);
         startActivity(intent);
+        finish();
     }
 
     private void displayNearbyTours(final LatLng myLocation, final GoogleMap mMap) {
@@ -165,7 +171,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
 
         System.out.println("attempting to grab data\n");
-        DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 20.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 5000.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 System.out.println("success\n");
@@ -185,7 +191,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
                     mMap.addMarker(new MarkerOptions().position(location)
                             .title(t.getTitle())
-                            .snippet(t.getSummary()));
+                            .snippet(t.getSummary())
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
                 }
 
 
@@ -238,5 +245,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private final View myContentsView;
+
+        MyInfoWindowAdapter(){
+            myContentsView = getLayoutInflater().inflate(R.layout.custom_window_info_contents, null);
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+
+            TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.title));
+            tvTitle.setText(marker.getTitle());
+            TextView tvSnippet = ((TextView)myContentsView.findViewById(R.id.snippet));
+            tvSnippet.setText(marker.getSnippet());
+
+            return myContentsView;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
     }
 }

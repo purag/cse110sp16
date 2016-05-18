@@ -13,7 +13,7 @@ public class Tour {
 	private Boolean visibility;
 	private double starting_lat;
 	private double starting_lng;
-    
+
     private ArrayList<Checkpoint> listOfCheckpoints;
 
 	public Tour() {}
