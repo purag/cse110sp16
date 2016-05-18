@@ -32,7 +32,7 @@
 
         <activity
             android:name="com.cs110.lit.adventour.BrowseListActivity"
-            android:label="@string/title_browse_list">
+            android:label="@string/app_name">
         </activity>
 
         <!-- Search results activity -->

@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.cs110.lit.adventour.model.Tour;
 import com.google.android.gms.appindexing.Action;
@@ -30,7 +31,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -43,19 +46,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<Tour> nearbyTours;
     private Location lastKnownLocation;
     private LocationManager locationManager;
-    private ImageButton listButton;
+    //private ImageButton listButton;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
-
-    //TODO: THOSE CODE NEED REFACTORING
-    SharedPreferences prefs;
-    SharedPreferences.Editor editor;
-    private DrawerLayout navigationDrawer;
-    private ActionBarDrawerToggle navigationToggle;
-    //todo ends here
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,46 +67,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
-
-//        //TODO: THOSE CODE NEED REFACTORING
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//
-//        // ---------- Navigation Stuff --------------//
-//        navigationDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        navigationToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//
-//        navigationDrawer.addDrawerListener(navigationToggle);
-//        navigationToggle.syncState();
-//
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
-//
-//        prefs =  getApplicationContext().getSharedPreferences("Login", 0);
-//        editor = prefs.edit();
-//
-//        // Get the user information, and show it in the navigation title
-//        View header = navigationView.getHeaderView(0);
-//        TextView name = (TextView) header.findViewById(R.id.nav_header_name);
-//        TextView email = (TextView) header.findViewById(R.id.nav_header_email);
-//        name.setText(prefs.getString("uname", "User"));
-//        email.setText(prefs.getString("uemail", "user@example.com"));
-//        //todo ends here
-
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        listButton = (ImageButton) findViewById(R.id.listButton);
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+
+        /*listButton = (ImageButton) findViewById(R.id.listButton);
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("I'm clicked");
                 showListView();
             }
-        });
+        });*/
 
         ///// -------------- adding listener ---------------///
         // Acquire a reference to the system Location Manager
@@ -198,6 +170,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void showListView () {
         Intent intent = new Intent(this, BrowseListActivity.class);
         startActivity(intent);
+        finish();
     }
 
     private void displayNearbyTours(final LatLng myLocation, final GoogleMap mMap) {
@@ -205,7 +178,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
 
         System.out.println("attempting to grab data\n");
-        DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 20.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 5000.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 System.out.println("success\n");
@@ -225,9 +198,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
                     mMap.addMarker(new MarkerOptions().position(location)
                             .title(t.getTitle())
-                            .snippet(t.getSummary()));
+                            .snippet(t.getSummary())
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
                 }
-
 
             }
 
@@ -281,61 +254,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
-    //-------------------------------------------------------------------------
-    //TODO: THOSE CODE NEED REFACTORING  //////////////////////////////////////
-    //-------------------------------------------------------------------------
-    /**
-     * Create option menu
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_map_actions, menu);
+        private final View myContentsView;
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)menu.findItem(R.id.action_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        // Configure the search info and add any event listeners...
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    /**
-     * Case selection for option menu
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        System.out.println("selected an item: " + item.getItemId());
-
-//        if (navigationToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-
-        // Take appropriate action for each action item click
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                // search action
-                return true;
-            case R.id.action_list_view:
-                // jump to the map view
-                showListView ();
-                return true;
-            case R.id.action_refresh:
-                // refresh
-                return true;
-            case R.id.action_help:
-                // help action
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        MyInfoWindowAdapter(){
+            myContentsView = getLayoutInflater().inflate(R.layout.custom_window_info_contents, null);
         }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+
+            TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.title));
+            tvTitle.setText(marker.getTitle());
+            TextView tvSnippet = ((TextView)myContentsView.findViewById(R.id.snippet));
+            tvSnippet.setText(marker.getSnippet());
+
+            return myContentsView;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
     }
-
-    //todo ends here------------------------------------------------
-    //--------------------------------------------------------------
-
-
 
 }
