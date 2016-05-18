@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!-- Back Item
-    <item android:id="@+id/action_back"
-        android:icon="@drawable/ic_action_back"
-        android:title="Back"
-        android:showAsAction="ifRoom" />-->
 
     <!-- Search / will display always -->
     <item android:id="@+id/action_search"
@@ -15,9 +10,9 @@
         app:actionViewClass="android.support.v7.widget.SearchView"/>
 
     <!-- Map View -->
-    <item android:id="@+id/action_map_view"
-        android:icon="@drawable/map_icon"
-        android:title="Map"
+    <item android:id="@+id/action_list_view"
+        android:icon="@drawable/list_icon"
+        android:title="List"
         app:showAsAction="ifRoom" />
 
     <!-- Refresh -->
