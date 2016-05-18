@@ -1,10 +1,14 @@
 package com.cs110.lit.adventour;
 
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -26,7 +30,8 @@ import java.security.NoSuchAlgorithmException;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements
+        LoginFragment.LoginFragmentListener, RegisterFragment.RegisterFragmentListener {
 
     /**
      * To record that a user session has been registered.
@@ -37,11 +42,6 @@ public class LoginActivity extends AppCompatActivity {
      * The object in which we record the user's active session.
      */
     SharedPreferences.Editor editor;
-
-    // UI references.
-    private EditText mEmailView;
-    private EditText mPasswordView;
-    private View mLoginFormView;
 
     Integer [] login_bg_imgs = new Integer [] {
         R.drawable.login_bg_0,
@@ -59,8 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        prefs =  getApplicationContext().getSharedPreferences("Login", 0);
+        prefs = getApplicationContext().getSharedPreferences("Login", 0);
         editor = prefs.edit();
 
         if (prefs.getBoolean("auth", false)) {
@@ -69,8 +70,12 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_login);
-        // Set up the login form.
-        mEmailView = (EditText) findViewById(R.id.email);
+
+        final FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction defTransaction = fragmentManager.beginTransaction();
+        defTransaction.replace(R.id.login_activity_form, LoginFragment.newInstance(this));
+        defTransaction.addToBackStack(null);
+        defTransaction.commit();
 
         if (getSupportActionBar() != null)
             getSupportActionBar().hide();
@@ -79,35 +84,36 @@ public class LoginActivity extends AppCompatActivity {
         int i = r.nextInt(login_bg_imgs.length);
         ImageView login_bg = (ImageView) findViewById(R.id.login_bg);
         TextView login_title = (TextView) findViewById(R.id.login_title);
-        Typeface t = Typeface.createFromAsset(getAssets(), "fonts/BerninoSansCondensedEB.ttf");
-
         login_bg.setImageResource(login_bg_imgs[i]);
+        Typeface t = Typeface.createFromAsset(getAssets(), "fonts/BerninoSansCondensedEB.ttf");
         login_title.setTypeface(t);
+    }
 
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
+    public void onSignInClicked (EditText mEmailView, EditText mPasswordView) {
+        attemptLogin(mEmailView, mPasswordView);
+    }
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        Button mRegisterButton = (Button) findViewById(R.id.email_create_account_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
-        mEmailSignInButton.setTypeface(t);
-        mRegisterButton.setTypeface(t);
+    public void onRegisterClicked () {
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        System.out.println("Clicked Register");
+        ft.replace(R.id.login_activity_form, RegisterFragment.newInstance(this));
+        ft.addToBackStack(null);
+        ft.commit();
+    }
 
-        mLoginFormView = findViewById(R.id.login_form);
+    public void onSignUpClicked (EditText emailInput, EditText usernameInput, EditText passwordInput) {
+        System.out.println("user tried to sign up!");
+        attemptRegister(emailInput, usernameInput, passwordInput);
+    }
+
+    public void onLogInClicked () {
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        System.out.println("Clicked Log In");
+        ft.replace(R.id.login_activity_form, LoginFragment.newInstance(this));
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     /**
@@ -115,61 +121,106 @@ public class LoginActivity extends AppCompatActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin () {
-        // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-
-        // Store values at the time of the login attempt.
+    private void attemptRegister (final EditText mEmailView, final EditText mUsernameView, final EditText mPasswordView) {
         String email = mEmailView.getText().toString();
+        String username = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        boolean cancel = false;
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            cancel = true;
-        }
-
-        // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            cancel = true;
-        } else if (!isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            cancel = true;
-        }
-
-        if (!cancel) {
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setMessage("Authenticating...");
-            progressDialog.show();
-            DB.authenticateUser(email, md5(password), this, new DB.Callback<User>() {
+        if (validateInput(mEmailView, mUsernameView, mPasswordView)) {
+            DB.registerUser(username, email, md5(password), this, new DB.Callback<User>() {
                 @Override
                 public void onSuccess (User u) {
-                    progressDialog.dismiss();
-                    System.out.println("logged " + u.getUser_email() + " in successfully");
-                    editor.putBoolean("auth", true);
-                    editor.putInt("uid", u.getUser_id());
-                    editor.putString("uemail", u.getUser_email());
-                    editor.putString("uname", u.getUser_name());
-                    editor.commit();
-                    showBrowseListView();
+                    System.out.println("registered " + u.getUser_email() + " successfully");
+                    login(u);
                 }
 
                 @Override
                 public void onFailure (User u) {
-                    progressDialog.dismiss();
+                    System.out.println("something is taken.");
+                }
+            });
+        }
+    }
+
+    private void login(User u) {
+        editor.putBoolean("auth", true);
+        editor.putInt("uid", u.getUser_id());
+        editor.putString("uemail", u.getUser_email());
+        editor.putString("uname", u.getUser_name());
+        editor.commit();
+        showBrowseListView();
+    }
+
+    /**
+     * Attempts to sign in or register the account specified by the login form.
+     * If there are form errors (invalid email, missing fields, etc.), the
+     * errors are presented and no actual login attempt is made.
+     */
+    private void attemptLogin (final EditText mEmailView, final EditText mPasswordView) {
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        if (validateInput(mEmailView, null, mPasswordView)) {
+            DB.authenticateUser(email, md5(password), this, new DB.Callback<User>() {
+                @Override
+                public void onSuccess (User u) {
+                    System.out.println("logged " + u.getUser_email() + " in successfully");
+                    login(u);
+                }
+
+                @Override
+                public void onFailure (User u) {
                     System.out.println("authentication failed");
                     mPasswordView.setError("Incorrect username or password.");
                 }
             });
         }
+    }
+
+    private boolean validateInput(EditText mEmailView, EditText mUsernameView, EditText mPasswordView) {
+        // Reset errors.
+        mEmailView.setError(null);
+        String email = mEmailView.getText().toString();
+
+        String username = null;
+        if (mUsernameView != null) {
+            mUsernameView.setError(null);
+            username = mUsernameView.getText().toString();
+        }
+
+        String password = mPasswordView.getText().toString();
+        mPasswordView.setError(null);
+
+        // Keep track of any validation errors that occurred.
+        boolean valid = true;
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            valid = false;
+        } else if (!isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
+            valid = false;
+        }
+
+        // Check for a valid username (non-empty)
+        if (username != null) {
+            if (TextUtils.isEmpty(username)) {
+                mUsernameView.setError(getString(R.string.error_field_required));
+                valid = false;
+            }
+        }
+
+        // Check for a valid password
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            valid = false;
+        } else if (!isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            valid = false;
+        }
+
+        return valid;
     }
 
     private boolean isEmailValid (String email) {
