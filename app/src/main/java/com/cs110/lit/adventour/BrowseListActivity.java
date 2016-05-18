@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.cs110.lit.adventour.model.Tour;
 
@@ -53,6 +54,8 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     private DrawerLayout navigationDrawer;
     private ActionBarDrawerToggle navigationToggle;
 
+    private ViewFlipper viewFlipper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +64,9 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setBackgroundDrawable(new ColorDrawable(0xFF160203));
+
+
+        viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
 
 
         // create list view
@@ -126,8 +132,8 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         double testDist = 5000;
         int testLim = 10;
 
-        //DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
-        DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
+        //DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours){
                 //get the tours
@@ -204,7 +210,8 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
                 return true;
             case R.id.action_map_view:
                 // jump to the map view
-                showMapView();
+                //showMapView();
+                viewFlipper.showNext();
                 return true;
             case R.id.action_refresh:
                 // refresh

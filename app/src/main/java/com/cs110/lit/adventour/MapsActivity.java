@@ -50,13 +50,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private GoogleApiClient client;
 
-    //TODO: THOSE CODE NEED REFACTORING
-    SharedPreferences prefs;
-    SharedPreferences.Editor editor;
-    private DrawerLayout navigationDrawer;
-    private ActionBarDrawerToggle navigationToggle;
-    //todo ends here
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,32 +63,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-
-//        //TODO: THOSE CODE NEED REFACTORING
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//
-//        // ---------- Navigation Stuff --------------//
-//        navigationDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        navigationToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//
-//        navigationDrawer.addDrawerListener(navigationToggle);
-//        navigationToggle.syncState();
-//
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
-//
-//        prefs =  getApplicationContext().getSharedPreferences("Login", 0);
-//        editor = prefs.edit();
-//
-//        // Get the user information, and show it in the navigation title
-//        View header = navigationView.getHeaderView(0);
-//        TextView name = (TextView) header.findViewById(R.id.nav_header_name);
-//        TextView email = (TextView) header.findViewById(R.id.nav_header_email);
-//        name.setText(prefs.getString("uname", "User"));
-//        email.setText(prefs.getString("uemail", "user@example.com"));
-//        //todo ends here
 
     }
 
@@ -228,7 +195,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             .snippet(t.getSummary()));
                 }
 
-
             }
 
             @Override
@@ -279,63 +245,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
-
-
-
-    //-------------------------------------------------------------------------
-    //TODO: THOSE CODE NEED REFACTORING  //////////////////////////////////////
-    //-------------------------------------------------------------------------
-    /**
-     * Create option menu
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_map_actions, menu);
-
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)menu.findItem(R.id.action_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        // Configure the search info and add any event listeners...
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    /**
-     * Case selection for option menu
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        System.out.println("selected an item: " + item.getItemId());
-
-//        if (navigationToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-
-        // Take appropriate action for each action item click
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                // search action
-                return true;
-            case R.id.action_list_view:
-                // jump to the map view
-                showListView ();
-                return true;
-            case R.id.action_refresh:
-                // refresh
-                return true;
-            case R.id.action_help:
-                // help action
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    //todo ends here------------------------------------------------
-    //--------------------------------------------------------------
-
-
 
 }
