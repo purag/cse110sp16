@@ -31,20 +31,19 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.cs110.lit.adventour.model.Tour;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class BrowseListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     /**
      * Attributes for action bar
@@ -75,14 +74,6 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
 
 
 
-    ////////////////////////////////////////////////////////////////
-    /////// ------------ AUTO GENERATEED CODE ----------------//////
-    ////////////////////////////////////////////////////////////////
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
     /**
      * To record that a user session has been registered.
      */
@@ -103,14 +94,12 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_browse_list);
+        setContentView(R.layout.activity_browse_start);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
-
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
         // create list view
         list = (ListView)findViewById(R.id.browse_list);
@@ -163,14 +152,14 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
         this.TourDescription.add("Test object");
         this.imageId.add(R.drawable.cat3);
 
-        NearbyTours(lastKnownLocation);
+        GetNearbyToursForList(lastKnownLocation);
 
     }
 
-    private void NearbyTours(Location myLocation) {
+    private void GetNearbyToursForList(Location myLocation) {
         //grab data
         double testLatitude = 33;
-        double testLongitude = 117;
+        double testLongitude = -117;
         double testDist = 5000;
         int testLim = 10;
 
@@ -195,14 +184,14 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
                 }
 
                 // create list items
-                CustomList adapter = new CustomList(BrowseListActivity.this, TourTitle, TourDescription, imageId);
+                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitle, TourDescription, imageId);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        //Toast.makeText(BrowseListActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
                         showOverviewView();
                     }
                 });
@@ -251,8 +240,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
                 // search action
                 return true;
             case R.id.action_map_view:
-                // jump to the map view
-                //showMapView();
+                // switch to the map view using view flipper
                 viewFlipper.showNext();
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.map);
@@ -298,6 +286,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
 
     /**
      * Show overview of a tour when click list item
+     * TODO: Send data to overview activity
      */
     public void showOverviewView() {
         Intent intent = new Intent(this, OverviewActivity.class);
@@ -306,7 +295,7 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
 
 
     ///////////////////////////////////////////////////////////
-    ///-----------THIS IS FOR THE MAPO VIEW ----------------///
+    ///-----------THIS IS FOR THE MAP VIEW -----------------///
     //////////////////////////////////////////////////////////
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -314,35 +303,33 @@ public class BrowseListActivity extends AppCompatActivity implements NavigationV
 
         mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
 
-        //TODO: Need a better way to do this check
+        //TODO: Need a better way to do this check (or dont even bother to check this at all)
         if (lastKnownLocation == null) {
             System.out.println("NULL location");
             ////----------- display the map with marker on current location -----------//
             // Add a marker in current location, and move the camera.
             LatLng myLocation = new LatLng(33.812, -117.919);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+            //googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
 
             //grab data
-            displayNearbyTours(myLocation, mMap);
+            displayNearbyToursInMap(myLocation, mMap);
         } else {
 
             ////----------- display the map with marker on current location -----------//
             // Add a marker in current location, and move the camera.
             LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
 
             //grab data
-            displayNearbyTours(myLocation, mMap);
+            displayNearbyToursInMap(myLocation, mMap);
         }
-
-
     }
 
 
-    private void displayNearbyTours(final LatLng myLocation, final GoogleMap mMap) {
+    private void displayNearbyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
         mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
 

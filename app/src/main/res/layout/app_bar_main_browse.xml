@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".BrowseListActivity">
+    tools:context=".BrowseViewActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
         android:layout_height="match_parent">
 
         <include layout="@layout/browse_list_content" />
-        <include layout="@layout/activity_maps" />
+        <include layout="@layout/browse_map_content" />
 
     </ViewFlipper>
 

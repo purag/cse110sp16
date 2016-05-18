@@ -11,14 +11,12 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.cs110.lit.adventour.model.*;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import java.security.MessageDigest;
@@ -184,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
      * TODO: call this function when successfully logged in
      */
     public void showBrowseListView () {
-        Intent intent = new Intent(this, BrowseListActivity.class);
+        Intent intent = new Intent(this, BrowseViewActivity.class);
         startActivity(intent);
         finish();
     }
