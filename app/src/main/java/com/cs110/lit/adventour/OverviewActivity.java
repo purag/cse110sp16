@@ -3,15 +3,9 @@ package com.cs110.lit.adventour;
 /**
  * Created by achen on 5/7/16.
  */
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 public class OverviewActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbarLayout = null;
@@ -22,17 +16,17 @@ public class OverviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tour_overview);
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+        //ActionBar actionBar = getSupportActionBar();
+        //actionBar.setDisplayHomeAsUpEnabled(true);
 
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(getResources().getString(R.string.text_content));
+        //collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        //collapsingToolbarLayout.setTitle(getResources().getString(R.string.text_content));
 
         //dynamicToolbarColor();
-        toolbarTextAppernce();
-        Intent intent = getIntent();
+        //toolbarTextAppernce();
+        //Intent intent = getIntent();
     }
 
     /*
@@ -50,9 +44,10 @@ public class OverviewActivity extends AppCompatActivity {
         });
     }
 */
+    /*
     private void toolbarTextAppernce() {
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.collapsedappbar);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.expandedappbar);
     }
-
+*/
 }
