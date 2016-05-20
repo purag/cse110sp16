@@ -28,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     /**
      * Attributes for action bar
@@ -75,7 +76,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
     private GoogleMap mMap;
     private Geocoder geocoder;
-    private HashMap<Marker, Integer> markerTable = null;
+    private HashMap<String, Integer> markerTable = null;
 
 
 
@@ -320,6 +321,53 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         mMap = googleMap;
 
         mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
+        {
+            @Override public void onInfoWindowClick(Marker marker) {
+                Integer tourId;
+                System.out.println("Clicked" + marker.getId());
+                if(markerTable == null){
+                    System.out.println("No marker table");
+                    return;
+                }
+                else{
+                    tourId = markerTable.get(marker.getId());
+
+                    //check validity of ID
+                    if(tourId == null){
+                        System.out.println("Tour Id not found");
+                        return;
+                    }
+                    else{
+                        System.out.println("Tour Id is: " + tourId);
+                        //launch activity
+                    }
+
+                }
+            }
+        });
+
+
+        /* set up refresh and zoom buttons */
+        ImageButton zoomIn = (ImageButton)findViewById(R.id.zoomIn);
+        ImageButton zoomOut = (ImageButton)findViewById(R.id.zoomOut);
+
+        zoomIn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                mMap.animateCamera(CameraUpdateFactory.zoomIn());
+            }
+        });
+
+        zoomOut.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                mMap.animateCamera(CameraUpdateFactory.zoomOut());
+            }
+        });
+
 
         //TODO: Need a better way to do this check (or dont even bother to check this at all)
         if (lastKnownLocation == null) {
@@ -356,14 +404,18 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 System.out.println("success\n");
+                markerTable = new HashMap<String, Integer>();
                 //display them
                 for (Tour t : tours) {
                     // System.out.println("Let's drop some pins");
                     LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
-                    mMap.addMarker(new MarkerOptions().position(location)
+
+                    Marker newMarker = mMap.addMarker(new MarkerOptions().position(location)
                             .title(t.getTitle())
                             .snippet(t.getSummary())
                             .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+                    markerTable.put(newMarker.getId(), t.getTour_id());
+
                 }
             }
             @Override
@@ -402,29 +454,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
     }
 
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        Integer tourId;
-        System.out.print("Clicked\n" + marker.getId());
-        if(markerTable == null){
-            return;
-        }
-        else{
-            tourId = markerTable.get(marker);
-
-            //check validity of ID
-            if(tourId == null){
-                return;
-            }
-            else{
-                System.out.print("Tour Id is: " + tourId);
-                //launch activity
-            }
-
-        }
-
-
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
