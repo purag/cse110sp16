@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 
+import com.cs110.lit.adventour.model.ActiveTourCheckpoint;
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,6 +50,10 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
 
     // Fragment Manager for checkpoint displays.
     public final FragmentManager fManager = getSupportFragmentManager();
+
+    //Make a list of active checkpoints
+    private ArrayList<ActiveTourCheckpoint> activePointList =
+            new ArrayList<ActiveTourCheckpoint>();
 
 
     @Override
@@ -162,10 +167,72 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
     /* Function called when everything with settings is kosher. Start setting up markers. */
     @Override
     public void onSuccess(Tour tour) {
+
+        //access the list of checkpoints
+        ArrayList<Checkpoint> checkpointList = tour.getListOfCheckpoints();
+
+        // go through all the checkpoints and make them activeCheckpoints
+        for(Checkpoint points : checkpointList) {
+
+            //Make the checkpoint list a list of active checkpoints
+            activePointList.add(new ActiveTourCheckpoint(points.getCheckpoint_id(),
+                    points.getLatitude(), points.getLongitude(), points.getTour_id(),
+                    points.getTitle(), points.getDescription(),
+                    points.getPhoto(),
+                    points.getOrder_num(),false, false, false,true));
+            ; //bool startPoint, bool FinishPoint, bool Finished, bool Upcoming
+        }
+
+        //Now go back and set the first and last activeCheckpoints as the start and finish
+        //point
+        (activePointList.get(0)).setStartPoint(true);
+        (activePointList.get(activePointList.size() - 1)).setFinishPoint(true);
+
+
         // Define a listener that responds to location updates
         locationListener = new LocationListener() {
+
+            /*ADDED BY LIZ */
+            // Called when a new location is found by the network location provider.
             public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
+
+                //get the location's current coordinates
+                double currentLat = location.getLatitude();
+                double currentLong= location.getLongitude();
+
+                // declare an array to store the distance in between
+                float[] results = new float[4];
+
+                //Check to see if we are near the next checkpoint
+                //results[0] will store the distance between the two
+                location.distanceBetween(currentLat,currentLong, (activePointList.get(0)).getLatitude(),
+                        (activePointList.get(0)).getLongitude(), results);
+
+                //TODO: figure out which distance we need to be away from to get a notification
+                if(results[0] < LOCATION_REFRESH_DISTANCE &&
+                        !((activePointList.get(0)).getReachedPoint())){
+
+                    //notify the user they are approaching a checkpoint
+                    System.out.println("Suh' dude you're near " +
+                            (activePointList.get(0)).getTitle() +
+                            ". It's getting LIT fam! ");
+
+                    //reset the distance
+                    results[0] = 0;
+
+                    //mark checkpoint as visited
+                    //Technically this is a waste if i'm deleting it after
+                    (activePointList.get(0)).setReachedPoint(true);
+                    (activePointList.get(0)).setuUpcomingPoint(false);
+
+                    //removing the checkpoint from the front of the list
+                    activePointList.remove(0);
+
+                }
+
+
+
+
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -194,7 +261,6 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
         //        lastKnownLocation.getLongitude()));
 
 
-        ArrayList<Checkpoint> checkpointList = tour.getListOfCheckpoints();
         // Create lines.
         PolylineOptions lineOptions = new PolylineOptions();
 
