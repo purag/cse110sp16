@@ -159,6 +159,9 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                TourTitle.clear();
+                TourDescription.clear();
+                imageId.clear();
                 GetNearbyToursForList(lastKnownLocation);
                 refreshLayout.setRefreshing(false);
             }
@@ -197,7 +200,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitle, TourDescription, imageId);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
