@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.cs110.lit.adventour.model.Tour;
@@ -169,18 +170,22 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         this.TourDescription.add("Test object");
         this.imageId.add(R.drawable.santa_cruz_test);
 
-        GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        if ( lastKnownLocation != null) {
+            GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
         /* Allow user to refresh the list */
-        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                refreshLayout.setRefreshing(false);
-            }
-        });
-
+            final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
+            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                    refreshLayout.setRefreshing(false);
+                }
+            });
+        } else {
+            Toast.makeText(BrowseViewActivity.this, "Enter a location... avoiding null thing for now", Toast.LENGTH_SHORT).show();
+            System.out.println("NULL LOCATION");
+        }
         /* Try for the search */
         handleIntent(getIntent());
     }
