@@ -8,7 +8,7 @@ public class Checkpoint {
 	
 	private int checkpoint_id;
 	private double checkpoint_lat;
-	private double checkpoint_lon;
+	private double checkpoint_lng;
 	private int tour_id;
 	private String title;
 	private String description;
@@ -19,11 +19,11 @@ public class Checkpoint {
     public Checkpoint() { }
 
     // Intializer Constructor
-    public Checkpoint(int checkpoint_id, double checkpoint_lat, double checkpoint_lon, int tour_id,
+    public Checkpoint(int checkpoint_id, double checkpoint_lat, double checkpoint_lng, int tour_id,
 					  String title, String description, String photo, int order_num) {
         this.checkpoint_id = checkpoint_id;
         this.checkpoint_lat = checkpoint_lat;
-		this.checkpoint_lon = checkpoint_lon;
+		this.checkpoint_lng = checkpoint_lng;
         this.tour_id = tour_id;
         this.title = title;
         this.description = description;
@@ -42,7 +42,7 @@ public class Checkpoint {
 	}
 
 	public void setLongitude (double lon) {
-		this.checkpoint_lon = lon;
+		this.checkpoint_lng = lon;
 	}
 	
 	public void setTour_id(int tour_id){
@@ -75,7 +75,7 @@ public class Checkpoint {
 	   return checkpoint_lat;
 	}
 
-	public double getLongitude() { return checkpoint_lon; }
+	public double getLongitude() { return checkpoint_lng; }
 	
 	public int getTour_id(){
 	   return tour_id;
