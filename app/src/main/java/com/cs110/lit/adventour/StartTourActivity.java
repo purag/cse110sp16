@@ -247,14 +247,15 @@ public class StartTourActivity extends FragmentActivity implements OnMapReadyCal
         // Failed requesting tour, silden
         if(tour == null)
             return ;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                    LOCATION_REFRESH_DISTANCE, locationListener);
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, locationListener);
+            String locationNetworkProvider = LocationManager.GPS_PROVIDER;
 
-        String locationNetworkProvider = LocationManager.GPS_PROVIDER;
-
-        // Return could be null but addMarkerAtMyLocation checks for this.
-        Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+            // Return could be null but addMarkerAtMyLocation checks for this.
+            Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        }
 
         ////----------- display the map with marker on current location -----------//
         //addMarkerAtMyLocation(new LatLng(lastKnownLocation.getLatitude(),
