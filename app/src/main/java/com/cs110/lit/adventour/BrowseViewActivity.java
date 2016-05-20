@@ -159,10 +159,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                TourTitle.clear();
-                TourDescription.clear();
-                imageId.clear();
-                GetNearbyToursForList(lastKnownLocation);
+                RefreshListView();
                 refreshLayout.setRefreshing(false);
             }
         });
@@ -262,6 +259,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 return true;
             case R.id.action_refresh:
                 // refresh
+                RefreshListView();
                 return true;
             case R.id.action_help:
                 // help action
@@ -269,6 +267,13 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void RefreshListView() {
+        TourTitle.clear();
+        TourDescription.clear();
+        imageId.clear();
+        GetNearbyToursForList(lastKnownLocation);
     }
 
     //-------------------Functions related to navigation stuff ----------------//
