@@ -32,7 +32,6 @@ public class OverviewActivity extends AppCompatActivity {
         //get the tour id entered, -1 for bad input
         Intent intent = getIntent();
         final int tourID = intent.getIntExtra(TOUR_ID, -1);
-        System.out.println("tour ID: "+ tourID);
         DB.getTourById(tourID, this, new DB.Callback<Tour>() {
             @Override
             public void onSuccess(Tour tour) {
@@ -95,5 +94,6 @@ public class OverviewActivity extends AppCompatActivity {
         CheckpointListAdapter adapter = new CheckpointListAdapter(checkpoints);
         checkpointList.setAdapter(adapter);
         checkpointList.setLayoutManager(new LinearLayoutManager(this));
+
     }
 }
