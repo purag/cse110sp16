@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -42,8 +43,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 
-public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     /**
      * Attributes for action bar
@@ -71,6 +74,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private String locationNetworkProvider;
 
     private GoogleMap mMap;
+    private Geocoder geocoder;
+    private HashMap<Marker, Integer> markerTable = null;
 
 
 
@@ -247,6 +252,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.action_search:
+
                 // search action
                 return true;
             case R.id.action_map_view:
@@ -393,6 +399,30 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             // TODO Auto-generated method stub
             return null;
         }
+
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Integer tourId;
+        System.out.print("Clicked\n" + marker.getId());
+        if(markerTable == null){
+            return;
+        }
+        else{
+            tourId = markerTable.get(marker);
+
+            //check validity of ID
+            if(tourId == null){
+                return;
+            }
+            else{
+                System.out.print("Tour Id is: " + tourId);
+                //launch activity
+            }
+
+        }
+
 
     }
 
