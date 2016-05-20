@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -43,9 +44,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.List;
 
 public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
@@ -64,6 +67,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private final ArrayList<String> TourTitle = new ArrayList<>();
     private final ArrayList<String> TourDescription = new ArrayList<>();
     private final ArrayList<Integer> imageId = new ArrayList<>();
+    private final ArrayList<Integer> TourID = new ArrayList<>();
+    //TODO: make a list : ArrayList<int> TourId..
 
 
     /**
@@ -75,9 +80,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private String locationNetworkProvider;
 
     private GoogleMap mMap;
-    private Geocoder geocoder;
     private HashMap<String, Integer> markerTable = null;
-
 
 
     /**
@@ -89,10 +92,17 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
      */
     SharedPreferences.Editor editor;
 
+    /**
+     * Attributes related to search query
+     */
+    private String searchQuery;
+    private Address searchLocation;
+
 
     ////////////////////////////////////////////////////////////////
     /////// ------------ Functions Start HERE ----------------//////
     ////////////////////////////////////////////////////////////////
+
     /**
      * This is onCreate
      * @param savedInstanceState
@@ -108,7 +118,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
 
         // create list view
-        list = (ListView)findViewById(R.id.browse_list);
+        list = (ListView) findViewById(R.id.browse_list);
 
 
         // ---------- Navigation Stuff --------------//
@@ -121,7 +131,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        prefs =  getApplicationContext().getSharedPreferences("Login", 0);
+        prefs = getApplicationContext().getSharedPreferences("Login", 0);
         editor = prefs.edit();
 
         // Get the user information, and show it in the navigation title
@@ -135,6 +145,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         // --------- Get Location --------------//
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+
 
         // check permission
         //check fine
@@ -158,33 +169,68 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         this.TourDescription.add("Test object");
         this.imageId.add(R.drawable.santa_cruz_test);
 
-        GetNearbyToursForList(lastKnownLocation);
+        GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
         /* Allow user to refresh the list */
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                GetNearbyToursForList(lastKnownLocation);
+                RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                 refreshLayout.setRefreshing(false);
             }
         });
 
+        /* Try for the search */
+        handleIntent(getIntent());
     }
 
-    private void GetNearbyToursForList(Location myLocation) {
+    ////////////////////////////////////////////////////////
+    /////////----- Code Handles Search --------------///////
+    ///////////////////////////////////////////////////////
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            searchQuery = intent.getStringExtra(SearchManager.QUERY);
+            // Do work using string
+            searchLocation = getLocationFromAddress(searchQuery);
+            RefreshView(searchLocation.getLatitude(), searchLocation.getLongitude());
+        }
+    }
+
+    public Address getLocationFromAddress(String strAddress) {
+        Geocoder coder = new Geocoder(this);
+        List<Address> address;
+        try {
+            address = coder.getFromLocationName(strAddress, 5);
+            return address.get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    ///////////////////////////////////////////////////////////
+    ///-----------THIS IS FOR LIST VIEW -----------------///
+    //////////////////////////////////////////////////////////
+    private void GetNearbyToursForList(double latitude, double longitude) {
         //grab data
         double testLatitude = 33;
         double testLongitude = -117;
         double testDist = 5000;
         int testLim = 10;
 
-        DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
-        //DB.getToursNearLoc(myLocation.getLatitude(), myLocation.getLongitude(), 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        //DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(latitude, longitude, 50, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
-            public void onSuccess(ArrayList<Tour> tours){
+            public void onSuccess(ArrayList<Tour> tours) {
                 //get the tours
-                for (int i = 0; i< tours.size(); i++) {
+                for (int i = 0; i < tours.size(); i++) {
                     if (tours.get(i).getTitle() != null)
                         TourTitle.add(tours.get(i).getTitle());
                     else
@@ -194,21 +240,22 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                     else
                         TourDescription.add("There is no summary available");
                     //if (tours.get(i).getImage() != null)
-                      //  imageId.add(tours.get(i).getImage());
+                    //  imageId.add(tours.get(i).getImage());
                     //else
                     imageId.add(R.drawable.logo_400);
+                    TourID.add(new Integer(tours.get(i).getTour_id()));
                 }
 
                 // create list items
                 CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitle, TourDescription, imageId);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
                         //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
-                        showOverviewView();
+                        showOverviewView(TourID.get(+position));
+
                     }
                 });
             }
@@ -231,7 +278,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)menu.findItem(R.id.action_search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         // Configure the search info and add any event listeners...
@@ -267,6 +314,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 return true;
             case R.id.action_refresh:
                 // refresh
+                RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                 return true;
             case R.id.action_help:
                 // help action
@@ -307,9 +355,27 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
      * Show overview of a tour when click list item
      * TODO: Send data to overview activity
      */
-    public void showOverviewView() {
+    public void showOverviewView(Integer tourID) {
         Intent intent = new Intent(this, OverviewActivity.class);
+        intent.putExtra(OverviewActivity.TOUR_ID, tourID.intValue());
         startActivity(intent);
+    }
+
+
+    /**
+     * Function that handles all the data refresh
+     * @param latitude
+     * @param longitude
+     */
+    private void RefreshView(double latitude, double longitude) {
+        TourTitle.clear();
+        TourDescription.clear();
+        imageId.clear();
+        // refresh List
+        GetNearbyToursForList(latitude, longitude);
+        // refresh Map
+        LatLng searchLatLng = new LatLng(latitude, longitude);
+        displayNearbyToursInMap(searchLatLng, mMap);
     }
 
 
@@ -321,26 +387,24 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         mMap = googleMap;
 
         mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
-        {
-            @Override public void onInfoWindowClick(Marker marker) {
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
                 Integer tourId;
                 System.out.println("Clicked" + marker.getId());
-                if(markerTable == null){
+                if (markerTable == null) {
                     System.out.println("No marker table");
                     return;
-                }
-                else{
+                } else {
                     tourId = markerTable.get(marker.getId());
 
                     //check validity of ID
-                    if(tourId == null){
+                    if (tourId == null) {
                         System.out.println("Tour Id not found");
                         return;
-                    }
-                    else{
+                    } else {
                         System.out.println("Tour Id is: " + tourId);
-                        //launch activity
+                        showOverviewView(tourId);
                     }
 
                 }
@@ -349,10 +413,10 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
 
         /* set up refresh and zoom buttons */
-        ImageButton zoomIn = (ImageButton)findViewById(R.id.zoomIn);
-        ImageButton zoomOut = (ImageButton)findViewById(R.id.zoomOut);
+        ImageButton zoomIn = (ImageButton) findViewById(R.id.zoomIn);
+        ImageButton zoomOut = (ImageButton) findViewById(R.id.zoomOut);
 
-        zoomIn.setOnClickListener(new View.OnClickListener(){
+        zoomIn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -360,7 +424,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             }
         });
 
-        zoomOut.setOnClickListener(new View.OnClickListener(){
+        zoomOut.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -368,6 +432,17 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             }
         });
 
+        //check fine
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            return;
+        }
+        //check coarse
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_REQUEST_CODE);
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
 
         //TODO: Need a better way to do this check (or dont even bother to check this at all)
         if (lastKnownLocation == null) {
@@ -375,10 +450,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             ////----------- display the map with marker on current location -----------//
             // Add a marker in current location, and move the camera.
             LatLng myLocation = new LatLng(33.812, -117.919);
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-            //googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
-
             //grab data
             displayNearbyToursInMap(myLocation, mMap);
         } else {
@@ -386,21 +457,20 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             ////----------- display the map with marker on current location -----------//
             // Add a marker in current location, and move the camera.
             LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
 
             //grab data
             displayNearbyToursInMap(myLocation, mMap);
         }
     }
 
-
     private void displayNearbyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+        if (mMap == null) return;
+        mMap.clear();
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
 
         System.out.println("attempting to grab data\n");
-        DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 5000.0, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 50, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 System.out.println("success\n");

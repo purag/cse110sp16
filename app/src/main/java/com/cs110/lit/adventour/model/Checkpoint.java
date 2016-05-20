@@ -64,6 +64,8 @@ public class Checkpoint {
 	public void setOrder_num(int order_num){
 	   this.order_num = order_num;
 	}
+
+
 	
 	/* Public Getters */
 	
