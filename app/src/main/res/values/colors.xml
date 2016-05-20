@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#0c1f7b</color>
     <color name="colorSecondary">#8dc96f</color>
     <color name="colorSecondaryDark">#0e8a57</color>
+    <color name="colorTertiary">#cb7e15</color>
+    <color name="colorTertiaryDark">#a66205</color>
     <color name="colorAccentOrange">#ff8f1a</color>
     <color name="colorAccentOrangeTrans">#dfff8f1a</color>
     <color name="login_bg_trans">#4F000000</color>
