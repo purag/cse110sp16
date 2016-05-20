@@ -64,6 +64,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private final ArrayList<String> TourTitle = new ArrayList<>();
     private final ArrayList<String> TourDescription = new ArrayList<>();
     private final ArrayList<Integer> imageId = new ArrayList<>();
+    private final ArrayList<Integer> TourID = new ArrayList<>();
+    //TODO: make a list : ArrayList<int> TourId..
 
 
     /**
@@ -228,6 +230,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                       //  imageId.add(tours.get(i).getImage());
                     //else
                     imageId.add(R.drawable.logo_400);
+                    TourID.add(new Integer(tours.get(i).getTour_id()));
                 }
 
                 // create list items
@@ -238,7 +241,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
                         //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
-                        showOverviewView();
+                        showOverviewView(TourID.get(+position));
+
                     }
                 });
             }
@@ -348,8 +352,9 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
      * Show overview of a tour when click list item
      * TODO: Send data to overview activity
      */
-    public void showOverviewView() {
+    public void showOverviewView(Integer tourID) {
         Intent intent = new Intent(this, OverviewActivity.class);
+        intent.putExtra(OverviewActivity.TOUR_ID, tourID.intValue() );
         startActivity(intent);
     }
 
