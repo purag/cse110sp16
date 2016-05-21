@@ -164,6 +164,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
         if(lastKnownLocation == null) {
             lastKnownLocation = new Location("");
+            lastKnownLocation.setLatitude(37);
             lastKnownLocation.setLongitude(-117);
         }
 
