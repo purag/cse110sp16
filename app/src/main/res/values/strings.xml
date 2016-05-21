@@ -32,7 +32,6 @@
     <!-- Strings related to the tour overview view -->
     <string name="text_content">filler text </string>
 
-
     <!-- Navigation drawer strings -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
