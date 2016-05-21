@@ -8,13 +8,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <ImageView
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:adjustViewBounds="true"
-            android:src="@mipmap/ic_launcher"
-            android:clickable="false" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Click To View"
+            android:id="@+id/textView" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
