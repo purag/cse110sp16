@@ -47,7 +47,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.List;
 
 public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -162,12 +161,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         // get the local location
         lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
-        // ----------- TEST CODE ------------//
-        // TODO: need more data in the database, and delete this code after we have enought data in the data base
-        // added some test vaiable just for testing!!
-        this.TourTitle.add("Garfield");
-        this.TourDescription.add("Test object");
-        this.imageId.add(R.drawable.santa_cruz_test);
 
         GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
@@ -219,13 +212,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     ///-----------THIS IS FOR LIST VIEW -----------------///
     //////////////////////////////////////////////////////////
     private void GetNearbyToursForList(double latitude, double longitude) {
-        //grab data
-        double testLatitude = 33;
-        double testLongitude = -117;
-        double testDist = 5000;
-        int testLim = 10;
-
-        //DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
         DB.getToursNearLoc(latitude, longitude, 50, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
