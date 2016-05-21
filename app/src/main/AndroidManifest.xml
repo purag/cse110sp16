@@ -48,18 +48,14 @@
         <activity
 
             android:name=".BrowseViewActivity"
-<<<<<<< HEAD
             android:label="@string/app_name">
         </activity>
 
         <!-- Search results activity -->
         <activity android:name=".SearchResultsActivity"
             android:parentActivityName=".BrowseViewActivity" >
-
-=======
             android:label="@string/app_name"
             android:launchMode="singleTop">
->>>>>>> 1ae77f0b6442c0f2ce836640c0cf29e514d8fb0a
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
