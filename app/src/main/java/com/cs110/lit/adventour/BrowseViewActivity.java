@@ -396,6 +396,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         TourTitle.clear();
         TourDescription.clear();
         imageId.clear();
+        TourID.clear();
+        TourUsers.clear();
         // refresh List
         GetNearbyToursForList(latitude, longitude);
         // refresh Map
