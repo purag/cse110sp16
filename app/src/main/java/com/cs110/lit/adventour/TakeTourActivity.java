@@ -242,6 +242,9 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
                     } else if (checkpointList.get(checkpointList.size() - 1) == points){
                         endPoint = true;
                     }
+                    else{
+                        startPoint = false;
+                    }
                     LatLng latLng = new LatLng(points.getLatitude(), points.getLongitude());
                     addMarkerAtMyLocation(latLng,points,startPoint,endPoint);
                     lineOptions.add(latLng);
