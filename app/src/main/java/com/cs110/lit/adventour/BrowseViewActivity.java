@@ -162,6 +162,11 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
         // get the local location
         lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        if(lastKnownLocation == null) {
+            lastKnownLocation = new Location("");
+            lastKnownLocation.setLongitude(-117);
+        }
+
 
         // ----------- TEST CODE ------------//
         // TODO: need more data in the database, and delete this code after we have enought data in the data base
