@@ -15,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cs110.lit.adventour.model.User;
+
 import java.util.ArrayList;
 
 public class CustomList extends ArrayAdapter<String>{
@@ -23,14 +25,16 @@ public class CustomList extends ArrayAdapter<String>{
     private final ArrayList<String> TourTitle;
     private final ArrayList<String> TourDescription;
     private final ArrayList<Integer> imageId;
+    private final ArrayList<User> TourUsers;
 
-    public CustomList(Activity context,ArrayList<String> TourTitle, ArrayList<String> TourDescription, ArrayList<Integer> imageId)
+    public CustomList(Activity context,ArrayList<String> TourTitle, ArrayList<String> TourDescription, ArrayList<Integer> imageId, ArrayList<User> TourUsers)
     {
         super(context, R.layout.list_single, TourTitle);
         this.context = context;
         this.TourTitle = TourTitle;
         this.TourDescription = TourDescription;
         this.imageId = imageId;
+        this.TourUsers = TourUsers;
 
     }
 
@@ -38,13 +42,18 @@ public class CustomList extends ArrayAdapter<String>{
     public View getView(int position, View view, ViewGroup parent) {
 
         LayoutInflater inflater = context.getLayoutInflater();
-        View rowView= inflater.inflate(R.layout.list_single, null, true);
+        View rowView = inflater.inflate(R.layout.list_single, null, true);
+
+        // list single view items (view)
+        TextView userName = (TextView) rowView.findViewById(R.id.list_user_name);
 
         TextView txtTitle = (TextView) rowView.findViewById(R.id.list_txt_title);
         TextView txtDescription = (TextView) rowView.findViewById(R.id.list_txt_description);
 
         ImageView imageView = (ImageView) rowView.findViewById(R.id.list_img);
 
+        // Set list item contents
+        userName.setText(TourUsers.get(position).getUser_name());
         txtTitle.setText(TourTitle.get(position));
         Typeface customFont = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
         txtTitle.setTypeface(customFont);

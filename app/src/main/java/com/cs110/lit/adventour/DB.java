@@ -123,6 +123,46 @@ public class DB {
     }
 
     /**
+     * Fetch a specific user by its ID from the database
+     * @param user_id
+     * @param context
+     * @param userCallback
+     */
+    public static void getUserById (int user_id, Context context, final Callback<User> userCallback) {
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        String reqUrl = base + "users/" + user_id;
+
+         /* Prepare the request for the JSON-formatted response text. */
+        JsonObjectRequest req = new JsonObjectRequest(reqUrl, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                User user = null;
+                try {
+                    /* Using the tour data and checkpoints ArrayList, instantiate a tour. */
+                    user = new User(
+                            response.getInt("user_id"),
+                            response.getString("user_name"),
+                            ""
+                    );
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                /* Delegate to the callback. */
+                userCallback.onSuccess(user);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("Error with user request");
+            }
+        });
+
+        /* Actually make the request. */
+        requestQueue.add(req);
+    }
+
+    /**
      * Fetch a specific tour by its ID from the database.
      *
      * @param id the ID of the tour to fetch
