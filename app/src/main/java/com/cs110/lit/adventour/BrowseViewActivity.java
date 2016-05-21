@@ -36,6 +36,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.cs110.lit.adventour.model.Tour;
+import com.cs110.lit.adventour.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -48,10 +49,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.List;
 
 public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+
+    private Context thisActivity = this;
 
     /**
      * Attributes for action bar
@@ -69,6 +71,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private final ArrayList<String> TourDescription = new ArrayList<>();
     private final ArrayList<Integer> imageId = new ArrayList<>();
     private final ArrayList<Integer> TourID = new ArrayList<>();
+    private final ArrayList<User> TourUsers = new ArrayList<>();
     //TODO: make a list : ArrayList<int> TourId..
 
 
@@ -169,13 +172,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         }
 
 
-        // ----------- TEST CODE ------------//
-        // TODO: need more data in the database, and delete this code after we have enought data in the data base
-        // added some test vaiable just for testing!!
-        this.TourTitle.add("Garfield");
-        this.TourDescription.add("Test object");
-        this.imageId.add(R.drawable.santa_cruz_test);
-
         if ( lastKnownLocation != null) {
             GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
@@ -230,35 +226,49 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     ///-----------THIS IS FOR LIST VIEW -----------------///
     //////////////////////////////////////////////////////////
     private void GetNearbyToursForList(double latitude, double longitude) {
-        //grab data
-        double testLatitude = 33;
-        double testLongitude = -117;
-        double testDist = 5000;
-        int testLim = 10;
 
-        //DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
-        DB.getToursNearLoc(latitude, longitude, 50, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(latitude, longitude, 10, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 //get the tours
                 for (int i = 0; i < tours.size(); i++) {
-                    if (tours.get(i).getTitle() != null)
-                        TourTitle.add(tours.get(i).getTitle());
+                    final Tour tour = tours.get(i);
+                    //SetTourInfoForListView(tour);
+                    if (tour.getTitle() != null)
+                        TourTitle.add(tour.getTitle());
                     else
                         TourTitle.add("Unknown");
-                    if (tours.get(i).getSummary() != null)
-                        TourDescription.add(tours.get(i).getSummary());
+                    if (tour.getSummary() != null)
+                        TourDescription.add(tour.getSummary());
                     else
                         TourDescription.add("There is no summary available");
                     //if (tours.get(i).getImage() != null)
                     //  imageId.add(tours.get(i).getImage());
                     //else
                     imageId.add(R.drawable.logo_400);
-                    TourID.add(new Integer(tours.get(i).getTour_id()));
+                    TourID.add(new Integer(tour.getTour_id()));
+                    User newUser = new User(10, "Sean", "a@b");
+                    TourUsers.add(newUser);
+                    //System.out.println(newUser.getUser_name());
+
+//                    DB.getUserById(tour.getUser_id(), thisActivity, new DB.Callback<User>() {
+//                        @Override
+//                        public void onSuccess(User user) {
+//                            TourUsers.add(user);
+//                            System.out.println(user.getUser_name());
+//                        }
+//
+//                        @Override
+//                        public void onFailure(User uesr) {
+//                            User newUser = new User(10, "Sean", "a@b");
+//                            TourUsers.add(newUser);
+//                            System.out.println("On failure happened\n");
+//                        }
+//                    });
                 }
 
                 // create list items
-                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitle, TourDescription, imageId);
+                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitle, TourDescription, imageId, TourUsers);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -271,6 +281,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 });
             }
 
+
             @Override
             public void onFailure(ArrayList<Tour> tours) {
                 System.out.println("On failure happened\n");
@@ -278,6 +289,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         });
 
     }
+
 
     /**
      * Create option menu
@@ -335,6 +347,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         }
     }
 
+
     //-------------------Functions related to navigation stuff ----------------//
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -361,6 +374,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
     /**
      * Show overview of a tour when click list item
@@ -473,6 +487,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             displayNearbyToursInMap(myLocation, mMap);
         }
     }
+
 
     private void displayNearbyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
         if (mMap == null) return;
