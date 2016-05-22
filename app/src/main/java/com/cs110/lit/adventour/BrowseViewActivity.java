@@ -123,24 +123,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
 
         // ---------- Navigation Stuff --------------//
-        navigationDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        navigationDrawer.addDrawerListener(navigationToggle);
-        navigationToggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        prefs = getApplicationContext().getSharedPreferences("Login", 0);
-        editor = prefs.edit();
-
-        // Get the user information, and show it in the navigation title
-        View header = navigationView.getHeaderView(0);
-        TextView name = (TextView) header.findViewById(R.id.nav_header_name);
-        TextView email = (TextView) header.findViewById(R.id.nav_header_email);
-        name.setText(prefs.getString("uname", "User"));
-        email.setText(prefs.getString("uemail", "user@example.com"));
+        NavigationSetUps();
 
 
         // --------- Get Location --------------//
@@ -184,6 +167,27 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
         /* Try for the search */
         handleIntent(getIntent());
+    }
+
+    private void NavigationSetUps() {
+        navigationDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        navigationDrawer.addDrawerListener(navigationToggle);
+        navigationToggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        prefs = getApplicationContext().getSharedPreferences("Login", 0);
+        editor = prefs.edit();
+
+        // Get the user information, and show it in the navigation title
+        View header = navigationView.getHeaderView(0);
+        TextView name = (TextView) header.findViewById(R.id.nav_header_name);
+        TextView email = (TextView) header.findViewById(R.id.nav_header_email);
+        name.setText(prefs.getString("uname", "User"));
+        email.setText(prefs.getString("uemail", "user@example.com"));
     }
 
     ////////////////////////////////////////////////////////
@@ -333,10 +337,12 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         int id = item.getItemId();
 
         if (id == R.id.nav_my_tours) {
-            // Handle the camera action
+
+
         } else if (id == R.id.nav_browse) {
 
         } else if (id == R.id.nav_log_out) {
+            // handle log out
             editor.clear();
             editor.commit();
             Intent login = new Intent(this, LoginActivity.class);
@@ -375,7 +381,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         TourDescriptions.clear();
         imageIds.clear();
         TourIDs.clear();
-        //TourUsers.clear();
+        TourUsers.clear();
         // refresh List
         GetNearbyToursForList(latitude, longitude);
         // refresh Map
