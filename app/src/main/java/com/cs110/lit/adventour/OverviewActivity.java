@@ -5,12 +5,18 @@ package com.cs110.lit.adventour;
  */
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cs110.lit.adventour.model.Checkpoint;
@@ -27,7 +33,15 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_tour_overview);
+//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
+//        if (getSupportActionBar() != null)
+//            getSupportActionBar().hide();
+
+        setSupportActionBar((Toolbar) findViewById(R.id.collapsing_toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //get the tour id entered, -1 for bad input
         Intent intent = getIntent();
@@ -60,7 +74,7 @@ public class OverviewActivity extends AppCompatActivity {
      */
     private void setTitle(String title) {
         CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) findViewById(R.id.tour_metadata_collapsing_toolbar);
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbar.setTitle(title);
     }
 
