@@ -5,21 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.location.LocationListener;
-import android.net.Uri;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.cs110.lit.adventour.model.ActiveTourCheckpoint;
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -36,7 +32,7 @@ import java.util.ArrayList;
 /**
  * Created by Izhikevich on 5/20/16.
  */
-public class TakeTourActivity extends FragmentActivity implements OnMapReadyCallback{
+public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     // Request Constant.
     private static final int LOCATION_REQUEST_CODE = 0;
@@ -52,15 +48,12 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
     private ArrayList<ActiveTourCheckpoint> activePointList =
             new ArrayList<ActiveTourCheckpoint>();
 
-    //private ImageButton listButton;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
+    public static final String TOUR_ID = "tour_id";
+    public static final String TOUR_TITLE = "tour_title";
     /* Tour Model Related */
     private int tourID = 7;
+    private String tourTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +65,10 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
 
         // for communication with the last/previews view
         Intent intent = getIntent();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        //get the tour id entered, -1 for bad input
+        tourID = intent.getIntExtra(TOUR_ID, -1);
+        tourTitle = intent.getStringExtra(TOUR_TITLE);
+        getSupportActionBar().setTitle(tourTitle);
 
     }
 
@@ -83,15 +77,6 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
         mMap = googleMap;
 
         mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
-
-        /*listButton = (ImageButton) findViewById(R.id.listButton);
-        listButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("I'm clicked");
-                showListView();
-            }
-        });*/
 
         ///// -------------- adding listener ---------------///
         // Acquire a reference to the system Location Manager
@@ -129,14 +114,14 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             return;
         }
-        System.out.println("got fine permission");
 
         //check coarse
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_REQUEST_CODE);
             return;
         }
-        System.out.println("got coarse permission");
+
+        mMap.setMyLocationEnabled(true);
 
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
 
@@ -145,12 +130,6 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
             ////----------- display the map with marker on current location -----------//
             // Add a marker in current location, and move the camera.
             LatLng myLocation = new LatLng(33.812, -117.919);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-            //mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
-
-            //print
-            System.out.println("Gee I'm trying\n");
 
             //grab data
             displayNearbyCheckpoints(myLocation, mMap);
@@ -159,43 +138,11 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
             ////----------- display the map with marker on current location -----------//
             // Add a marker in current location, and move the camera.
             LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in my location"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-
-            //print
-            System.out.println("Gee I'm trying\n");
 
             //grab data
             displayNearbyCheckpoints(myLocation, mMap);
         }
 
-
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        //show me what you got
-        int i = 0;
-        for (String s : permissions) {
-            System.out.println("at request permission result" + s + grantResults[i] + "\n");
-            i++;
-        }
-        System.out.println("Trying again");
-        onMapReady(mMap);
-        return;
-
-    }
-
-    /**
-     * load map action
-     */
-    public void showListView () {
-        Intent intent = new Intent(this, BrowseViewActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     private void displayNearbyCheckpoints(final LatLng myLocation, final GoogleMap mMap) {
@@ -245,6 +192,9 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
                     LatLng latLng = new LatLng(points.getLatitude(), points.getLongitude());
                     addMarkerAtMyLocation(latLng,points,startPoint,endPoint);
                     lineOptions.add(latLng);
+
+                    startPoint = false;
+                    endPoint = false;
                 }
 
                 // Draw the entire line.
@@ -335,6 +285,7 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
             mMap.addMarker(new MarkerOptions().position(latLng)
                     .title(point.getTitle())
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_start)));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
         }
         else if(endPoint){
             mMap.addMarker(new MarkerOptions().position(latLng)
@@ -348,48 +299,8 @@ public class TakeTourActivity extends FragmentActivity implements OnMapReadyCall
         }
 
         // zoom in to the current location in camera view
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
         System.err.println("The checkpoint you just added is at " + latLng);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Maps Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://com.cs110.lit.adventour/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Maps Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://com.cs110.lit.adventour/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
     }
 
 

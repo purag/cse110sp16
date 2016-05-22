@@ -22,6 +22,7 @@ public class OverviewActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbarLayout = null;
 
     public static final String TOUR_ID = "tour_id";
+    private int tourID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,7 @@ public class OverviewActivity extends AppCompatActivity {
 
         //get the tour id entered, -1 for bad input
         Intent intent = getIntent();
-        final int tourID = intent.getIntExtra(TOUR_ID, -1);
+        tourID = intent.getIntExtra(TOUR_ID, -1);
         DB.getTourById(tourID, this, new DB.Callback<Tour>() {
             @Override
             public void onSuccess(Tour tour) {
@@ -102,6 +103,8 @@ public class OverviewActivity extends AppCompatActivity {
      */
     public void showTakeTour (View view) {
         Intent intent = new Intent(this, TakeTourActivity.class);
+        intent.putExtra(TakeTourActivity.TOUR_ID, tourID);
+        intent.putExtra(TakeTourActivity.TOUR_TITLE,getSupportActionBar().getTitle());
         startActivity(intent);
         finish();
     }
