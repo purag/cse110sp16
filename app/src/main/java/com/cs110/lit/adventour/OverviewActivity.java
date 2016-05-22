@@ -3,12 +3,14 @@ package com.cs110.lit.adventour;
 /**
  * Created by achen on 5/7/16.
  */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.TextView;
 
 import com.cs110.lit.adventour.model.Checkpoint;
@@ -93,5 +95,14 @@ public class OverviewActivity extends AppCompatActivity {
         checkpointList.setAdapter(adapter);
         checkpointList.setLayoutManager(new LinearLayoutManager(this));
 
+    }
+
+    /**
+     * load map action
+     */
+    public void showTakeTour (View view) {
+        Intent intent = new Intent(this, TakeTourActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
