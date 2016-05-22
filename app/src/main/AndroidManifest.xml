@@ -34,7 +34,8 @@
         <!--added by Liz for TakeTour-->
         <activity
             android:name="com.cs110.lit.adventour.TakeTourActivity"
-            android:label="@string/title_activity_map">
+            android:label="@string/title_activity_map"
+            android:parentActivityName=".OverviewActivity">
         </activity>
 
         <!-- Browse View -->
