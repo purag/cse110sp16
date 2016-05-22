@@ -175,6 +175,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
         /* Allow user to refresh the list */
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
+        assert refreshLayout != null;
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -228,38 +229,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 //get the tours
                 for (int i = 0; i < tours.size(); i++) {
                     final Tour tour = tours.get(i);
-                    //SetTourInfoForListView(tour);
-                    if (tour.getTitle() != null)
-                        TourTitle.add(tour.getTitle());
-                    else
-                        TourTitle.add("Unknown");
-                    if (tour.getSummary() != null)
-                        TourDescription.add(tour.getSummary());
-                    else
-                        TourDescription.add("There is no summary available");
-                    //if (tours.get(i).getImage() != null)
-                    //  imageId.add(tours.get(i).getImage());
-                    //else
-                    imageId.add(R.drawable.logo_400);
-                    TourID.add(new Integer(tour.getTour_id()));
-                    User newUser = new User(10, "Sean", "a@b");
-                    TourUsers.add(newUser);
-                    //System.out.println(newUser.getUser_name());
-
-//                    DB.getUserById(tour.getUser_id(), thisActivity, new DB.Callback<User>() {
-//                        @Override
-//                        public void onSuccess(User user) {
-//                            TourUsers.add(user);
-//                            System.out.println(user.getUser_name());
-//                        }
-//
-//                        @Override
-//                        public void onFailure(User uesr) {
-//                            User newUser = new User(10, "Sean", "a@b");
-//                            TourUsers.add(newUser);
-//                            System.out.println("On failure happened\n");
-//                        }
-//                    });
+                    SetTourInfoForListView(tour);
                 }
 
                 // create list items
@@ -283,6 +253,40 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             }
         });
 
+    }
+
+    private void SetTourInfoForListView(Tour tour) {
+        if (tour.getTitle() != null)
+            TourTitle.add(tour.getTitle());
+        else
+            TourTitle.add("Unknown");
+        if (tour.getSummary() != null)
+            TourDescription.add(tour.getSummary());
+        else
+            TourDescription.add("There is no summary available");
+        //if (tours.get(i).getImage() != null)
+        //  imageId.add(tours.get(i).getImage());
+        //else
+        imageId.add(R.drawable.logo_400);
+        TourID.add(new Integer(tour.getTour_id()));
+        User newUser = new User(10, "Sean", "a@b");
+        TourUsers.add(newUser);
+        //System.out.println(newUser.getUser_name());
+
+//        DB.getUserById(tour.getUser_id(), this, new DB.Callback<User>() {
+//            @Override
+//            public void onSuccess(User user) {
+//                TourUsers.add(user);
+//                System.out.println(user.getUser_name());
+//            }
+//
+//            @Override
+//            public void onFailure(User uesr) {
+//                User newUser = new User(10, "Sean", "a@b");
+//                TourUsers.add(newUser);
+//                System.out.println("On failure happened\n");
+//            }
+//        });
     }
 
 
