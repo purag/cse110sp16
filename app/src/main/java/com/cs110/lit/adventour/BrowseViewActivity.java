@@ -179,7 +179,9 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             searchQuery = intent.getStringExtra(SearchManager.QUERY);
             searchLocation = getLocationFromAddress(searchQuery);
-            RefreshView(searchLocation.getLatitude(), searchLocation.getLongitude());
+            if (searchLocation != null) {
+                RefreshView(searchLocation.getLatitude(), searchLocation.getLongitude());
+            }
         }
     }
 
@@ -188,6 +190,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         List<Address> address;
         try {
             address = coder.getFromLocationName(strAddress, 5);
+            if (address.size() == 0)
+                return null;
             return address.get(0);
         } catch (IOException e) {
             e.printStackTrace();
