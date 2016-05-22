@@ -31,6 +31,12 @@
             android:label="@string/title_activity_map">
         </activity>
 
+        <!--added by Liz for TakeTour-->
+        <activity
+            android:name="com.cs110.lit.adventour.TakeTourActivity"
+            android:label="@string/title_activity_map">
+        </activity>
+
         <!-- Browse View -->
         <activity
             android:name=".BrowseViewActivity"
