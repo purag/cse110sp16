@@ -13,4 +13,5 @@
     <color name="whiteTrans">#BFFFFFFF</color>
     <color name="yellow">#e6a733</color>
     <color name="darkyellow">#472900</color>
+    <color name="transparent">#00000000</color>
 </resources>
