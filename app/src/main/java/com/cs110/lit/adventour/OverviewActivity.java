@@ -7,11 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cs110.lit.adventour.model.Checkpoint;
@@ -41,6 +38,7 @@ public class OverviewActivity extends AppCompatActivity {
                 ArrayList<Checkpoint> checkpoints = tour.getListOfCheckpoints();
 
                 setTitle(tourTitle);
+                getSupportActionBar().setTitle(tourTitle);
                 setSummaryCard(tourTitle, tourSummary);
                 loadBackdrop();
                 displayCheckpoints(checkpoints);
