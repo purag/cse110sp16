@@ -32,10 +32,10 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.cs110.lit.adventour.model.Tour;
+import com.cs110.lit.adventour.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -48,33 +48,25 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.List;
 
 public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-    /**
-     * Attributes for action bar
-     */
+    // Attributes for action bar
     private DrawerLayout navigationDrawer;
     private ActionBarDrawerToggle navigationToggle;
     private ViewFlipper viewFlipper;
 
 
-    /**
-     * Attributes for the list view
-     */
+    // Attributes for the list view
     ListView list;
-    private final ArrayList<String> TourTitle = new ArrayList<>();
-    private final ArrayList<String> TourDescription = new ArrayList<>();
-    private final ArrayList<Integer> imageId = new ArrayList<>();
-    private final ArrayList<Integer> TourID = new ArrayList<>();
-    //TODO: make a list : ArrayList<int> TourId..
+    private final ArrayList<String> TourTitles = new ArrayList<>();
+    private final ArrayList<String> TourDescriptions = new ArrayList<>();
+    private final ArrayList<Integer> imageIds = new ArrayList<>();
+    private final ArrayList<Integer> TourIDs = new ArrayList<>();
+    private final ArrayList<User> TourUsers = new ArrayList<>();
 
-
-    /**
-     * Attributes for location
-     */
+    // Attributes for location
     private static final int LOCATION_REQUEST_CODE = 0;
     private LocationManager locationManager;
     private Location lastKnownLocation;
@@ -84,18 +76,11 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private HashMap<String, Integer> markerTable = null;
 
 
-    /**
-     * To record that a user session has been registered.
-     */
+    // Attributes for log in
     SharedPreferences prefs;
-    /**
-     * The object in which we record the user's active session.
-     */
     SharedPreferences.Editor editor;
 
-    /**
-     * Attributes related to search query
-     */
+    // Attributes for search
     private String searchQuery;
     private Address searchLocation;
 
@@ -103,11 +88,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     ////////////////////////////////////////////////////////////////
     /////// ------------ Functions Start HERE ----------------//////
     ////////////////////////////////////////////////////////////////
-
-    /**
-     * This is onCreate
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,32 +101,12 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         // create list view
         list = (ListView) findViewById(R.id.browse_list);
 
-
         // ---------- Navigation Stuff --------------//
-        navigationDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        navigationDrawer.addDrawerListener(navigationToggle);
-        navigationToggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        prefs = getApplicationContext().getSharedPreferences("Login", 0);
-        editor = prefs.edit();
-
-        // Get the user information, and show it in the navigation title
-        View header = navigationView.getHeaderView(0);
-        TextView name = (TextView) header.findViewById(R.id.nav_header_name);
-        TextView email = (TextView) header.findViewById(R.id.nav_header_email);
-        name.setText(prefs.getString("uname", "User"));
-        email.setText(prefs.getString("uemail", "user@example.com"));
-
+        NavigationSetUps();
 
         // --------- Get Location --------------//
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
-
 
         // check permission
         //check fine
@@ -168,32 +128,42 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             lastKnownLocation.setLongitude(-117);
         }
 
-
-        // ----------- TEST CODE ------------//
-        // TODO: need more data in the database, and delete this code after we have enought data in the data base
-        // added some test vaiable just for testing!!
-        this.TourTitle.add("Garfield");
-        this.TourDescription.add("Test object");
-        this.imageId.add(R.drawable.santa_cruz_test);
-
-        if ( lastKnownLocation != null) {
-            GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
         /* Allow user to refresh the list */
-            final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
-            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                    refreshLayout.setRefreshing(false);
-                }
-            });
-        } else {
-            Toast.makeText(BrowseViewActivity.this, "Enter a location... avoiding null thing for now", Toast.LENGTH_SHORT).show();
-            System.out.println("NULL LOCATION");
-        }
+        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
+        assert refreshLayout != null;
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                refreshLayout.setRefreshing(false);
+            }
+        });
+
         /* Try for the search */
         handleIntent(getIntent());
+    }
+
+    private void NavigationSetUps() {
+        navigationDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        navigationDrawer.addDrawerListener(navigationToggle);
+        navigationToggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        prefs = getApplicationContext().getSharedPreferences("Login", 0);
+        editor = prefs.edit();
+
+        // Get the user information, and show it in the navigation title
+        View header = navigationView.getHeaderView(0);
+        TextView name = (TextView) header.findViewById(R.id.nav_header_name);
+        TextView email = (TextView) header.findViewById(R.id.nav_header_email);
+        name.setText(prefs.getString("uname", "User"));
+        email.setText(prefs.getString("uemail", "user@example.com"));
     }
 
     ////////////////////////////////////////////////////////
@@ -208,7 +178,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             searchQuery = intent.getStringExtra(SearchManager.QUERY);
-            // Do work using string
             searchLocation = getLocationFromAddress(searchQuery);
             RefreshView(searchLocation.getLatitude(), searchLocation.getLongitude());
         }
@@ -230,42 +199,25 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     ///-----------THIS IS FOR LIST VIEW -----------------///
     //////////////////////////////////////////////////////////
     private void GetNearbyToursForList(double latitude, double longitude) {
-        //grab data
-        double testLatitude = 33;
-        double testLongitude = -117;
-        double testDist = 5000;
-        int testLim = 10;
 
-        //DB.getToursNearLoc(testLatitude, testLongitude, testDist, testLim, this, new DB.Callback<ArrayList<Tour>>() {
-        DB.getToursNearLoc(latitude, longitude, 50, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursNearLoc(latitude, longitude, 10, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 //get the tours
                 for (int i = 0; i < tours.size(); i++) {
-                    if (tours.get(i).getTitle() != null)
-                        TourTitle.add(tours.get(i).getTitle());
-                    else
-                        TourTitle.add("Unknown");
-                    if (tours.get(i).getSummary() != null)
-                        TourDescription.add(tours.get(i).getSummary());
-                    else
-                        TourDescription.add("There is no summary available");
-                    //if (tours.get(i).getImage() != null)
-                    //  imageId.add(tours.get(i).getImage());
-                    //else
-                    imageId.add(R.drawable.logo_400);
-                    TourID.add(new Integer(tours.get(i).getTour_id()));
+                    final Tour tour = tours.get(i);
+                    SetTourInfoForListView(tour);
                 }
 
                 // create list items
-                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitle, TourDescription, imageId);
+                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
-                        showOverviewView(TourID.get(+position));
+                        //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitles.get(+position), Toast.LENGTH_SHORT).show();
+                        showOverviewView(TourIDs.get(+position));
 
                     }
                 });
@@ -278,6 +230,22 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         });
 
     }
+
+    private void SetTourInfoForListView(Tour tour) {
+        String tour_title = (tour.getTitle() != null) ? tour.getTitle() : "Unknown";
+        String tour_summary = (tour.getSummary() != null) ? tour.getSummary() : "There is no summary available";
+        User tour_user = (tour.getUser() != null) ? tour.getUser() : new User(0, "User X", "");
+
+        TourTitles.add(tour_title);
+        TourDescriptions.add(tour_summary);
+        TourUsers.add(tour_user);
+        TourIDs.add(tour.getTour_id());
+        //if (tours.get(i).getImage() != null)
+        //  imageIds.add(tours.get(i).getImage());
+        //else
+        imageIds.add(R.drawable.logo_400);
+    }
+
 
     /**
      * Create option menu
@@ -302,7 +270,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        System.out.println("selected an item: " + item.getItemId());
 
         if (navigationToggle.onOptionsItemSelected(item)) {
             return true;
@@ -335,6 +302,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         }
     }
 
+
     //-------------------Functions related to navigation stuff ----------------//
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -342,10 +310,12 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         int id = item.getItemId();
 
         if (id == R.id.nav_my_tours) {
-            // Handle the camera action
+
+
         } else if (id == R.id.nav_browse) {
 
         } else if (id == R.id.nav_log_out) {
+            // handle log out
             editor.clear();
             editor.commit();
             Intent login = new Intent(this, LoginActivity.class);
@@ -361,6 +331,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
     /**
      * Show overview of a tour when click list item
@@ -379,9 +350,11 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
      * @param longitude
      */
     private void RefreshView(double latitude, double longitude) {
-        TourTitle.clear();
-        TourDescription.clear();
-        imageId.clear();
+        TourTitles.clear();
+        TourDescriptions.clear();
+        imageIds.clear();
+        TourIDs.clear();
+        TourUsers.clear();
         // refresh List
         GetNearbyToursForList(latitude, longitude);
         // refresh Map
@@ -473,6 +446,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             displayNearbyToursInMap(myLocation, mMap);
         }
     }
+
 
     private void displayNearbyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
         if (mMap == null) return;
