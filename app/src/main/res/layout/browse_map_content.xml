@@ -15,7 +15,8 @@
         android:text="New Button"
         android:id="@+id/zoomIn"
         android:layout_above="@+id/zoomOut"
-        android:src="@drawable/plus"/>
+        android:src="@drawable/icon_zoom_in"
+        android:alpha="0.85" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -23,7 +24,8 @@
         android:id="@+id/zoomOut"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:src="@drawable/minus"/>
+        android:src="@drawable/icon_zoom_out"
+        android:alpha="0.85"/>
 
 
 </RelativeLayout>
