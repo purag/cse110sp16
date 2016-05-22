@@ -28,7 +28,7 @@ public class DB {
     /**
      * The base URL of the REST API service.
      */
-    private static String base = "http://107.170.197.108/";
+    private static String base = "http://api.adventour.tk/";
 
     /**
      * Private constructor -- enforces non-instantiability.
@@ -38,8 +38,8 @@ public class DB {
     /**
      * Register a user into the database.
      *
-     * @param email the email address of the user to authenticate
-     * @param password the encrypted password of the user to authenticate
+     * @param email the email address of the user to register
+     * @param password the encrypted password of the user to register
      * @param cb the callback object (implementing the onSuccess method)
      */
     public static void registerUser(final String username, final String email, final String password,
@@ -123,46 +123,6 @@ public class DB {
     }
 
     /**
-     * Fetch a specific user by its ID from the database
-     * @param user_id
-     * @param context
-     * @param userCallback
-     */
-    public static void getUserById (int user_id, Context context, final Callback<User> userCallback) {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        String reqUrl = base + "users/" + user_id;
-
-         /* Prepare the request for the JSON-formatted response text. */
-        JsonObjectRequest req = new JsonObjectRequest(reqUrl, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                User user = null;
-                try {
-                    /* Using the tour data and checkpoints ArrayList, instantiate a tour. */
-                    user = new User(
-                            response.getInt("user_id"),
-                            response.getString("user_name"),
-                            ""
-                    );
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                /* Delegate to the callback. */
-                userCallback.onSuccess(user);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("Error with user request");
-            }
-        });
-
-        /* Actually make the request. */
-        requestQueue.add(req);
-    }
-
-    /**
      * Fetch a specific tour by its ID from the database.
      *
      * @param id the ID of the tour to fetch
@@ -198,10 +158,16 @@ public class DB {
                         ));
                     }
 
+                    JSONObject user = response.getJSONObject("user");
+
                     /* Using the tour data and checkpoints ArrayList, instantiate a tour. */
                     t = new Tour(
                             response.getInt("tour_id"),
-                            response.getInt("user_id"),
+                            new User(
+                                    user.getInt("user_id"),
+                                    user.getString("user_name"),
+                                    ""
+                            ),
                             response.getString("tour_title"),
                             response.getString("tour_summary"),
                             response.getInt("tour_visibility") == 1,
@@ -249,9 +215,14 @@ public class DB {
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject tour = response.optJSONObject(i);
+                        JSONObject user = tour.getJSONObject("user");
                         tours.add(i, new Tour(
                                 tour.getInt("tour_id"),
-                                tour.getInt("user_id"),
+                                new User(
+                                        user.getInt("user_id"),
+                                        user.getString("user_name"),
+                                        ""
+                                ),
                                 tour.getString("tour_title"),
                                 tour.getString("tour_summary"),
                                 tour.getInt("tour_visibility") == 1,
