@@ -52,29 +52,21 @@ import java.util.List;
 
 public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-    /**
-     * Attributes for action bar
-     */
+    // Attributes for action bar
     private DrawerLayout navigationDrawer;
     private ActionBarDrawerToggle navigationToggle;
     private ViewFlipper viewFlipper;
 
 
-    /**
-     * Attributes for the list view
-     */
+    // Attributes for the list view
     ListView list;
     private final ArrayList<String> TourTitles = new ArrayList<>();
     private final ArrayList<String> TourDescriptions = new ArrayList<>();
     private final ArrayList<Integer> imageIds = new ArrayList<>();
     private final ArrayList<Integer> TourIDs = new ArrayList<>();
     private final ArrayList<User> TourUsers = new ArrayList<>();
-    //TODO: make a list : ArrayList<int> TourId..
 
-
-    /**
-     * Attributes for location
-     */
+    // Attributes for location
     private static final int LOCATION_REQUEST_CODE = 0;
     private LocationManager locationManager;
     private Location lastKnownLocation;
@@ -84,18 +76,11 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private HashMap<String, Integer> markerTable = null;
 
 
-    /**
-     * To record that a user session has been registered.
-     */
+    // Attributes for log in
     SharedPreferences prefs;
-    /**
-     * The object in which we record the user's active session.
-     */
     SharedPreferences.Editor editor;
 
-    /**
-     * Attributes related to search query
-     */
+    // Attributes for search
     private String searchQuery;
     private Address searchLocation;
 
@@ -103,11 +88,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     ////////////////////////////////////////////////////////////////
     /////// ------------ Functions Start HERE ----------------//////
     ////////////////////////////////////////////////////////////////
-
-    /**
-     * This is onCreate
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,15 +101,12 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         // create list view
         list = (ListView) findViewById(R.id.browse_list);
 
-
         // ---------- Navigation Stuff --------------//
         NavigationSetUps();
-
 
         // --------- Get Location --------------//
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
-
 
         // check permission
         //check fine
@@ -150,7 +127,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             lastKnownLocation.setLatitude(37);
             lastKnownLocation.setLongitude(-117);
         }
-
 
         GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
@@ -202,7 +178,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             searchQuery = intent.getStringExtra(SearchManager.QUERY);
-            // Do work using string
             searchLocation = getLocationFromAddress(searchQuery);
             RefreshView(searchLocation.getLatitude(), searchLocation.getLongitude());
         }
@@ -269,7 +244,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         //  imageIds.add(tours.get(i).getImage());
         //else
         imageIds.add(R.drawable.logo_400);
-        
     }
 
 
@@ -296,7 +270,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        System.out.println("selected an item: " + item.getItemId());
 
         if (navigationToggle.onOptionsItemSelected(item)) {
             return true;
