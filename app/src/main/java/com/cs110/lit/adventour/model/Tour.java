@@ -7,12 +7,12 @@ public class Tour {
 	/* Private member variables */
 	
 	private int tour_id;
-	private User user;
 	private String title;
 	private String summary;
 	private Boolean visibility;
 	private double starting_lat;
 	private double starting_lng;
+	private User user;
 
     private ArrayList<Checkpoint> listOfCheckpoints;
 
@@ -44,11 +44,11 @@ public class Tour {
 	public void setTour_id(int tour_id){
 	   this.tour_id = tour_id;
 	}
-	
-	public void setUser(User user){
-	   this.user = user;
+
+	public void setUser(User user) {
+		this.user = user;
 	}
-	
+
 	public void setTitle(String title){
 	   this.title = title;
 	}
@@ -70,7 +70,7 @@ public class Tour {
 	public int getTour_id(){
 	   return tour_id;
 	}
-	
+
 	public User getUser() {
 		return user;
 	}
