@@ -52,8 +52,6 @@ import java.util.List;
 
 public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-    private Context thisActivity = this;
-
     /**
      * Attributes for action bar
      */
@@ -66,10 +64,10 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
      * Attributes for the list view
      */
     ListView list;
-    private final ArrayList<String> TourTitle = new ArrayList<>();
-    private final ArrayList<String> TourDescription = new ArrayList<>();
-    private final ArrayList<Integer> imageId = new ArrayList<>();
-    private final ArrayList<Integer> TourID = new ArrayList<>();
+    private final ArrayList<String> TourTitles = new ArrayList<>();
+    private final ArrayList<String> TourDescriptions = new ArrayList<>();
+    private final ArrayList<Integer> imageIds = new ArrayList<>();
+    private final ArrayList<Integer> TourIDs = new ArrayList<>();
     private final ArrayList<User> TourUsers = new ArrayList<>();
     //TODO: make a list : ArrayList<int> TourId..
 
@@ -233,19 +231,18 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 }
 
                 // create list items
-                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitle, TourDescription, imageId, TourUsers);
+                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitle.get(+position), Toast.LENGTH_SHORT).show();
-                        showOverviewView(TourID.get(+position));
+                        //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitles.get(+position), Toast.LENGTH_SHORT).show();
+                        showOverviewView(TourIDs.get(+position));
 
                     }
                 });
             }
-
 
             @Override
             public void onFailure(ArrayList<Tour> tours) {
@@ -256,37 +253,19 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     }
 
     private void SetTourInfoForListView(Tour tour) {
-        if (tour.getTitle() != null)
-            TourTitle.add(tour.getTitle());
-        else
-            TourTitle.add("Unknown");
-        if (tour.getSummary() != null)
-            TourDescription.add(tour.getSummary());
-        else
-            TourDescription.add("There is no summary available");
-        //if (tours.get(i).getImage() != null)
-        //  imageId.add(tours.get(i).getImage());
-        //else
-        imageId.add(R.drawable.logo_400);
-        TourID.add(new Integer(tour.getTour_id()));
-        User newUser = new User(10, "Sean", "a@b");
-        TourUsers.add(newUser);
-        //System.out.println(newUser.getUser_name());
+        String tour_title = (tour.getTitle() != null) ? tour.getTitle() : "Unknown";
+        String tour_summary = (tour.getSummary() != null) ? tour.getSummary() : "There is no summary available";
+        User tour_user = (tour.getUser() != null) ? tour.getUser() : new User(0, "User X", "");
 
-//        DB.getUserById(tour.getUser_id(), this, new DB.Callback<User>() {
-//            @Override
-//            public void onSuccess(User user) {
-//                TourUsers.add(user);
-//                System.out.println(user.getUser_name());
-//            }
-//
-//            @Override
-//            public void onFailure(User uesr) {
-//                User newUser = new User(10, "Sean", "a@b");
-//                TourUsers.add(newUser);
-//                System.out.println("On failure happened\n");
-//            }
-//        });
+        TourTitles.add(tour_title);
+        TourDescriptions.add(tour_summary);
+        TourUsers.add(tour_user);
+        TourIDs.add(tour.getTour_id());
+        //if (tours.get(i).getImage() != null)
+        //  imageIds.add(tours.get(i).getImage());
+        //else
+        imageIds.add(R.drawable.logo_400);
+        
     }
 
 
@@ -392,10 +371,10 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
      * @param longitude
      */
     private void RefreshView(double latitude, double longitude) {
-        TourTitle.clear();
-        TourDescription.clear();
-        imageId.clear();
-        TourID.clear();
+        TourTitles.clear();
+        TourDescriptions.clear();
+        imageIds.clear();
+        TourIDs.clear();
         //TourUsers.clear();
         // refresh List
         GetNearbyToursForList(latitude, longitude);
