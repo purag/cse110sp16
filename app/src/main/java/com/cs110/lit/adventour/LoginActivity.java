@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.cs110.lit.adventour.model.*;
 
+import java.math.BigInteger;
 import java.util.Random;
 
 import java.security.MessageDigest;
@@ -281,15 +282,14 @@ public class LoginActivity extends AppCompatActivity implements
     public static String md5 (String s) {
         try {
             // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
-
-            // Create Hex String
-            StringBuffer hexString = new StringBuffer();
-            for (int i=0; i<messageDigest.length; i++)
-                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
-            return hexString.toString();
+            MessageDigest m = java.security.MessageDigest.getInstance("MD5");
+            m.update(s.getBytes(), 0, s.length());
+            String hash = (new BigInteger(1, m.digest())).toString(16);
+            int len = hash.length();
+            for (int i = len; i < 32; i++) {
+                hash = "0" + hash;
+            }
+            return hash;
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
