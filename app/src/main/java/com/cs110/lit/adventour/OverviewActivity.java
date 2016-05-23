@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,11 +17,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
+import com.cs110.lit.adventour.model.User;
 
 import java.util.ArrayList;
 
@@ -51,13 +55,18 @@ public class OverviewActivity extends AppCompatActivity {
             public void onSuccess(Tour tour) {
 
                 String tourTitle = tour.getTitle();
+                User tourCreator = tour.getUser();
+                String tourCreatorName = tourCreator.getUser_name();
                 String tourSummary = tour.getSummary();
                 ArrayList<Checkpoint> checkpoints = tour.getListOfCheckpoints();
 
                 setTitle(tourTitle);
                 getSupportActionBar().setTitle(tourTitle);
-                setSummaryCard(tourTitle, tourSummary);
-                loadBackdrop();
+                setSummaryCard(tourCreatorName, tourSummary);
+
+                Checkpoint first = checkpoints.get(0);
+                String testPhoto = first.getPhoto();
+                loadBackdrop(testPhoto);
                 displayCheckpoints(checkpoints);
             }
 
@@ -81,13 +90,13 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * Set the title and description of the summary card in tour metadata view
      *
-     * @param title
+     * @param name
      * @param summary
      */
-    private void setSummaryCard(String title, String summary) {
+    private void setSummaryCard(String name, String summary) {
         //set title field of summary card
-        TextView summaryTitle = (TextView) findViewById(R.id.tour_metadata_summary_card_title);
-        summaryTitle.setText(title);
+        TextView userName = (TextView) findViewById(R.id.tour_metadata_summary_card_user_name);
+        userName.setText(name);
 
         //set summary field of summary card
         TextView summaryText = (TextView) findViewById(R.id.tour_metadata_summary_card_description);
@@ -97,18 +106,22 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * display the selected checkpoint image in the metadata view
      */
-    private void loadBackdrop() {
-        //final ImageView imageView = (ImageView) findViewById(R.id.tour_metadata_bg_image);
+    private void loadBackdrop(String photo) {
+        final ImageView imageView = (ImageView) findViewById(R.id.tour_metadata_bg_image);
+        Glide.with(this).load(photo).into(imageView);
     }
 
     /**
      * display all of the checkpoints in the recyclerview
      */
     private void displayCheckpoints(ArrayList<Checkpoint> checkpoints) {
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
         RecyclerView checkpointList = (RecyclerView) findViewById(R.id.tour_metadata_checkpoints_list);
         CheckpointListAdapter adapter = new CheckpointListAdapter(checkpoints);
         checkpointList.setAdapter(adapter);
-        checkpointList.setLayoutManager(new LinearLayoutManager(this));
+        checkpointList.setLayoutManager(layoutManager);
 
     }
 
