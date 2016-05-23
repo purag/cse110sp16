@@ -22,8 +22,8 @@
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_add_white"
-        app:backgroundTint="@color/colorTertiary"
+        android:src="@drawable/create_icon_wt"
+        app:backgroundTint="@color/colorPrimaryDark"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/activity_horizontal_margin"
