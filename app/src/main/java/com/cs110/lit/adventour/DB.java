@@ -184,6 +184,7 @@ public class DB {
             @Override
             public void onErrorResponse(VolleyError error) {
                 System.out.println("Error with tour request");
+                cb.onFailure(null);
             }
         });
 
@@ -241,6 +242,61 @@ public class DB {
             @Override
             public void onErrorResponse(VolleyError error) {
                 System.out.println("Error with tour request");
+                cb.onFailure(null);
+            }
+        });
+
+        /* Actually make the request. */
+        requestQueue.add(req);
+    }
+
+    /**
+     * Fetch all the tours taken by a user
+     *
+     * @param id the id of the user whose taken tours are being fetched
+     * @param c the context (activity) from which this database access is being made
+     * @param cb the callback object (implementing the onSuccess method)
+     */
+    public static void getToursTakenByUserId (int id, Context c, final Callback<ArrayList<Tour>> cb) {
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+        String reqUrl = base + "users/" + id + "/tours/taken";
+
+        /* Prepare the request for the JSON-formatted response text. */
+        JsonArrayRequest req = new JsonArrayRequest(reqUrl, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                /* Populate the ArrayList of tours from the JSON array. */
+                ArrayList<Tour> tours = new ArrayList<>();
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject tour = response.optJSONObject(i);
+                        JSONObject user = tour.getJSONObject("user");
+                        tours.add(i, new Tour(
+                                tour.getInt("tour_id"),
+                                new User(
+                                        user.getInt("user_id"),
+                                        user.getString("user_name"),
+                                        ""
+                                ),
+                                tour.getString("tour_title"),
+                                tour.getString("tour_summary"),
+                                tour.getInt("tour_visibility") == 1,
+                                0,
+                                0
+                        ));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                /* Delegate to the callback. */
+                cb.onSuccess(tours);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("Error with tour request");
+                cb.onFailure(null);
             }
         });
 
