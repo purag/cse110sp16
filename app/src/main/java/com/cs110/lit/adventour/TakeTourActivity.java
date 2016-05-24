@@ -302,13 +302,13 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         if(startPoint){
             mMap.addMarker(new MarkerOptions().position(latLng)
                     .title(point.getTitle())
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_start)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.start_flag)));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
         }
         else if(endPoint){
             mMap.addMarker(new MarkerOptions().position(latLng)
                     .title(point.getTitle())
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_end)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.end_flag)));
         }
         else {
             mMap.addMarker(new MarkerOptions().position(latLng)
