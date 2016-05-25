@@ -404,6 +404,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         ImageButton zoomIn = (ImageButton) findViewById(R.id.zoomIn);
         ImageButton zoomOut = (ImageButton) findViewById(R.id.zoomOut);
 
+        assert zoomIn != null;
         zoomIn.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -412,6 +413,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             }
         });
 
+        assert zoomOut != null;
         zoomOut.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -433,7 +435,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         mMap.setMyLocationEnabled(true);
 
         //TODO: Need a better way to do this check (or dont even bother to check this at all)
-        if (lastKnownLocation == null) {
+        if (lastKnownLocation == null && searchLocation == null) {
             System.out.println("NULL location");
             ////----------- display the map with marker on current location -----------//
             // Add a marker in current location, and move the camera.
@@ -447,7 +449,13 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
             //grab data
-            displayNearbyToursInMap(myLocation, mMap);
+            if (searchLocation == null) {
+                displayNearbyToursInMap(myLocation, mMap);
+            } else {
+                LatLng searchLatLng = new LatLng(searchLocation.getLatitude(), searchLocation.getLongitude());
+                displayNearbyToursInMap(searchLatLng, mMap);
+            }
+
         }
     }
 
