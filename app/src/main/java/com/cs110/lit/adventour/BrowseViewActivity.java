@@ -56,20 +56,21 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private DrawerLayout navigationDrawer;
     private ActionBarDrawerToggle navigationToggle;
     private ViewFlipper viewFlipper;
+    private LatLng lastUsedLng;
 
 
     // Attributes for the list view
     ListView list;
     private final ArrayList<String> TourTitles = new ArrayList<>();
     private final ArrayList<String> TourDescriptions = new ArrayList<>();
-    private final ArrayList<Integer> imageIds = new ArrayList<>();
+    private final ArrayList<String> imageIds = new ArrayList<>();
     private final ArrayList<Integer> TourIDs = new ArrayList<>();
     private final ArrayList<User> TourUsers = new ArrayList<>();
 
     // Attributes for location
     private static final int LOCATION_REQUEST_CODE = 0;
     private LocationManager locationManager;
-    private Location lastKnownLocation;
+    private Location currentLocation;
     private String locationNetworkProvider;
 
     private GoogleMap mMap;
@@ -121,14 +122,14 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         }
 
         // get the local location
-        lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
-        if(lastKnownLocation == null) {
-            lastKnownLocation = new Location("");
-            lastKnownLocation.setLatitude(37);
-            lastKnownLocation.setLongitude(-117);
+        currentLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        if(currentLocation == null) {
+            currentLocation = new Location("");
+            currentLocation.setLatitude(33);
+            currentLocation.setLongitude(-117);
         }
 
-        GetNearbyToursForList(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        GetNearbyToursForList(currentLocation.getLatitude(), currentLocation.getLongitude());
 
         /* Allow user to refresh the list */
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
@@ -136,7 +137,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
                 refreshLayout.setRefreshing(false);
             }
         });
@@ -153,6 +154,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         navigationToggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
 
         prefs = getApplicationContext().getSharedPreferences("Login", 0);
@@ -244,10 +246,14 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         TourDescriptions.add(tour_summary);
         TourUsers.add(tour_user);
         TourIDs.add(tour.getTour_id());
+
+
         //if (tours.get(i).getImage() != null)
         //  imageIds.add(tours.get(i).getImage());
         //else
-        imageIds.add(R.drawable.logo_400);
+        imageIds.add("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
+                "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
     }
 
 
@@ -296,7 +302,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 return true;
             case R.id.action_refresh:
                 // refresh
-                RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
                 return true;
             case R.id.action_help:
                 // help action
@@ -362,8 +368,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         // refresh List
         GetNearbyToursForList(latitude, longitude);
         // refresh Map
-        LatLng searchLatLng = new LatLng(latitude, longitude);
-        displayNearbyToursInMap(searchLatLng, mMap);
+        lastUsedLng = new LatLng(latitude, longitude);
+        displayNearbyToursInMap(lastUsedLng, mMap);
     }
 
 
@@ -379,26 +385,14 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Integer tourId;
-                System.out.println("Clicked" + marker.getId());
-                if (markerTable == null) {
-                    System.out.println("No marker table");
-                    return;
-                } else {
+                if (markerTable != null) {
                     tourId = markerTable.get(marker.getId());
-
                     //check validity of ID
-                    if (tourId == null) {
-                        System.out.println("Tour Id not found");
-                        return;
-                    } else {
-                        System.out.println("Tour Id is: " + tourId);
+                    if (tourId != null)
                         showOverviewView(tourId);
-                    }
-
                 }
             }
         });
-
 
         /* set up refresh and zoom buttons */
         ImageButton zoomIn = (ImageButton) findViewById(R.id.zoomIn);
@@ -423,7 +417,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         });
 
         //check fine
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             return;
         }
@@ -435,27 +429,17 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         mMap.setMyLocationEnabled(true);
 
         //TODO: Need a better way to do this check (or dont even bother to check this at all)
-        if (lastKnownLocation == null && searchLocation == null) {
-            System.out.println("NULL location");
-            ////----------- display the map with marker on current location -----------//
-            // Add a marker in current location, and move the camera.
-            LatLng myLocation = new LatLng(33.812, -117.919);
-            //grab data
+        if (currentLocation == null && lastUsedLng == null) {
+            LatLng myLocation = new LatLng(33, -117);
             displayNearbyToursInMap(myLocation, mMap);
         } else {
-
             ////----------- display the map with marker on current location -----------//
-            // Add a marker in current location, and move the camera.
-            LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-            //grab data
-            if (searchLocation == null) {
+            if (lastUsedLng == null) {
+                LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                 displayNearbyToursInMap(myLocation, mMap);
             } else {
-                LatLng searchLatLng = new LatLng(searchLocation.getLatitude(), searchLocation.getLongitude());
-                displayNearbyToursInMap(searchLatLng, mMap);
+                displayNearbyToursInMap(lastUsedLng, mMap);
             }
-
         }
     }
 

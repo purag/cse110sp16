@@ -5,8 +5,6 @@ package com.cs110.lit.adventour;
  */
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.cs110.lit.adventour.model.User;
 
 import java.util.ArrayList;
@@ -24,10 +23,10 @@ public class CustomList extends ArrayAdapter<String>{
     private final Activity context;
     private final ArrayList<String> TourTitle;
     private final ArrayList<String> TourDescription;
-    private final ArrayList<Integer> imageId;
+    private final ArrayList<String> imageId;
     private final ArrayList<User> TourUsers;
 
-    public CustomList(Activity context,ArrayList<String> TourTitle, ArrayList<String> TourDescription, ArrayList<Integer> imageId, ArrayList<User> TourUsers)
+    public CustomList(Activity context,ArrayList<String> TourTitle, ArrayList<String> TourDescription, ArrayList<String> imageId, ArrayList<User> TourUsers)
     {
         super(context, R.layout.list_single, TourTitle);
         this.context = context;
@@ -51,6 +50,7 @@ public class CustomList extends ArrayAdapter<String>{
         TextView txtDescription = (TextView) rowView.findViewById(R.id.list_txt_description);
 
         ImageView imageView = (ImageView) rowView.findViewById(R.id.list_img);
+        Glide.with(context).load(imageId.get(position)).into(imageView);
 
         // Set list item contents
         userName.setText(TourUsers.get(position).getUser_name());
@@ -61,15 +61,15 @@ public class CustomList extends ArrayAdapter<String>{
         txtDescription.setText(TourDescription.get(position));
 
         // imageView.setImageResource(imageId[position]);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inDither = false;
-        options.inJustDecodeBounds = false;
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        options.inSampleSize = 5;
-
-        Bitmap icon = BitmapFactory.decodeResource(context.getResources(), imageId.get(position),options);
-
-        imageView.setImageBitmap(icon);
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inDither = false;
+//        options.inJustDecodeBounds = false;
+//        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//        options.inSampleSize = 5;
+//
+//        Bitmap icon = BitmapFactory.decodeResource(context.getResources(), imageId.get(position),options);
+//
+//        imageView.setImageBitmap(icon);
 
         return rowView;
     }
