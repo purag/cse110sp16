@@ -5,7 +5,6 @@ package com.cs110.lit.adventour;
  */
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -64,7 +63,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
     ListView list;
     private final ArrayList<String> TourTitles = new ArrayList<>();
     private final ArrayList<String> TourDescriptions = new ArrayList<>();
-    private final ArrayList<Integer> imageIds = new ArrayList<>();
+    private final ArrayList<String> imageIds = new ArrayList<>();
     private final ArrayList<Integer> TourIDs = new ArrayList<>();
     private final ArrayList<User> TourUsers = new ArrayList<>();
 
@@ -275,7 +274,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
         //if (tours.get(i).getImage() != null)
         //  imageIds.add(tours.get(i).getImage());
         //else
-        imageIds.add(R.drawable.logo_400);
+        //imageIds.add(R.drawable.logo_400);
     }
 
 
