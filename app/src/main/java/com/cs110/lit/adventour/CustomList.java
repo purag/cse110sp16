@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.bumptech.glide.Glide;
 import com.cs110.lit.adventour.model.User;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class CustomList extends ArrayAdapter<String>{
         TextView txtDescription = (TextView) rowView.findViewById(R.id.list_txt_description);
 
         ImageView imageView = (ImageView) rowView.findViewById(R.id.list_img);
-        //Glide.with(context).load(imageId.get(position)).into(imageView);
+        Glide.with(context).load(imageId.get(position)).into(imageView);
 
         // Set list item contents
         userName.setText(TourUsers.get(position).getUser_name());
