@@ -51,13 +51,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class BrowseViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
-
-    // Attributes for action bar
-    private DrawerLayout navigationDrawer;
-    private ActionBarDrawerToggle navigationToggle;
-    private ViewFlipper viewFlipper;
-    private LatLng lastUsedLng;
-
     // Attributes for the list view
     ListView list;
     private final ArrayList<String> TourTitles = new ArrayList<>();
@@ -66,11 +59,20 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private final ArrayList<Integer> TourIDs = new ArrayList<>();
     private final ArrayList<User> TourUsers = new ArrayList<>();
 
+
+    // Attributes for action bar
+    private DrawerLayout navigationDrawer;
+    private ActionBarDrawerToggle navigationToggle;
+    private ViewFlipper viewFlipper;
+
     // Attributes for location
     private static final int LOCATION_REQUEST_CODE = 0;
     private LocationManager locationManager;
     private Location currentLocation;
     private String locationNetworkProvider;
+    double LastUsedLatitude;
+    double LastUsedLongitude;
+    private LatLng lastUsedLng;
 
     private GoogleMap mMap;
     private HashMap<String, Integer> markerTable = null;
@@ -113,8 +115,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         currentLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
         if(currentLocation == null) {
             currentLocation = new Location("");
-            currentLocation.setLatitude(33);
-            currentLocation.setLongitude(-117);
+            currentLocation.setLatitude(32.881375);
+            currentLocation.setLongitude(-117.233035);
         }
 
 
@@ -126,7 +128,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
+                RefreshView(LastUsedLatitude, LastUsedLongitude);
                 refreshLayout.setRefreshing(false);
             }
         });
@@ -155,6 +157,16 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         TextView email = (TextView) header.findViewById(R.id.nav_header_email);
         name.setText(prefs.getString("uname", "User"));
         email.setText(prefs.getString("uemail", "user@example.com"));
+    }
+
+    private void RefreshView(double latitude, double longitude) {
+        LastUsedLatitude = latitude;
+        LastUsedLongitude = longitude;
+        // refresh List
+        GetNearbyToursForList(latitude, longitude);
+        // refresh Map
+        lastUsedLng = new LatLng(latitude, longitude);
+        displayNearbyToursInMap(lastUsedLng, mMap);
     }
 
     //////////////////////////////////////////////////////////
@@ -301,10 +313,10 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             case R.id.action_refresh:
                 // refresh
                 RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
-                System.out.println("Dont think it is this one!!");
                 return true;
             case R.id.action_help:
                 // help action
+                getLayoutInflater().inflate(R.layout.help_window, null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -350,20 +362,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         Intent intent = new Intent(this, OverviewActivity.class);
         intent.putExtra(OverviewActivity.TOUR_ID, tourID.intValue());
         startActivity(intent);
-    }
-
-
-    /**
-     * Function that handles all the data refresh
-     * @param latitude
-     * @param longitude
-     */
-    private void RefreshView(double latitude, double longitude) {
-        // refresh List
-        GetNearbyToursForList(latitude, longitude);
-        // refresh Map
-        lastUsedLng = new LatLng(latitude, longitude);
-        displayNearbyToursInMap(lastUsedLng, mMap);
     }
 
 
@@ -424,10 +422,10 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
         //TODO: Need a better way to do this check (or dont even bother to check this at all)
         if (currentLocation == null && lastUsedLng == null) {
-            LatLng myLocation = new LatLng(33, -117);
+            LatLng myLocation = new LatLng(32.881375, -117.233035);
             displayNearbyToursInMap(myLocation, mMap);
         } else {
-            ////----------- display the map with marker on current location -----------//
+            //----------- display the map with marker on current location -----------//
             if (lastUsedLng == null) {
                 LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                 displayNearbyToursInMap(myLocation, mMap);
@@ -441,7 +439,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private void displayNearbyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
         if (mMap == null) return;
         mMap.clear();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,13));
 
         System.out.println("attempting to grab data\n");
         DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
