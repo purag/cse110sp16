@@ -219,6 +219,9 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
             @Override
             public void onFailure(ArrayList<Tour> tours) {
+                clearAllArrays();
+                CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
+                list.setAdapter(adapter);
                 System.out.println("On failure happened\n");
             }
         });
