@@ -30,6 +30,17 @@
         android:alpha="0.85"
         android:elevation="10dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="No Nearby Tours Found"
+        android:id="@+id/NoTours"
+        android:textSize="27dp"
+        android:textStyle="bold"
+        android:typeface="normal"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

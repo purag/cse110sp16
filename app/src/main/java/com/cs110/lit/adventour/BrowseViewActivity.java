@@ -75,6 +75,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     private LatLng lastUsedLng;
 
     private GoogleMap mMap;
+    private TextView NoToursMap;
+    private TextView NoToursList;
     private HashMap<String, Integer> markerTable = null;
 
     // Attributes for user information
@@ -100,6 +102,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         NavigationSetUps();
         viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
         list = (ListView) findViewById(R.id.browse_list);
+        NoToursList = (TextView) findViewById(R.id.NoToursList);
+        NoToursList.setVisibility(View.GONE);
 
         /* set up location manager and location permissions */
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -210,6 +214,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 clearAllArrays();
+                NoToursList.setVisibility(View.GONE);
                 //get the tours
                 for (int i = 0; i < tours.size(); i++) {
                     final Tour tour = tours.get(i);
@@ -234,6 +239,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 clearAllArrays();
                 CustomList adapter = new CustomList(BrowseViewActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
                 list.setAdapter(adapter);
+                NoToursList.setVisibility(View.VISIBLE);
                 System.out.println("On failure happened\n");
             }
         });
@@ -389,6 +395,9 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         /* set up refresh and zoom buttons */
         ImageButton zoomIn = (ImageButton) findViewById(R.id.zoomIn);
         ImageButton zoomOut = (ImageButton) findViewById(R.id.zoomOut);
+        NoToursMap = (TextView) findViewById(R.id.NoTours);
+
+        NoToursMap.setVisibility(View.GONE);
 
         assert zoomIn != null;
         zoomIn.setOnClickListener(new View.OnClickListener() {
@@ -445,6 +454,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
+                NoToursMap.setVisibility(View.GONE);
                 System.out.println("success\n");
                 markerTable = new HashMap<String, Integer>();
                 //display them
@@ -462,6 +472,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             }
             @Override
             public void onFailure(ArrayList<Tour> tours) {
+                mMap.clear();
+                NoToursMap.setVisibility(View.VISIBLE);
                 System.out.println("On failure happened\n");
             }
         });
