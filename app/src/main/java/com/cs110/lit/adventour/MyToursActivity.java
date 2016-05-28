@@ -239,17 +239,27 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
             @Override
              public void onSuccess(ArrayList<Tour> tours) {
             // Get the tours
-            for (int i = 0; i < tours.size(); i++) {
-                System.err.println("Getting tour: " + i);
-                final Tour tour = tours.get(i);
-                SetTourInfoForListView(tour);
-            }
+
+                if(tours.isEmpty()) {
+                    clearAllArrays();
+                    CustomList adapter = new CustomList(MyToursActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
+                    list.setAdapter(adapter);
+                    NoToursList.setVisibility(View.VISIBLE);
+                    System.out.println("No tours found");
+                }
+                else{
+                    NoToursList.setVisibility(View.GONE);
+                for (int i = 0; i < tours.size(); i++) {
+                     System.err.println("Getting tour: " + i);
+                      final Tour tour = tours.get(i);
+                       SetTourInfoForListView(tour);
+                  }
                 System.err.println("size of array is " + tours.size());
-            // Create list items
-            CustomList adapter = new
-                    CustomList(MyToursActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
-            list.setAdapter(adapter);
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                // Create list items
+                CustomList adapter = new
+                        CustomList(MyToursActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
+                list.setAdapter(adapter);
+                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
@@ -257,7 +267,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
                     showOverviewView(TourIDs.get(+position));
 
                 }
-            });
+            });}
         }
 
             @Override
@@ -548,17 +558,26 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
                         markerTable = new HashMap<String, Integer>();
 
                         // Display them
-                        for (Tour t : tours) {
-                            System.out.println("Let's drop some pins");
-                            LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
-
-                            Marker newMarker = mMap.addMarker(new MarkerOptions().position(location)
-                                    .title(t.getTitle())
-                                    .snippet(t.getSummary())
-                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
-                            markerTable.put(newMarker.getId(), t.getTour_id());
-
+                        if(tours.isEmpty()) {
+                            mMap.clear();
+                            NoToursMap.setVisibility(View.VISIBLE);
                         }
+                        else {
+                            NoToursMap.setVisibility(View.GONE);
+                            for (Tour t : tours) {
+                                System.out.println("Let's drop some pins");
+                                LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
+
+                                Marker newMarker = mMap.addMarker(new MarkerOptions().position(location)
+                                        .title(t.getTitle())
+                                        .snippet(t.getSummary())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+                                markerTable.put(newMarker.getId(), t.getTour_id());
+
+                            }
+                        }
+
+
                     }
 
                     @Override
