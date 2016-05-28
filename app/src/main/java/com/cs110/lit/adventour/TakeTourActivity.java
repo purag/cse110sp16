@@ -93,49 +93,21 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             return;
         }
 
-        /* set up refresh and zoom buttons */
-        ImageButton zoomIn = (ImageButton) findViewById(R.id.zoomIn);
-        ImageButton zoomOut = (ImageButton) findViewById(R.id.zoomOut);
-        if (zoomIn != null) {
-            zoomIn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.animateCamera(CameraUpdateFactory.zoomIn());
-                }
-            });
-        }
-
-        if (zoomOut != null) {
-            zoomOut.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.animateCamera(CameraUpdateFactory.zoomOut());
-                }
-            });
-        }
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
-        if (fab != null)
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    System.err.println("Button has been clicked!");
-                    movetoNextCheckpoint();
-                }
-            });
-
         mMap.setMyLocationEnabled(true);
+
+        /* set up refresh and zoom buttons */
+        setUpZoomButtonsOnMap();
+
+        /* display the checkpoints for the particular tour */
+        displayNearbyCheckpoints(mMap);
+
+        /* set up FloatingActionButton clicks */
+        actionsForFABs();
 
         ///// -------------- adding listener ---------------///
         // Acquire a reference to the system Location Manager
         //this will help us determine where to render the map near
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
-
-        /* display the checkpoints for the particular tour */
-        displayNearbyCheckpoints(mMap);
-
 
         // Define a listener that responds to location updates
         //this will check whether we have reached a checkpoint
@@ -156,6 +128,62 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+    }
+
+    private void setUpZoomButtonsOnMap() {
+        ImageButton zoomIn = (ImageButton) findViewById(R.id.zoomIn);
+        ImageButton zoomOut = (ImageButton) findViewById(R.id.zoomOut);
+
+        assert zoomIn != null;
+        zoomIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.animateCamera(CameraUpdateFactory.zoomIn());
+            }
+        });
+
+        assert zoomOut != null;
+        zoomOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.animateCamera(CameraUpdateFactory.zoomOut());
+            }
+        });
+    }
+
+    private void displayNearbyCheckpoints(final GoogleMap mMap) {
+
+        DB.getTourById(tourID,  this, new DB.Callback<Tour>() {
+            @Override
+            public void onSuccess(Tour tour) {
+                //fill up the checkpoint lists
+                populateCheckpointLists(tour);
+
+                // Create lines.
+                PolylineOptions lineOptions = new PolylineOptions();
+
+                boolean startPoint = false;
+                boolean endPoint = false;
+
+                // Display markers.
+                for(ActiveTourCheckpoint points : activePointList) {
+
+                    LatLng latLng = new LatLng(points.getLatitude(), points.getLongitude());
+                    addMarkerAtMyLocation(latLng,points);
+                    lineOptions.add(latLng);
+                }
+
+                // Draw the entire line.
+                Polyline line = mMap.addPolyline(lineOptions);
+            }
+
+            @Override
+            public void onFailure(Tour tour) {
+                System.out.println("On failure happened when rendering the checkpoints on the" +
+                        "take tour map\n");
+            }
+        });
+
     }
 
     /* Used to fill up the checkpoint lists with the tour's checkpoint */
@@ -209,6 +237,29 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+    /* button listener for the  floating action bar */
+    private void actionsForFABs() {
+        FloatingActionButton skipFab = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
+        if (skipFab != null)
+            skipFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    System.err.println("Button has been clicked!");
+                    movetoNextCheckpoint();
+                }
+            });
+
+        FloatingActionButton undoFab = (FloatingActionButton) findViewById(R.id.undo_skip_checkpoint);
+        if (undoFab != null)
+            undoFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    System.err.println("Button has been clicked!");
+                    movetoBackACheckpoint();
+                }
+            });
+    }
+
     private void movetoNextCheckpoint(){
         //notify the user they are approaching a checkpoint
         //TODO: Insert pop up fragment here to display checkpoint info
@@ -245,39 +296,32 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
     }
 
-    private void displayNearbyCheckpoints(final GoogleMap mMap) {
+    private void movetoBackACheckpoint(){
+        //notify the user they are approaching a checkpoint
+        //TODO: Insert pop up fragment here to display checkpoint info
 
-        DB.getTourById(tourID,  this, new DB.Callback<Tour>() {
-            @Override
-            public void onSuccess(Tour tour) {
-                //fill up the checkpoint lists
-                populateCheckpointLists(tour);
+        //To avoid out of index errors
+        if(upComingCheckpoint < 1) return;
 
-                // Create lines.
-                PolylineOptions lineOptions = new PolylineOptions();
+        //move back a checkpoint
+        upComingCheckpoint--;
 
-                boolean startPoint = false;
-                boolean endPoint = false;
+        if(upComingCheckpoint < 1) return;
 
-                // Display markers.
-                for(ActiveTourCheckpoint points : activePointList) {
+        //edit info for that checkpoint
+        (activePointList.get(upComingCheckpoint)).setReachedPoint(false);
+        //(activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
 
-                    LatLng latLng = new LatLng(points.getLatitude(), points.getLongitude());
-                    addMarkerAtMyLocation(latLng,points);
-                    lineOptions.add(latLng);
-                }
+        // move the view camera to the next checkpoint
+        LatLng previous_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(previous_latLng, 16));
 
-                // Draw the entire line.
-                Polyline line = mMap.addPolyline(lineOptions);
-            }
+        //Rerender the map with the updated checkpoints (Whether visited or not)
+        (markerList.get(upComingCheckpoint)).remove();
 
-            @Override
-            public void onFailure(Tour tour) {
-                System.out.println("On failure happened when rendering the checkpoints on the" +
-                        "take tour map\n");
-            }
-        });
-
+        mMap.addMarker(new MarkerOptions().position(previous_latLng)
+                .title((activePointList.get(upComingCheckpoint)).getTitle())
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_gray)));
 
     }
 
