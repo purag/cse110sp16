@@ -1,16 +1,15 @@
 package com.cs110.lit.adventour;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.cs110.lit.adventour.model.Checkpoint;
 
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
         public TextView nameTextView;
         public View mView;
         public int mCheckpointID;
+        public final ImageView mImageView;
         public String title;
         public String summary;
 
@@ -39,6 +39,7 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
             // to access the context from any ViewHolder instance.
             super(itemView);
             mView = itemView;
+            mImageView = (ImageView) itemView.findViewById(R.id.tour_metadata_checkpoint_image);
             nameTextView = (TextView) itemView.findViewById(R.id.tour_metadata_checkpoint_title);
 
         }
@@ -92,12 +93,18 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
                 /*Intent intent = new Intent(context, CheckpointActivity.class);
                 intent.putExtra(CheckpointActivity.CHECKPOINT_ID, vHolder.mCheckpointID);
 
-                intent.putExtra(CheckpointActivity.TITLE_ID, vHolder.title);
+                integnt.putExtra(CheckpointActivity.TITLE_ID, vHolder.title);
                 intent.putExtra(CheckpointActivity.SUMMARY_ID, vHolder.summary);
                 context.startActivity(intent);*/
             }
         });
-
+    
+        String google_testString = ("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                Double.toString(checkpoint.getLatitude()) +"," + Double.toString(checkpoint.getLongitude()) +
+                "&heading=15&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
+        String photo_string = checkpoint.getPhoto();
+        Glide.with(vHolder.mImageView.getContext()).load(google_testString)
+                .fitCenter().into(vHolder.mImageView);
     }
 
     // Return the total count of items
