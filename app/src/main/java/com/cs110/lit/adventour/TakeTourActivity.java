@@ -8,12 +8,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
-
+import com.github.clans.fab.FloatingActionButton;
 import com.cs110.lit.adventour.model.ActiveTourCheckpoint;
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
@@ -62,7 +61,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // launch map view
-        setContentView(R.layout.browse_map_content);
+        setContentView(R.layout.activity_take_tour);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -125,7 +124,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 }
             });
 
-
         mMap.setMyLocationEnabled(true);
 
         ///// -------------- adding listener ---------------///
@@ -135,29 +133,12 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         String locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
 
-        Location lastKnownLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        /* display the checkpoints for the particular tour */
+        displayNearbyCheckpoints(mMap);
 
-        if (lastKnownLocation == null) {
-            System.out.println("NULL location");
-            ////----------- display the map with marker on current location -----------//
-            // Add a marker in current location, and move the camera.
-            LatLng myLocation = new LatLng(33.812, -117.919);
-
-            //grab data and display checkpoints
-            displayNearbyCheckpoints(myLocation, mMap);
-        } else {
-
-            ////----------- display the map with marker on current location -----------//
-            // Add a marker in current location, and move the camera.
-            LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-            //grab data and display checkpoints
-            displayNearbyCheckpoints(myLocation, mMap);
-        }
 
         // Define a listener that responds to location updates
         //this will check whether we have reached a checkpoint
-
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
@@ -233,7 +214,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         //TODO: Insert pop up fragment here to display checkpoint info
 
         //To avoid out of index errors
-        if(upComingCheckpoint >= activePointList.size()){
+        if(upComingCheckpoint >= activePointList.size() -1){
             return;
         }
 
@@ -248,29 +229,27 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             (activePointList.get(upComingCheckpoint)).setReachedPoint(true);
             (activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
 
+            // move the view camera to the next checkpoint
+            LatLng upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(upcoming_latLng, 16));
+
             //Rerender the map with the updated checkpoints (Whether visited or not)
             (markerList.get(upComingCheckpoint)).remove();
-            mMap.addMarker(new MarkerOptions().position(new LatLng(
-                    (activePointList.get(upComingCheckpoint)).getLatitude(),
-                    (activePointList.get(upComingCheckpoint)).getLongitude()))
+            mMap.addMarker(new MarkerOptions().position(upcoming_latLng)
                     .title((activePointList.get(upComingCheckpoint)).getTitle())
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
-
-            //move onto the next checkpoint
         }
+
+        //move onto the next checkpoint
         upComingCheckpoint++;
 
     }
 
-    private void displayNearbyCheckpoints(final LatLng myLocation, final GoogleMap mMap) {
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+    private void displayNearbyCheckpoints(final GoogleMap mMap) {
 
         DB.getTourById(tourID,  this, new DB.Callback<Tour>() {
-
             @Override
             public void onSuccess(Tour tour) {
-
                 //fill up the checkpoint lists
                 populateCheckpointLists(tour);
 

@@ -363,8 +363,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     //////////////////////////////////////////////////////////
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //FloatingActionButton SkipButton = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
-        //SkipButton.setVisibility(View.GONE);
+
+        // launch the map
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
         NoToursMap = (TextView) findViewById(R.id.NoTours);
