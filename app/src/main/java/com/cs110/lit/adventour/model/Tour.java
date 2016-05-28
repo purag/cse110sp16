@@ -9,7 +9,6 @@ public class Tour {
 	private int tour_id;
 	private String title;
 	private String summary;
-	private Boolean visibility;
 	private double starting_lat;
 	private double starting_lng;
 	private User user;
@@ -19,12 +18,11 @@ public class Tour {
 	public Tour() {}
 
 	public Tour(int tour_id, User user, String title, String summary,
-				Boolean visibility, double starting_lat, double starting_lng) {
+				 double starting_lat, double starting_lng) {
 		this.tour_id = tour_id;
 		this.user = user;
 		this.title = title;
 		this.summary = summary;
-		this.visibility = visibility;
 		this.starting_lat = starting_lat;
 		this.starting_lng = starting_lng;
 	}
@@ -35,7 +33,6 @@ public class Tour {
 		this.user = user;
 		this.title = title;
 		this.summary = summary;
-		this.visibility = visibility;
         this.listOfCheckpoints = listOfCheckpoints;
 	}
 
@@ -56,10 +53,7 @@ public class Tour {
 	public void setSummary(String summary){
 	   this.summary = summary;
 	}
-	
-	public void setVisibility(Boolean visibility){
-	   this.visibility = visibility;
-	}
+
     public void setListOfCheckpoints(ArrayList<Checkpoint> listOfCheckpoints){
         this.listOfCheckpoints= listOfCheckpoints;
     }
@@ -91,9 +85,6 @@ public class Tour {
         return starting_lng;
     }
 
-    public Boolean getVisibility(){
-	   return visibility;
-	}
     public ArrayList<Checkpoint> getListOfCheckpoints(){
         return listOfCheckpoints;
     }
