@@ -413,7 +413,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
         /**
          * Function for on map marker click in the map view.
@@ -571,36 +571,6 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
             }
         }
         return true;
-    }
-
-    /**
-     * Class for window switching between list and map view.
-     */
-    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-
-        private final View myContentsView;
-
-        MyInfoWindowAdapter(){
-            myContentsView = getLayoutInflater().inflate(R.layout.custom_window_info_contents, null);
-        }
-
-        @Override
-        public View getInfoContents(Marker marker) {
-
-            TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.title));
-            tvTitle.setText(marker.getTitle());
-            TextView tvSnippet = ((TextView)myContentsView.findViewById(R.id.snippet));
-            tvSnippet.setText(marker.getSnippet());
-
-            return myContentsView;
-        }
-
-        @Override
-        public View getInfoWindow(Marker marker) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
     }
 
 
