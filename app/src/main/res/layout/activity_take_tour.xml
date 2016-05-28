@@ -68,7 +68,7 @@
             fab:fab_size="mini"
             fab:fab_colorNormal="#33BB33"
             fab:fab_colorPressed="#009900"
-            android:src="@drawable/ic_done_white"
+            android:src="@drawable/skip_icon"
             android:id="@+id/skip_checkpoint_button"/>
 
         <com.github.clans.fab.FloatingActionButton
@@ -78,7 +78,7 @@
             fab:fab_size="mini"
             fab:fab_colorNormal="#3333BB"
             fab:fab_colorPressed="#000099"
-            android:src="@drawable/ic_add_location_white"
+            android:src="@drawable/redo_icon"
             android:id="@+id/fab_touropts_create_checkpt"/>
 
     </com.github.clans.fab.FloatingActionMenu>
