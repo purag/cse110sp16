@@ -329,8 +329,8 @@ public class DB {
                                 ),
                                 tour.getString("tour_title"),
                                 tour.getString("tour_summary"),
-                                0,
-                                0
+                                tour.getDouble("starting_lat"),
+                                tour.getDouble("starting_lng")
                         ));
                     }
                 } catch (JSONException e) {

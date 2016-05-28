@@ -5,26 +5,23 @@ package com.cs110.lit.adventour;
  */
 
 import android.Manifest;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,12 +43,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-public class ViewTourActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+public class MyToursActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     // Attributes for action bar
     private DrawerLayout navigationDrawer;
@@ -81,6 +76,9 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
 
+    private TextView NoToursMap;
+    private TextView NoToursList;
+
     // Attributes for search
     private String searchQuery;
     private Address searchLocation;
@@ -95,13 +93,20 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_start);
 
+        /* set up views and navigation */
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
+
 
         viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
 
         // Create list view
         list = (ListView) findViewById(R.id.browse_list);
+        NoToursList = (TextView) findViewById(R.id.NoMyToursList);
+        NoToursList.setVisibility(View.GONE);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_tour);
+        fab.setVisibility(View.GONE);
 
         // Set up the navigatino
         NavigationSetUp();
@@ -134,7 +139,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
         getUserTakenTours(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
         /* Allow user to refresh the list */
-        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
+        /*final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
         assert refreshLayout != null;
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -142,11 +147,11 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
                 RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                 refreshLayout.setRefreshing(false);
             }
-        });
+        });*/
 
         // Searches
         // Check if there is intent for search request.
-        handleIntent(getIntent());
+        /*handleIntent(getIntent());*/
     }
 
     /**
@@ -175,49 +180,49 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
 
     /* Functions to handle searches. */
 
-    /**
-     * Function to handle intents. Used for searches.
-     */
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        handleIntent(intent);
-    }
+//    /**
+//     * Function to handle intents. Used for searches.
+//     */
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        setIntent(intent);
+//        handleIntent(intent);
+//    }
+//
+//    /**
+//     * Function to handle intent, used for searches.
+//     *
+//     */
+//    private void handleIntent(Intent intent) {
+//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+//            searchQuery = intent.getStringExtra(SearchManager.QUERY);
+//            searchLocation = getLocationFromAddress(searchQuery);
+//            // If null, refresh the view.
+//            if (searchLocation != null) {
+//                RefreshView(searchLocation.getLatitude(), searchLocation.getLongitude());
+//            }
+//        }
+//    }
 
-    /**
-     * Function to handle intent, used for searches.
-     *
-     */
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            searchQuery = intent.getStringExtra(SearchManager.QUERY);
-            searchLocation = getLocationFromAddress(searchQuery);
-            // If null, refresh the view.
-            if (searchLocation != null) {
-                RefreshView(searchLocation.getLatitude(), searchLocation.getLongitude());
-            }
-        }
-    }
-
-    /**
-     * Get's Address object given string of the address. Used for search.
-     */
-    public Address getLocationFromAddress(String strAddress) {
-        Geocoder coder = new Geocoder(this);
-        List<Address> address;
-
-        try {
-            address = coder.getFromLocationName(strAddress, 5);
-
-            if (address.size() == 0)
-                return null;
-
-            return address.get(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    /**
+//     * Get's Address object given string of the address. Used for search.
+//     */
+//    public Address getLocationFromAddress(String strAddress) {
+//        Geocoder coder = new Geocoder(this);
+//        List<Address> address;
+//
+//        try {
+//            address = coder.getFromLocationName(strAddress, 5);
+//
+//            if (address.size() == 0)
+//                return null;
+//
+//            return address.get(0);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
     /*List View Related functions */
 
@@ -225,38 +230,54 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
      * Function to get tours taken given user id. TODO: Add user id parse.
      */
     private void getUserTakenTours(double latitude, double longitude) {
+        SharedPreferences myPrefs = getSharedPreferences("Login", -1);
+        int uid = myPrefs.getInt("uid", 0);
+        System.out.println("My id is" + uid);
 
         // Changing to just new function call.
-        DB.getToursNearLoc(latitude, longitude, 10, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursTakenByUserId (uid, this,  new DB.Callback<ArrayList<Tour>>(){
             @Override
-            public void onSuccess(ArrayList<Tour> tours) {
-                // Get the tours
-                for (int i = 0; i < tours.size(); i++) {
-                    final Tour tour = tours.get(i);
-                    SetTourInfoForListView(tour);
-                }
-
-                // Create list items
-                CustomList adapter = new
-                    CustomList(ViewTourActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
-                list.setAdapter(adapter);
-                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
-                        //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitles.get(+position), Toast.LENGTH_SHORT).show();
-                        showOverviewView(TourIDs.get(+position));
-
-                    }
-                });
+             public void onSuccess(ArrayList<Tour> tours) {
+            // Get the tours
+            for (int i = 0; i < tours.size(); i++) {
+                System.err.println("Getting tour: " + i);
+                final Tour tour = tours.get(i);
+                SetTourInfoForListView(tour);
             }
+                System.err.println("size of array is " + tours.size());
+            // Create list items
+            CustomList adapter = new
+                    CustomList(MyToursActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
+            list.setAdapter(adapter);
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitles.get(+position), Toast.LENGTH_SHORT).show();
+                    showOverviewView(TourIDs.get(+position));
+
+                }
+            });
+        }
 
             @Override
             public void onFailure(ArrayList<Tour> tours) {
+                clearAllArrays();
+                CustomList adapter = new CustomList(MyToursActivity.this, TourTitles, TourDescriptions, imageIds, TourUsers);
+                list.setAdapter(adapter);
+                NoToursList.setVisibility(View.VISIBLE);
                 System.out.println("On failure happened\n");
             }
         });
 
+    }
+
+    private void clearAllArrays() {
+        TourTitles.clear();
+        TourDescriptions.clear();
+        imageIds.clear();
+        TourIDs.clear();
+        TourUsers.clear();
     }
 
     /**
@@ -271,10 +292,13 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
         TourDescriptions.add(tour_summary);
         TourUsers.add(tour_user);
         TourIDs.add(tour.getTour_id());
+
         //if (tours.get(i).getImage() != null)
         //  imageIds.add(tours.get(i).getImage());
         //else
-        //imageIds.add(R.drawable.logo_400);
+        imageIds.add("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
+                "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
     }
 
 
@@ -284,12 +308,12 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_list_actions, menu);
+        inflater.inflate(R.menu.activity_mytours_actions, menu);
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        // Associate searchable configuration with the SearchView
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         // Configure the search info and add any event listeners...
         return super.onCreateOptionsMenu(menu);
@@ -308,10 +332,6 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
 
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
-            case R.id.action_search:
-
-                // search action
-                return true;
             case R.id.action_map_view:
                 // switch to the map view using view flipper
                 item.setChecked(!item.isChecked());
@@ -349,6 +369,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
                 break;
 
             case R.id.nav_browse:
+                launchBrowseView();
                 break;
 
             case R.id.nav_log_out:
@@ -372,6 +393,11 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
         return true;
     }
 
+    private void launchBrowseView(){
+        Intent intent = new Intent(this, BrowseViewActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     /**
      * Show overview of a tour when click list item
@@ -397,7 +423,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
         getUserTakenTours(latitude, longitude);
         // refresh Map
         LatLng searchLatLng = new LatLng(latitude, longitude);
-        displayNearbyToursInMap(searchLatLng, mMap);
+        displayMyToursInMap(searchLatLng, mMap);
     }
 
 
@@ -412,6 +438,9 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
     @SuppressWarnings("MissingPermission")
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMyLocationEnabled(true);
+        NoToursMap = (TextView) findViewById(R.id.NoMyToursMap);
+        NoToursMap.setVisibility(View.GONE);
 
         mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
@@ -484,7 +513,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
             // Add a marker in current location, and move the camera.
             LatLng myLocation = new LatLng(33.812, -117.919);
             // Grab data
-            displayNearbyToursInMap(myLocation, mMap);
+            displayMyToursInMap(myLocation, mMap);
         } else {
 
             ////----------- display the map with marker on current location -----------//
@@ -492,7 +521,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
             LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
             // Grab data
-            displayNearbyToursInMap(myLocation, mMap);
+            displayMyToursInMap(myLocation, mMap);
         }
     }
 
@@ -500,15 +529,47 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
      * Function to display nearby tours given longitude and latitude. Sets up metadata
      * in map view.
      */
-    private void displayNearbyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
+    private void displayMyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
         if (mMap == null) return;
         mMap.clear();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,12));
+        SharedPreferences myPrefs = getSharedPreferences("Login", -1);
+        int uid = myPrefs.getInt("uid", 0);
+        System.out.println("My id is" + uid);
 
         System.out.println("attempting to grab data\n");
         // Data base call for near tours.
-        DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 50, 10, this, new DB.Callback<ArrayList<Tour>>() {
+        DB.getToursTakenByUserId (uid, this,  new DB.Callback<ArrayList<Tour>>(){
+                    @Override
+                    public void onSuccess(ArrayList<Tour> tours) {
+                        System.out.println("success for map");
+
+                        markerTable = new HashMap<String, Integer>();
+
+                        // Display them
+                        for (Tour t : tours) {
+                            System.out.println("Let's drop some pins");
+                            LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
+
+                            Marker newMarker = mMap.addMarker(new MarkerOptions().position(location)
+                                    .title(t.getTitle())
+                                    .snippet(t.getSummary())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+                            markerTable.put(newMarker.getId(), t.getTour_id());
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(ArrayList<Tour> tours) {
+                        mMap.clear();
+                        NoToursMap.setVisibility(View.VISIBLE);
+                        System.out.println("On failure happened\n");
+                    }
+                });
+
+        /*DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 50, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
             public void onSuccess(ArrayList<Tour> tours) {
                 System.out.println("success\n");
@@ -533,7 +594,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
             public void onFailure(ArrayList<Tour> tours) {
                 System.out.println("On failure happened\n");
             }
-        });
+        });*/
 
     }
 
@@ -589,7 +650,7 @@ public class ViewTourActivity extends AppCompatActivity implements NavigationVie
         }
 
         System.out.println("Trying again");
-        Intent intent = new Intent(this, ViewTourActivity.class);
+        Intent intent = new Intent(this, MyToursActivity.class);
         startActivity(intent);
         finish();
 
