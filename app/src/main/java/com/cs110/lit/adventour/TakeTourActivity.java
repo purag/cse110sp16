@@ -281,12 +281,13 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             (activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
 
             // move the view camera to the next checkpoint
-            LatLng upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
+            LatLng upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint+1)).getLatitude(), (activePointList.get(upComingCheckpoint+1)).getLongitude());
+            LatLng current_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(upcoming_latLng, 16));
 
             //Rerender the map with the updated checkpoints (Whether visited or not)
             (markerList.get(upComingCheckpoint)).remove();
-            mMap.addMarker(new MarkerOptions().position(upcoming_latLng)
+            mMap.addMarker(new MarkerOptions().position(current_latLng)
                     .title((activePointList.get(upComingCheckpoint)).getTitle())
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
         }
@@ -306,8 +307,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         //move back a checkpoint
         upComingCheckpoint--;
 
-        if(upComingCheckpoint < 1) return;
-
         //edit info for that checkpoint
         (activePointList.get(upComingCheckpoint)).setReachedPoint(false);
         //(activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
@@ -316,6 +315,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         LatLng previous_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(previous_latLng, 16));
 
+        if(upComingCheckpoint < 1) return;
         //Rerender the map with the updated checkpoints (Whether visited or not)
         (markerList.get(upComingCheckpoint)).remove();
 
