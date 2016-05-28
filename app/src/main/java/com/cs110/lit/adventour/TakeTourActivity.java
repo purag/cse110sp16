@@ -9,6 +9,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -71,6 +74,19 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         tourID = intent.getIntExtra(TOUR_ID, -1);
         tourTitle = intent.getStringExtra(TOUR_TITLE);
         getSupportActionBar().setTitle(tourTitle);
+
+        /*
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("take_tour_checkpoint_dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(this);
+        newFragment.show(ft, "take_tour_checkpoint_dialog");
+        */
 
     }
 
@@ -263,6 +279,18 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     private void movetoNextCheckpoint(){
         //notify the user they are approaching a checkpoint
         //TODO: Insert pop up fragment here to display checkpoint info
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("take_tour_checkpoint_dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(this);
+        newFragment.show(ft, "take_tour_checkpoint_dialog");
+
 
         //To avoid out of index errors
         if(upComingCheckpoint >= activePointList.size()-1){
