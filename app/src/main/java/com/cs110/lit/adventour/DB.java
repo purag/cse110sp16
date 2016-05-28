@@ -221,7 +221,6 @@ public class DB {
                             ),
                             response.getString("tour_title"),
                             response.getString("tour_summary"),
-                            response.getInt("tour_visibility") == 1,
                             checkpoints
                     );
                 } catch (JSONException e) {
