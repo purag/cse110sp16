@@ -240,7 +240,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         });
     }
 
-    private void launchCreateTour () {
+    private void launchCreateTour() {
         Intent intent = new Intent(this, CreateTourActivity.class);
         startActivity(intent);
     }
