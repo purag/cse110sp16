@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -40,32 +41,27 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     private static final float LOCATION_REFRESH_DISTANCE = 1.0f;
 
     private GoogleMap mMap;
-
     private LocationManager locationManager;
 
     //Make a list of active checkpoints
-    private ArrayList<ActiveTourCheckpoint> activePointList =
-            new ArrayList<ActiveTourCheckpoint>();
-
-    private ArrayList<Checkpoint> checkpointList =
-            new ArrayList<Checkpoint>();
-
-    private ArrayList<Marker> markerList = new ArrayList<Marker>();
+    private ArrayList<ActiveTourCheckpoint> activePointList = new ArrayList<>();
+    private ArrayList<Checkpoint> checkpointList = new ArrayList<>();
+    private ArrayList<Marker> markerList = new ArrayList<>();
 
     //To keep track of which checkpoint we are on
     private int upComingCheckpoint = 0;
-
 
     public static final String TOUR_ID = "tour_id";
     public static final String TOUR_TITLE = "tour_title";
 
     /* Tour Model Related */
-    private int tourID = 7;
+    private int tourID;
     private String tourTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // launch map view
         setContentView(R.layout.browse_map_content);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -85,7 +81,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
         //check fine
@@ -93,7 +88,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             return;
         }
-
         //check coarse
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_REQUEST_CODE);
@@ -105,7 +99,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         ImageButton zoomOut = (ImageButton) findViewById(R.id.zoomOut);
         if (zoomIn != null) {
             zoomIn.setOnClickListener(new View.OnClickListener() {
-
                 @Override
                 public void onClick(View v) {
                     mMap.animateCamera(CameraUpdateFactory.zoomIn());
@@ -113,36 +106,27 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             });
         }
 
-        /*
         if (zoomOut != null) {
             zoomOut.setOnClickListener(new View.OnClickListener() {
-
                 @Override
                 public void onClick(View v) {
                     mMap.animateCamera(CameraUpdateFactory.zoomOut());
                 }
             });
         }
-        */
-        //TODO: currently the skip button is the zoom button
-        //Added a skip button to move onto the next checkpoint
-        ImageButton skipCheckpoint = (ImageButton) findViewById(R.id.zoomIn);
-        if (skipCheckpoint != null) {
-            skipCheckpoint.setOnClickListener(new View.OnClickListener() {
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
+        if (fab != null)
+            fab.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-
+                public void onClick(View view) {
                     System.err.println("Button has been clicked!");
-
                     movetoNextCheckpoint();
                 }
             });
-        }
 
 
         mMap.setMyLocationEnabled(true);
-
 
         ///// -------------- adding listener ---------------///
         // Acquire a reference to the system Location Manager
