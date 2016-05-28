@@ -2,18 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Search / will display always -->
-    <item android:id="@+id/action_search"
-        android:icon="@drawable/ic_action_search"
-        android:title="@string/action_search"
-        app:showAsAction="always"
-        app:actionViewClass="android.support.v7.widget.SearchView"/>
-
     <!-- Map View -->
-    <item android:id="@+id/action_list_view"
-        android:icon="@drawable/list_icon"
-        android:title="List"
-        app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_map_view"
+        android:icon="@drawable/ic_map_white"
+        android:title="Map"
+        app:showAsAction="always" />
 
     <!-- Refresh -->
     <item android:id="@+id/action_refresh"
@@ -26,7 +19,5 @@
         android:icon="@drawable/ic_action_help"
         android:title="Help"
         android:showAsAction="never"/>
-
-
 
 </menu>
