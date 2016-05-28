@@ -11,9 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.cs110.lit.adventour.model.ActiveTourCheckpoint;
 import com.cs110.lit.adventour.model.Checkpoint;
@@ -88,7 +86,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
         //check fine
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
@@ -360,34 +358,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         // zoom in to the current location in camera view
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
         System.err.println("The checkpoint you just added is at " + latLng);
-    }
-
-
-    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-
-        private final View myContentsView;
-
-        MyInfoWindowAdapter(){
-            myContentsView = getLayoutInflater().inflate(R.layout.custom_window_info_contents, null);
-        }
-
-        @Override
-        public View getInfoContents(Marker marker) {
-
-            TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.title));
-            tvTitle.setText(marker.getTitle());
-            TextView tvSnippet = ((TextView)myContentsView.findViewById(R.id.snippet));
-            tvSnippet.setText(marker.getSnippet());
-
-            return myContentsView;
-        }
-
-        @Override
-        public View getInfoWindow(Marker marker) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
     }
 
 }
