@@ -30,12 +30,16 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_map"/>
 
-        <!-- added by Liz for TakeTour -->
+        <!-- TakeTour -->
         <activity
             android:name=".TakeTourActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_map"
-            android:parentActivityName=".OverviewActivity"/>
+            android:parentActivityName=".OverviewActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cs110.lit.adventour.OverviewActivity" />
+        </activity>
 
         <!-- Browse View -->
         <activity
