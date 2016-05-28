@@ -15,6 +15,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -133,6 +134,20 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
         /* handle search intent */
         handleIntent(getIntent());
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_tour);
+        if (fab != null)
+            fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchCreateTour();
+            }
+        });
+    }
+
+    private void launchCreateTour () {
+        Intent intent = new Intent(this, CreateTourActivity.class);
+        startActivity(intent);
     }
 
     private void NavigationSetUps() {

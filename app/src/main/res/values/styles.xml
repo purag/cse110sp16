@@ -27,6 +27,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+
+    <style name="CustomDialog" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">false</item>
+    </style>
+
     <style name="collapsedappbar" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/white</item>
@@ -41,6 +46,15 @@
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/white</item>
         <item name="colorControlNormal">@color/white</item>
+    </style>
+
+    <style name="textInputStyleBlack" parent="ThemeOverlay.AppCompat">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">#66000000</item>
+        <item name="android:textSize">18sp</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">#333333</item>
+        <item name="colorControlNormal">#333333</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
