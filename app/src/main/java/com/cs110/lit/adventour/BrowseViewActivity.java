@@ -142,7 +142,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             return false;
         }
         currentLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
-        if(currentLocation == null) {
+        if (currentLocation == null) {
             currentLocation = new Location("");
             currentLocation.setLatitude(32.881375);
             currentLocation.setLongitude(-117.233035);
@@ -206,11 +206,23 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         }
 
         System.out.println("Trying again");
-        Intent intent = new Intent(this, BrowseViewActivity.class);
-        startActivity(intent);
-        finish();
+        //Intent intent = new Intent(this, BrowseViewActivity.class);
+        //startActivity(intent);
+        //finish();
+
+        PostLocationRefreshView();
 
         return;
+
+    }
+
+    private void PostLocationRefreshView(){
+        if( setUpCurrentLocation()){
+            RefreshView(currentLocation.getLatitude(),currentLocation.getLongitude());
+        }
+        else{
+            System.err.println("FATAL ERROR");
+        }
 
     }
 
