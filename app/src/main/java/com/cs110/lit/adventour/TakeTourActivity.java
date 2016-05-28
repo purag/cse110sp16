@@ -2,6 +2,7 @@ package com.cs110.lit.adventour;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,13 +10,16 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import com.github.clans.fab.FloatingActionButton;
+
 import com.cs110.lit.adventour.model.ActiveTourCheckpoint;
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -237,6 +241,45 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
 
+    /* action bar back button override */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                alertWhenPressBackButton();
+                //backToOverviewView(tourID);
+                break;
+        }
+        return true;
+    }
+
+    private void alertWhenPressBackButton() {
+        new AlertDialog.Builder(this)
+                .setIcon(R.drawable.ic_warning_black)
+                .setTitle("Ending Tour")
+                .setMessage("Are you sure you want to end this tour? It won't be saved!\n Press Exit on the floating menu to save it")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        backToOverviewView(tourID);
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        alertWhenPressBackButton();
+    }
+
+    public void backToOverviewView(Integer tourID) {
+        Intent intent = new Intent(this, OverviewActivity.class);
+        intent.putExtra(OverviewActivity.TOUR_ID, tourID.intValue());
+        startActivity(intent);
+    }
+
     /* button listener for the  floating action bar */
     private void actionsForFABs() {
         FloatingActionButton skipFab = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
@@ -244,7 +287,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             skipFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.err.println("Button has been clicked!");
                     movetoNextCheckpoint();
                 }
             });
@@ -254,10 +296,42 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             undoFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.err.println("Button has been clicked!");
                     movetoBackACheckpoint();
                 }
             });
+
+        FloatingActionButton ExitFab = (FloatingActionButton) findViewById(R.id.exit_take_tour);
+        if (ExitFab != null)
+            ExitFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ExitFromTakeTour(false);
+                }
+            });
+    }
+
+    private void ExitFromTakeTour(boolean finishedLastCheckpoint){
+        if (!finishedLastCheckpoint) {
+            new AlertDialog.Builder(this)
+                    .setIcon(R.drawable.ic_warning_black)
+                    .setTitle("Exit Tour")
+                    .setMessage("Do you want to save this tour before finish it?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            backToOverviewView(tourID);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
+        backToBrowseHome();
+    }
+
+    private void backToBrowseHome() {
+        Intent intent = new Intent(this, BrowseViewActivity.class);
+        startActivity(intent);
     }
 
     private void movetoNextCheckpoint(){
