@@ -272,7 +272,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     (activePointList.get(upComingCheckpoint)).getLatitude(),
                     (activePointList.get(upComingCheckpoint)).getLongitude()))
                     .title((activePointList.get(upComingCheckpoint)).getTitle())
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_end)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
 
             //move onto the next checkpoint
         }
@@ -346,12 +346,12 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         else if(point.getReachedPoint()){
             marker = mMap.addMarker(new MarkerOptions().position(latLng)
                     .title(point.getTitle())
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_end)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
         }
         else { //else this must be an unvisited checkpoint
             marker = mMap.addMarker(new MarkerOptions().position(latLng)
                     .title(point.getTitle())
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_gray)));
         }
 
         //Now add this marker into a marker array so we can later update it

@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:contentScrim="@color/colorPrimary"
+                app:contentScrim="@color/colorPrimaryDark"
                 app:expandedTitleMarginStart="48dp"
                 app:expandedTitleMarginEnd="64dp"
                 android:fitsSystemWindows="true">
@@ -113,17 +113,6 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:nestedScrollingEnabled="false"/>
 
-            <Button
-                android:id="@+id/tour_metadata_start"
-                style="?android:textAppearanceLarge"
-                android:layout_width="300dp"
-                android:layout_height="50dp"
-                android:padding="10dp"
-                android:text="START TOUR"
-                android:textStyle="bold"
-                android:layout_gravity="center_horizontal"
-                android:backgroundTint="@color/colorTertiary"
-                android:onClick="showTakeTour"/>
 
         </LinearLayout>
 
@@ -134,8 +123,8 @@
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_play_arrow_white"
-        app:backgroundTint="@color/colorTertiary"
+        android:src="@drawable/ic_navigation_white"
+        app:backgroundTint="@color/colorPrimaryDark"
         android:layout_alignParentBottom="true"
 
         android:layout_alignParentEnd="true"
