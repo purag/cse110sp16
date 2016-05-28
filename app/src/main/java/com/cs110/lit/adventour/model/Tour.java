@@ -28,7 +28,7 @@ public class Tour {
 	}
 
 	public Tour(int tour_id, User user, String title, String summary,
-		 Boolean visibility, ArrayList<Checkpoint> listOfCheckpoints) {
+		 ArrayList<Checkpoint> listOfCheckpoints) {
 		this.tour_id = tour_id;
 		this.user = user;
 		this.title = title;
