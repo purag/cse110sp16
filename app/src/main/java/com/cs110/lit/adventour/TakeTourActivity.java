@@ -20,6 +20,7 @@ import com.cs110.lit.adventour.model.ActiveTourCheckpoint;
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
 import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -257,7 +258,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_warning_black)
                 .setTitle("Ending Tour")
-                .setMessage("Are you sure you want to end this tour? It won't be saved!\n Press Exit on the floating menu to save it")
+                .setMessage("Are you sure you want to end this tour without saving?\nPress Exit on floating menu to save it")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -282,14 +283,17 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
     /* button listener for the  floating action bar */
     private void actionsForFABs() {
+        final FloatingActionMenu floatingActionsMenu = (FloatingActionMenu) findViewById(R.id.floating_menu_for_take_tour);
         FloatingActionButton skipFab = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
-        if (skipFab != null)
+        if (skipFab != null) {
             skipFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     movetoNextCheckpoint();
+                    //floatingActionsMenu.close(true);
                 }
             });
+        }
 
         FloatingActionButton undoFab = (FloatingActionButton) findViewById(R.id.undo_skip_checkpoint);
         if (undoFab != null)
@@ -297,6 +301,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 @Override
                 public void onClick(View view) {
                     movetoBackACheckpoint();
+                    //floatingActionsMenu.close(true);
                 }
             });
 
@@ -319,14 +324,38 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            backToOverviewView(tourID);
+                            saveTourToMyTourOnDB();
+                            //finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
                     })
-                    .setNegativeButton("No", null)
                     .show();
         }
-        backToBrowseHome();
+        else {
+            new AlertDialog.Builder(this)
+                    .setIcon(R.drawable.icon_good_job)
+                    .setTitle("Congratulations!!")
+                    .setMessage("You finished this tour! Do you want to save this tour?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            saveTourToMyTourOnDB();
+                            //finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .show();
+        }
     }
 
     private void backToBrowseHome() {
@@ -340,6 +369,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         //To avoid out of index errors
         if(upComingCheckpoint >= activePointList.size()-1){
+            ExitFromTakeTour(true);
             return;
         }
 
@@ -413,6 +443,16 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+    private void saveTourToMyTourOnDB(){
+        AlertDialog.Builder SaveBuilder = new AlertDialog.Builder(this);
+        SaveBuilder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        }).setMessage(tourTitle + " is successfully saved into your tour list").show();
+        /* call post to DB and save the tour to user taken */
+    }
 
     /**
      * Simple helper function to set a marker at your current location.
