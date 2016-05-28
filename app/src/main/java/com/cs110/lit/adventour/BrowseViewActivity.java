@@ -101,27 +101,31 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         list = (ListView) findViewById(R.id.browse_list);
 
         /* set up location manager and location permissions */
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
-            return;
-        }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_REQUEST_CODE);
-            return;
-        }
-        currentLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
-        if(currentLocation == null) {
-            currentLocation = new Location("");
-            currentLocation.setLatitude(33);
-            currentLocation.setLongitude(-117);
-        }
-
+        if (!setUpCurrentLocation()) return;
 
         GetNearbyToursForList(currentLocation.getLatitude(), currentLocation.getLongitude());
 
         /* Allow user to refresh the list by pushing down */
+        SwipeDownToRefreshLastKnownList();
+
+        /* handle search intent */
+        handleIntent(getIntent());
+
+        ClickFloatingButtonToLaunchCreateTour();
+    }
+
+    private void ClickFloatingButtonToLaunchCreateTour() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_tour);
+        if (fab != null)
+            fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchCreateTour();
+            }
+        });
+    }
+
+    private void SwipeDownToRefreshLastKnownList() {
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
         assert refreshLayout != null;
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -131,18 +135,26 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 refreshLayout.setRefreshing(false);
             }
         });
+    }
 
-        /* handle search intent */
-        handleIntent(getIntent());
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_tour);
-        if (fab != null)
-            fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launchCreateTour();
-            }
-        });
+    private boolean setUpCurrentLocation() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            return false;
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_REQUEST_CODE);
+            return false;
+        }
+        currentLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        if(currentLocation == null) {
+            currentLocation = new Location("");
+            currentLocation.setLatitude(33);
+            currentLocation.setLongitude(-117);
+        }
+        return true;
     }
 
     private void launchCreateTour () {
@@ -389,7 +401,7 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -452,7 +464,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         }
     }
 
-
     private void displayNearbyToursInMap(final LatLng myLocation, final GoogleMap mMap) {
         if (mMap == null) return;
         mMap.clear();
@@ -484,35 +495,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         });
 
     }
-
-
-    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-
-        private final View myContentsView;
-
-        MyInfoWindowAdapter(){
-            myContentsView = getLayoutInflater().inflate(R.layout.custom_window_info_contents, null);
-        }
-
-        @Override
-        public View getInfoContents(Marker marker) {
-
-            TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.title));
-            tvTitle.setText(marker.getTitle());
-            TextView tvSnippet = ((TextView)myContentsView.findViewById(R.id.snippet));
-            tvSnippet.setText(marker.getSnippet());
-
-            return myContentsView;
-        }
-
-        @Override
-        public View getInfoWindow(Marker marker) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
