@@ -74,12 +74,12 @@
         <com.github.clans.fab.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_label="@string/create_checkpt"
+            fab:fab_label="Back to Previous Checkpoint"
             fab:fab_size="mini"
             fab:fab_colorNormal="#3333BB"
             fab:fab_colorPressed="#000099"
             android:src="@drawable/ic_add_location_white"
-            android:id="@+id/fab_touropts_create_checkpt"/>
+            android:id="@+id/undo_skip_checkpoint"/>
 
     </com.github.clans.fab.FloatingActionMenu>
 
