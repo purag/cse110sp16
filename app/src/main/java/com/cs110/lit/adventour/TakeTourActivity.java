@@ -52,7 +52,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
     public static final String TOUR_ID = "tour_id";
     public static final String TOUR_TITLE = "tour_title";
-
     /* Tour Model Related */
     private int tourID;
     private String tourTitle;
@@ -237,6 +236,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+
     /* button listener for the  floating action bar */
     private void actionsForFABs() {
         FloatingActionButton skipFab = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
@@ -265,7 +265,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         //TODO: Insert pop up fragment here to display checkpoint info
 
         //To avoid out of index errors
-        if(upComingCheckpoint >= activePointList.size() -1){
+        if(upComingCheckpoint >= activePointList.size()-1){
             return;
         }
 
@@ -275,21 +275,30 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
 
         //Only update the markers if they are not the starting or end ones
-        if(!(upComingCheckpoint == 0 || upComingCheckpoint == activePointList.size()-1)) {
-            //edit info for that checkpoint
-            (activePointList.get(upComingCheckpoint)).setReachedPoint(true);
-            (activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
 
-            // move the view camera to the next checkpoint
-            LatLng upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint+1)).getLatitude(), (activePointList.get(upComingCheckpoint+1)).getLongitude());
-            LatLng current_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(upcoming_latLng, 16));
+        //edit info for that checkpoint
+        (activePointList.get(upComingCheckpoint)).setReachedPoint(true);
+        (activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
 
-            //Rerender the map with the updated checkpoints (Whether visited or not)
+        // move the view camera to the next checkpoint
+        LatLng upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint+1)).getLatitude(), (activePointList.get(upComingCheckpoint+1)).getLongitude());
+        LatLng current_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(upcoming_latLng, 16));
+
+        //Rerender the map with the updated checkpoints (Whether visited or not)
+
+        if(upComingCheckpoint != 0){
             (markerList.get(upComingCheckpoint)).remove();
             mMap.addMarker(new MarkerOptions().position(current_latLng)
                     .title((activePointList.get(upComingCheckpoint)).getTitle())
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
+            (markerList.get(upComingCheckpoint)).remove();
+        }
+
+        if(upComingCheckpoint < activePointList.size()-2 ) {
+            mMap.addMarker(new MarkerOptions().position(upcoming_latLng)
+                    .title((activePointList.get(upComingCheckpoint+1)).getTitle())
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_start)));
         }
 
         //move onto the next checkpoint
@@ -306,23 +315,28 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         //move back a checkpoint
         upComingCheckpoint--;
-
         //edit info for that checkpoint
         (activePointList.get(upComingCheckpoint)).setReachedPoint(false);
-        //(activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
+        (activePointList.get(upComingCheckpoint)).setuUpcomingPoint(true);
 
-        // move the view camera to the next checkpoint
+        // move the view camera back to the previous upcoming checkpoint
         LatLng previous_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
+        LatLng up_upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint+1)).getLatitude(), (activePointList.get(upComingCheckpoint+1)).getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(previous_latLng, 16));
 
-        if(upComingCheckpoint < 1) return;
         //Rerender the map with the updated checkpoints (Whether visited or not)
-        (markerList.get(upComingCheckpoint)).remove();
-
-        mMap.addMarker(new MarkerOptions().position(previous_latLng)
-                .title((activePointList.get(upComingCheckpoint)).getTitle())
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_gray)));
-
+        if(upComingCheckpoint != 0) {
+            (markerList.get(upComingCheckpoint)).remove();
+            mMap.addMarker(new MarkerOptions().position(previous_latLng)
+                    .title((activePointList.get(upComingCheckpoint)).getTitle())
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_start)));
+        }
+        if(upComingCheckpoint < activePointList.size()-2) {
+            (markerList.get(upComingCheckpoint+1)).remove();
+            mMap.addMarker(new MarkerOptions().position(up_upcoming_latLng)
+                    .title((activePointList.get(upComingCheckpoint+1)).getTitle())
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_gray)));
+        }
     }
 
 
