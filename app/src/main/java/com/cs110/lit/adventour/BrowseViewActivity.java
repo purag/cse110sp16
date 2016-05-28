@@ -1,7 +1,9 @@
 package com.cs110.lit.adventour;
-
 /**
- * Created by achen on 5/6/16.
+ * BrowseViewActivity
+ * This activity works as a home page for Adventour.
+ * It gets the current location of the user and show a list of tours nearby
+ * The view switches between a list view and a map view
  */
 
 import android.Manifest;
@@ -114,29 +116,9 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         ClickFloatingButtonToLaunchCreateTour();
     }
 
-    private void ClickFloatingButtonToLaunchCreateTour() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_tour);
-        if (fab != null)
-            fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launchCreateTour();
-            }
-        });
-    }
-
-    private void SwipeDownToRefreshLastKnownList() {
-        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
-        assert refreshLayout != null;
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
-                refreshLayout.setRefreshing(false);
-            }
-        });
-    }
-
+    ////////////////////////////////////////////////////////////////
+    /////// ------------------ SET UPS -----------------------//////
+    ////////////////////////////////////////////////////////////////
     private boolean setUpCurrentLocation() {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationNetworkProvider = LocationManager.NETWORK_PROVIDER;
@@ -155,11 +137,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
             currentLocation.setLongitude(-117);
         }
         return true;
-    }
-
-    private void launchCreateTour () {
-        Intent intent = new Intent(this, CreateTourActivity.class);
-        startActivity(intent);
     }
 
     private void NavigationSetUps() {
@@ -182,6 +159,70 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         TextView email = (TextView) header.findViewById(R.id.nav_header_email);
         name.setText(prefs.getString("uname", "User"));
         email.setText(prefs.getString("uemail", "user@example.com"));
+    }
+
+    private void RefreshView(double latitude, double longitude) {
+        // refresh List
+        GetNearbyToursForList(latitude, longitude);
+        // refresh Map
+        lastUsedLng = new LatLng(latitude, longitude);
+        displayNearbyToursInMap(lastUsedLng, mMap);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        //show me what you got
+        int i = 0;
+        for (String s : permissions) {
+            System.out.println("at request permission result" + s + grantResults[i] + "\n");
+            i++;
+        }
+
+        System.out.println("Trying again");
+        Intent intent = new Intent(this, BrowseViewActivity.class);
+        startActivity(intent);
+        finish();
+
+        return;
+
+    }
+
+    ////////////////////////////////////////////////////////////////
+    /////// ----------- Call for other Activities ------------//////
+    ////////////////////////////////////////////////////////////////
+    private void ClickFloatingButtonToLaunchCreateTour() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_tour);
+        if (fab != null)
+            fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchCreateTour();
+            }
+        });
+    }
+
+    private void launchCreateTour () {
+        Intent intent = new Intent(this, CreateTourActivity.class);
+        startActivity(intent);
+    }
+
+    public void showOverviewView(Integer tourID) {
+        Intent intent = new Intent(this, OverviewActivity.class);
+        intent.putExtra(OverviewActivity.TOUR_ID, tourID.intValue());
+        startActivity(intent);
+    }
+
+    private void SwipeDownToRefreshLastKnownList() {
+        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
+        assert refreshLayout != null;
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
+                refreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     //////////////////////////////////////////////////////////
@@ -218,8 +259,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
     }
 
     ///////////////////////////////////////////////////////////
-    ///-----------THIS IS FOR LIST VIEW -----------------///
-    //////////////////////////////////////////////////////////
+    ///--------------THIS IS FOR LIST VIEW -----------------///
+    ///////////////////////////////////////////////////////////
     private void GetNearbyToursForList(double latitude, double longitude) {
         DB.getToursNearLoc(latitude, longitude, 25, 10, this, new DB.Callback<ArrayList<Tour>>() {
             @Override
@@ -280,119 +321,6 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
                 "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
     }
-
-
-    /**
-     * Create option menu
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_list_actions, menu);
-
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        // Configure the search info and add any event listeners...
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
-    /**
-     * Case selection for option menu
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (navigationToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        // Take appropriate action for each action item click
-        switch (item.getItemId()) {
-            case R.id.action_search:
-
-                // search action
-                return true;
-            case R.id.action_map_view:
-                // switch to the map view using view flipper
-                item.setChecked(!item.isChecked());
-                item.setIcon(item.isChecked() ? R.drawable.ic_view_list_white : R.drawable.ic_map_white);
-                viewFlipper.showNext();
-                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.map);
-                mapFragment.getMapAsync(this);
-                return true;
-            case R.id.action_refresh:
-                // refresh
-                RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
-                System.out.println("Dont think it is this one!!");
-                return true;
-            case R.id.action_help:
-                // help action
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-
-    //-------------------Functions related to navigation stuff ----------------//
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_my_tours) {
-
-
-        } else if (id == R.id.nav_browse) {
-
-        } else if (id == R.id.nav_log_out) {
-            // handle log out
-            editor.clear();
-            editor.commit();
-            Intent login = new Intent(this, LoginActivity.class);
-            startActivity(login);
-            finish();
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-
-    /**
-     * Show overview of a tour when click list item
-     * TODO: Send data to overview activity
-     */
-    public void showOverviewView(Integer tourID) {
-        Intent intent = new Intent(this, OverviewActivity.class);
-        intent.putExtra(OverviewActivity.TOUR_ID, tourID.intValue());
-        startActivity(intent);
-    }
-
-
-    /**
-     * Function that handles all the data refresh
-     * @param latitude
-     * @param longitude
-     */
-    private void RefreshView(double latitude, double longitude) {
-        // refresh List
-        GetNearbyToursForList(latitude, longitude);
-        // refresh Map
-        lastUsedLng = new LatLng(latitude, longitude);
-        displayNearbyToursInMap(lastUsedLng, mMap);
-    }
-
 
     ///////////////////////////////////////////////////////////
     ///-----------THIS IS FOR THE MAP VIEW -----------------///
@@ -496,22 +424,83 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
 
     }
 
+    ///////////////////////////////////////////////////////////
+    ///--------------OPTIONS AND NAVIGATION ----------------///
+    ///////////////////////////////////////////////////////////
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        //show me what you got
-        int i = 0;
-        for (String s : permissions) {
-            System.out.println("at request permission result" + s + grantResults[i] + "\n");
-            i++;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_list_actions, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        // Configure the search info and add any event listeners...
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (navigationToggle.onOptionsItemSelected(item)) {
+            return true;
         }
 
-        System.out.println("Trying again");
-        Intent intent = new Intent(this, BrowseViewActivity.class);
-        startActivity(intent);
-        finish();
+        // Take appropriate action for each action item click
+        switch (item.getItemId()) {
+            case R.id.action_search:
 
-        return;
+                // search action
+                return true;
+            case R.id.action_map_view:
+                // switch to the map view using view flipper
+                item.setChecked(!item.isChecked());
+                item.setIcon(item.isChecked() ? R.drawable.ic_view_list_white : R.drawable.ic_map_white);
+                viewFlipper.showNext();
+                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.map);
+                mapFragment.getMapAsync(this);
+                return true;
+            case R.id.action_refresh:
+                // refresh
+                RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
+                System.out.println("Dont think it is this one!!");
+                return true;
+            case R.id.action_help:
+                // help action
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_my_tours) {
+
+
+        } else if (id == R.id.nav_browse) {
+
+        } else if (id == R.id.nav_log_out) {
+            // handle log out
+            editor.clear();
+            editor.commit();
+            Intent login = new Intent(this, LoginActivity.class);
+            startActivity(login);
+            finish();
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
