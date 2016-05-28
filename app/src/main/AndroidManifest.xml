@@ -25,15 +25,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_map"></activity>
+            android:label="@string/title_activity_map"/>
 
         <!-- added by Liz for TakeTour -->
         <activity
             android:name=".TakeTourActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_map"
-            android:parentActivityName=".OverviewActivity"></activity>
+            android:parentActivityName=".OverviewActivity"/>
 
         <!-- Browse View -->
         <activity
@@ -49,11 +51,12 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
         <activity
             android:name=".OverviewActivity"
             android:label="@string/text_content"
             android:parentActivityName=".BrowseViewActivity"
-            android:theme="@style/NoActionBar"></activity>
+            android:theme="@style/NoActionBar"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -62,7 +65,7 @@
         <activity
             android:name=".CreateTourActivity"
             android:label="@string/title_activity_create_tour"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>
