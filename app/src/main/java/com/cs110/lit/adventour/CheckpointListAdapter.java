@@ -1,14 +1,11 @@
 package com.cs110.lit.adventour;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,8 +98,12 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
                 context.startActivity(intent);*/
             }
         });
-
-        Glide.with(vHolder.mImageView.getContext()).load(checkpoint.getPhoto())
+    
+        String google_testString = ("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                Double.toString(checkpoint.getLatitude()) +"," + Double.toString(checkpoint.getLongitude()) +
+                "&heading=15&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
+        String photo_string = checkpoint.getPhoto();
+        Glide.with(vHolder.mImageView.getContext()).load(google_testString)
                 .fitCenter().into(vHolder.mImageView);
     }
 
