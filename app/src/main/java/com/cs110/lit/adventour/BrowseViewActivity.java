@@ -127,6 +127,16 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         ClickFloatingButtonToLaunchCreateTour();
     }
 
+    @Override
+    public void onResume () {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences("Login", -1);
+        if (!prefs.getBoolean("auth", false)) {
+            finish();
+        }
+    }
+
+
     ////////////////////////////////////////////////////////////////
     /////// ------------------ SET UPS -----------------------//////
     ////////////////////////////////////////////////////////////////
