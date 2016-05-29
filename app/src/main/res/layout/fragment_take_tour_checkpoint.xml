@@ -15,6 +15,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ImageView
+            android:scaleType="centerCrop"
             android:layout_width="fill_parent"
             android:id="@+id/tour_metadata_img"
             android:layout_height="200dp"
@@ -37,10 +38,6 @@
         android:paddingLeft="?listPreferredItemPaddingLeft"
         android:paddingRight="?listPreferredItemPaddingRight"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#8f8f8f" />
 
     <TextView
         android:id="@+id/checkpoint_metadata_summary"
@@ -57,6 +54,15 @@
         android:layout_weight="1"
         android:paddingLeft="?listPreferredItemPaddingLeft"
         android:paddingRight="?listPreferredItemPaddingRight"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Continue"
+        android:id="@+id/create_tour_continue"
+        android:layout_weight="1"
+        android:background="@color/colorTertiary"
+        android:clickable="true" />
 
 
 </LinearLayout>
