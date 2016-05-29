@@ -2,7 +2,10 @@ package com.cs110.lit.adventour;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +17,7 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -32,6 +36,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +59,7 @@ public class CreateTourActivity extends AppCompatActivity implements OnMapReadyC
     private LatLng currentLatLng;
     private String locationNetworkProvider;
 
-    private DialogFragment tourMetadataFragment;
-    private DialogFragment checkpointMetadataFragment;
+    private DialogFragment openFragment;
 
     private Tour tour;
     private ArrayList<Checkpoint> checkpoints = new ArrayList<>();
@@ -72,6 +76,9 @@ public class CreateTourActivity extends AppCompatActivity implements OnMapReadyC
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Preparing map...");
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -81,13 +88,13 @@ public class CreateTourActivity extends AppCompatActivity implements OnMapReadyC
 
     private void showTourMetadataDialog () {
         // Create and show the dialog.
-        tourMetadataFragment = CreateTourMetadataFragment.newInstance(this);
-        tourMetadataFragment.show(getSupportFragmentManager(), "tour_metadata_dialog");
+        openFragment = CreateTourMetadataFragment.newInstance(this);
+        openFragment.show(getSupportFragmentManager(), "tour_metadata_dialog");
     }
 
     private void showCheckpointMetadataDialog (boolean cancelable) {
-        checkpointMetadataFragment = CreateCheckpointMetadataFragment.newInstance(this, cancelable);
-        checkpointMetadataFragment.show(getSupportFragmentManager(), "checkpoint_metadata_dialog");
+        openFragment = CreateCheckpointMetadataFragment.newInstance(this, cancelable);
+        openFragment.show(getSupportFragmentManager(), "checkpoint_metadata_dialog");
     }
 
 
@@ -137,34 +144,52 @@ public class CreateTourActivity extends AppCompatActivity implements OnMapReadyC
                     public void onProviderDisabled(String provider) {}
                 });
 
-        currentLocation = locationManager.getLastKnownLocation(locationNetworkProvider);
+        currentLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
         LatLng curLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, 14));
 
         progressDialog.dismiss();
 
-        if (tourMetadataFragment != null)
-            tourMetadataFragment.dismiss();
-        if (checkpointMetadataFragment != null)
-            checkpointMetadataFragment.dismiss();
+        if (openFragment != null)
+            openFragment.dismiss();
 
         showTourMetadataDialog();
 
         FloatingActionButton createCheckpt = (FloatingActionButton) findViewById(R.id.fab_touropts_create_checkpt);
-        createCheckpt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCheckpointMetadataDialog(false);
-            }
-        });
+        if (createCheckpt != null)
+            createCheckpt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showCheckpointMetadataDialog(true);
+                }
+            });
 
         FloatingActionButton endTour = (FloatingActionButton) findViewById(R.id.fab_touropts_end_tour);
-        endTour.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        if (endTour != null)
+            endTour.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+
+        FloatingActionButton finishTour = (FloatingActionButton) findViewById(R.id.fab_touropts_finish_tour);
+        if (finishTour != null)
+            finishTour.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressDialog.setMessage("Uploading Tour...");
+                    progressDialog.setCancelable(false);
+                    progressDialog.setCanceledOnTouchOutside(false);
+                    progressDialog.show();
+                    new TourUpload().execute(tour);
+                }
+            });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        openFragment.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -188,13 +213,13 @@ public class CreateTourActivity extends AppCompatActivity implements OnMapReadyC
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(t.getTitle());
 
-        // prefs = getApplicationContext().getSharedPreferences("Login", 0);
-        // t.setUser(new User(prefs.getInt("uid", -1), prefs.getString("uname", ""), ""));
+        prefs = getApplicationContext().getSharedPreferences("Login", 0);
+        t.setUser(new User(prefs.getInt("uid", -1), prefs.getString("uname", ""), ""));
 
         tour = t;
-        tourMetadataFragment.dismiss();
+        openFragment.dismiss();
 
-        showCheckpointMetadataDialog(true);
+        showCheckpointMetadataDialog(false);
     }
 
     @Override
@@ -207,6 +232,7 @@ public class CreateTourActivity extends AppCompatActivity implements OnMapReadyC
         if (tour.getListOfCheckpoints().size() == 0)
             first = true;
 
+        c.setOrder_num(tour.getListOfCheckpoints().size() + 1);
         tour.getListOfCheckpoints().add(c);
 
         points.add(currentLatLng);
@@ -221,6 +247,41 @@ public class CreateTourActivity extends AppCompatActivity implements OnMapReadyC
                 .title(c.getTitle())
                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
 
-        checkpointMetadataFragment.dismiss();
+        openFragment.dismiss();
+    }
+
+    private class TourUpload extends AsyncTask<Tour, Void, String> {
+        @Override
+        protected String doInBackground(Tour... params) {
+            Gson gson = new Gson();
+            return gson.toJson(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            DB.uploadTour(s, CreateTourActivity.this, new DB.Callback<Integer> () {
+                @Override
+                public void onSuccess(Integer tour_id) {
+                    progressDialog.dismiss();
+                    Intent intent = new Intent(CreateTourActivity.this, OverviewActivity.class);
+                    intent.putExtra(OverviewActivity.TOUR_ID, tour_id.intValue());
+                    CreateTourActivity.this.startActivity(intent);
+                    CreateTourActivity.this.finish();
+                }
+
+                @Override
+                public void onFailure(Integer integer) {
+                    progressDialog.dismiss();
+                    new AlertDialog.Builder(CreateTourActivity.this)
+                        .setTitle("Upload Failed.")
+                        .setMessage("Please try again soon!")
+                        .setPositiveButton("OK", null)
+                        .show();
+                }
+            });
+        }
+
+        @Override protected void onPreExecute() {}
+        @Override protected void onProgressUpdate(Void... values) {}
     }
 }
