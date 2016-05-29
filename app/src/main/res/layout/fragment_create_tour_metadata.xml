@@ -1,0 +1,95 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="16dp"
+    android:orientation="vertical"
+    tools:context="com.cs110.lit.adventour.CreateTourMetadataFragment"
+    android:id="@+id/tour_metadata_form"
+    android:divider="@android:color/black"
+    android:showDividers="middle">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+        android:layout_width="fill_parent"
+        android:id="@+id/tour_metadata_img"
+        android:layout_height="200dp"
+        android:background="@android:color/darker_gray" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_a_photo_white"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"/>
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/create_tour_title_input"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@null"
+        android:gravity="center_vertical|start"
+        android:minHeight="?listPreferredItemHeight"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:textSize="24sp"
+        android:hint="Tour Title"
+        android:paddingLeft="?listPreferredItemPaddingLeft"
+        android:paddingRight="?listPreferredItemPaddingRight"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f8f8f" />
+
+    <EditText
+        android:id="@+id/create_tour_summary_input"
+        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:background="@null"
+        android:gravity="top|start"
+        android:minHeight="?listPreferredItemHeight"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:textSize="18sp"
+        android:minLines="1"
+        android:hint="Tour Summary"
+        android:layout_weight="1"
+        android:paddingLeft="?listPreferredItemPaddingLeft"
+        android:paddingRight="?listPreferredItemPaddingRight"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/create_tour_cancel"
+            android:layout_weight="1"
+            android:background="@color/colorGray"
+            android:clickable="true" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Continue"
+            android:id="@+id/create_tour_continue"
+            android:layout_weight="1"
+            android:background="@color/colorTertiary"
+            android:clickable="true" />
+
+    </LinearLayout>
+
+</LinearLayout>

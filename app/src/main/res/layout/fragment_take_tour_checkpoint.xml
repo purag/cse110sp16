@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.cs110.lit.adventour.CreateTourMetadataFragment"
+    android:id="@+id/tour_metadata_form"
+    android:divider="@android:color/black"
+    android:showDividers="middle">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:scaleType="centerCrop"
+            android:layout_width="fill_parent"
+            android:id="@+id/tour_metadata_img"
+            android:layout_height="200dp"
+            android:background="@android:color/darker_gray" />
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/checkpoint_metadata_title"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@null"
+        android:gravity="center_vertical|start"
+        android:minHeight="?listPreferredItemHeight"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:textSize="24sp"
+
+        android:paddingLeft="?listPreferredItemPaddingLeft"
+        android:paddingRight="?listPreferredItemPaddingRight"/>
+
+
+    <TextView
+        android:id="@+id/checkpoint_metadata_summary"
+        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:background="@null"
+        android:gravity="top|start"
+        android:minHeight="?listPreferredItemHeight"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:textSize="18sp"
+        android:minLines="1"
+
+        android:layout_weight="1"
+        android:paddingLeft="?listPreferredItemPaddingLeft"
+        android:paddingRight="?listPreferredItemPaddingRight"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Continue"
+        android:id="@+id/create_tour_continue"
+        android:layout_weight="1"
+        android:background="@color/colorTertiary"
+        android:clickable="true" />
+
+
+</LinearLayout>

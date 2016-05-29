@@ -5,10 +5,6 @@ package com.cs110.lit.adventour;
  */
 
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +12,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cs110.lit.adventour.model.Checkpoint;
@@ -30,6 +25,7 @@ import java.util.ArrayList;
 
 public class OverviewActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbarLayout = null;
+    private OverviewActivity thisActivity = this;
 
     public static final String TOUR_ID = "tour_id";
     private int tourID;
@@ -51,6 +47,7 @@ public class OverviewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         tourID = intent.getIntExtra(TOUR_ID, -1);
         DB.getTourById(tourID, this, new DB.Callback<Tour>() {
+
             @Override
             public void onSuccess(Tour tour) {
 
@@ -64,9 +61,13 @@ public class OverviewActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(tourTitle);
                 setSummaryCard(tourCreatorName, tourSummary);
 
-                Checkpoint first = checkpoints.get(0);
-                String testPhoto = first.getPhoto();
-                loadBackdrop(testPhoto);
+                //Get the photo from the first checkpoint to load as background
+                String firstPhoto = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                        Double.toString(checkpoints.get(0).getLatitude()) +"," +
+                        Double.toString(checkpoints.get(0).getLongitude()) +
+                        "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
+                loadBackdrop(firstPhoto);
+
                 displayCheckpoints(checkpoints);
             }
 

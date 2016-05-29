@@ -79,6 +79,57 @@ public class DB {
         requestQueue.add(req);
     }
 
+
+    /**
+     * Will send the tour data to the database
+     *
+     * @param user the user who created the tour
+     * @param title the title of the tour
+     * @param summary the summary of the tour
+     * @param start_Lat the starting latitude of the tour
+     * @param start_Long the starting longitude of the tour
+     */
+    public static void createTourData(final User user, final String title,
+                                      final String summary, final double start_Lat, final double start_Long,
+                                    Context c, final Callback<Tour> cb){
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+
+        /* Prepare the request body. */
+        JSONObject body;
+        try {
+            body = new JSONObject("{'userID':'" + user.getUser_id() + "', 'title':'" + title + "', 'summary':'" + summary + "'}");
+        } catch (Exception e) {
+            body = null;
+        }
+
+        /* Prepare the request with the POST method */
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "setTour", body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    cb.onSuccess(new Tour(
+                            response.getInt("tour_id"),
+                            user,
+                            response.getString("title"),
+                            response.getString("summary"),
+                            0.0,
+                            0.0
+                    ));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                cb.onFailure(null);
+            }
+        });
+
+        /* Actually make the request */
+        requestQueue.add(req);
+    }
+
     /**
      * Authenticate a user against the database of registered users.
      *
@@ -170,7 +221,6 @@ public class DB {
                             ),
                             response.getString("tour_title"),
                             response.getString("tour_summary"),
-                            response.getInt("tour_visibility") == 1,
                             checkpoints
                     );
                 } catch (JSONException e) {
@@ -226,7 +276,6 @@ public class DB {
                                 ),
                                 tour.getString("tour_title"),
                                 tour.getString("tour_summary"),
-                                tour.getInt("tour_visibility") == 1,
                                 tour.getDouble("starting_lat"),
                                 tour.getDouble("starting_lng")
                         ));
@@ -280,9 +329,8 @@ public class DB {
                                 ),
                                 tour.getString("tour_title"),
                                 tour.getString("tour_summary"),
-                                tour.getInt("tour_visibility") == 1,
-                                0,
-                                0
+                                tour.getDouble("starting_lat"),
+                                tour.getDouble("starting_lng")
                         ));
                     }
                 } catch (JSONException e) {
