@@ -81,6 +81,48 @@ public class DB {
         requestQueue.add(req);
     }
 
+    /**
+     * Save a tour a user has taken to their list of taken tours.
+     *
+     * @param tour_id
+     * @param user_id
+     * @param c
+     * @param cb
+     */
+    public static void saveTourTakenByUser (int tour_id, int user_id, Context c, final Callback<Integer> cb) {
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+        String reqUrl = base + "users/" + user_id + "/tours/taken";
+
+        /* Prepare the request body. */
+        JSONObject body;
+        try {
+            body = new JSONObject("{tour_id: " + tour_id + "}");
+        } catch (Exception e) {
+            body = null;
+        }
+
+        /* Prepare the request with the POST method */
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, reqUrl, body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Integer tourId = response.getInt("tour_id");
+                    cb.onSuccess(tourId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                cb.onFailure(null);
+            }
+        });
+
+        /* Actually make the request */
+        requestQueue.add(req);
+    }
+
 
     /**
      * Will send the tour data to the database
@@ -89,8 +131,9 @@ public class DB {
      * @param c the context (activity) from which this database access is being made
      * @param cb the callback object (implementing the onSuccess method)
      */
-    public static void uploadTour(String tourJson, Context c, final Callback<Integer> cb){
+    public static void uploadTour (String tourJson, Context c, final Callback<Integer> cb){
         RequestQueue requestQueue = Volley.newRequestQueue(c);
+        String reqUrl = base + "tours";
 
         /* Prepare the request body. */
         JSONObject body;
@@ -101,7 +144,7 @@ public class DB {
         }
 
         /* Prepare the request with the POST method */
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "tours", body, new Response.Listener<JSONObject>() {
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, reqUrl, body, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -129,9 +172,9 @@ public class DB {
      * @param c
      * @param cb
      */
-    public static void uploadPhoto(final String photo, Context c, final Callback<String> cb){
+    public static void uploadPhoto (final String photo, Context c, final Callback<String> cb){
         RequestQueue requestQueue = Volley.newRequestQueue(c);
-        System.out.println(photo.length());
+        String reqUrl = base + "upload";
 
         JSONObject body;
         try {
@@ -141,7 +184,7 @@ public class DB {
         }
 
         /* Prepare the request with the POST method */
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "upload", body, new Response.Listener<JSONObject>() {
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, reqUrl, body, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -169,8 +212,9 @@ public class DB {
      * @param password the encrypted password of the user to authenticate
      * @param cb the callback object (implementing the onSuccess method)
      */
-    public static void authenticateUser(final String email, final String password, Context c, final Callback<User> cb){
+    public static void authenticateUser (final String email, final String password, Context c, final Callback<User> cb){
         RequestQueue requestQueue = Volley.newRequestQueue(c);
+        String reqUrl = base + "login";
 
         /* Prepare the request body. */
         JSONObject body;
@@ -181,7 +225,7 @@ public class DB {
         }
 
         /* Prepare the request with the POST method */
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "login", body, new Response.Listener<JSONObject>() {
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, reqUrl, body, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
