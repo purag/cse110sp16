@@ -259,6 +259,11 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         finish();
     }
 
+    private void launchViewTours(){
+        Intent intent = new Intent(this, MyToursActivity.class);
+        startActivity(intent);
+    }
+
     //////////////////////////////////////////////////////////
     /////////------- Code Handles Search --------------///////
     //////////////////////////////////////////////////////////
@@ -519,7 +524,8 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         int id = item.getItemId();
 
         if (id == R.id.nav_my_tours) {
-
+            //handle shift to view my tours
+            launchViewTours();
 
         } else if (id == R.id.nav_browse) {
 

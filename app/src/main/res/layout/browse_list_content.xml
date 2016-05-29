@@ -38,8 +38,22 @@
         android:id="@+id/NoToursList"
         android:textStyle="bold"
         android:textSize="27dp"
+        android:typeface="normal"
+        android:layout_alignTop="@+id/NoMyToursList"
+        android:layout_alignStart="@+id/NoMyToursList"
+        android:visibility="gone" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="No Taken Tours Found"
+        android:id="@+id/NoMyToursList"
+        android:textStyle="bold"
+        android:textSize="27dp"
+        android:typeface="normal"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:typeface="normal" />
+        android:visibility="gone" />
 
 </RelativeLayout>

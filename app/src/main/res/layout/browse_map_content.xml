@@ -44,4 +44,16 @@
         android:layout_centerHorizontal="true"
         android:visibility="gone" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="No Taken Tours Found"
+        android:id="@+id/NoMyToursMap"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:textStyle="bold"
+        android:textSize="27dp" />
+
 </RelativeLayout>
