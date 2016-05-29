@@ -39,7 +39,7 @@ import java.util.ArrayList;
 /**
  * Created by Izhikevich on 5/20/16.
  */
-public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCallback,  TakeTourCheckpointFragment.TakeTourCheckpointListener{
 
     // Request Constant.
     private static final int LOCATION_REQUEST_CODE = 0;
@@ -248,12 +248,17 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 (activePointList.get(upComingCheckpoint)).getLongitude(), results);
 
         //TODO: figure out which distance we need to be away from to get a notification
-        if (results[0] < LOCATION_REFRESH_DISTANCE &&
+        if (results[0] < /*LOCATION_REFRESH_DISTANCE*/20 &&
                 !((activePointList.get(upComingCheckpoint).getReachedPoint()))) {
 
             movetoNextCheckpoint();
             //reset the distance
             results[0] = 0;
+
+        }
+        else{
+            System.out.println("too far, reuslt[0] was " + results[0]);
+            System.out.println("min distance is " +LOCATION_REFRESH_DISTANCE);
 
         }
     }
@@ -406,7 +411,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(
                 (activePointList.get(upComingCheckpoint)).getTitle(),
                 (activePointList.get(upComingCheckpoint)).getDescription(),
-                photo);
+                photo, this);
 
         newFragment.show(ft, "take_tour_checkpoint_dialog");
 
