@@ -154,6 +154,14 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         /*handleIntent(getIntent());*/
     }
 
+    @Override
+    public void onResume () {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences("Login", -1);
+        if (!prefs.getBoolean("auth", false)) {
+            finish();
+        }
+    }
     /**
      * Function to setup navigation.
      */
@@ -405,6 +413,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
 
     private void launchBrowseView(){
         Intent intent = new Intent(this, BrowseViewActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
