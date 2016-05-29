@@ -282,6 +282,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
     /* button listener for the  floating action bar */
     private void actionsForFABs() {
+
         FloatingActionButton skipFab = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
         if (skipFab != null)
             skipFab.setOnClickListener(new View.OnClickListener() {
