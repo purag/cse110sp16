@@ -275,7 +275,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_warning_black)
                 .setTitle("Ending Tour")
-                .setMessage("Are you sure you want to end this tour? It won't be saved!\n Press Exit on the floating menu to save it")
+                .setMessage("Are you sure you want to end this tour without saving?\nPress Exit on floating menu to save it")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -307,6 +307,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 @Override
                 public void onClick(View view) {
                     movetoNextCheckpoint();
+                    //floatingActionsMenu.close(true);
                 }
             });
 
@@ -316,6 +317,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 @Override
                 public void onClick(View view) {
                     movetoBackACheckpoint();
+                    //floatingActionsMenu.close(true);
                 }
             });
 
@@ -338,19 +340,38 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            backToOverviewView(tourID);
+                            saveTourToMyTourOnDB();
+                            //finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
                     })
-                    .setNegativeButton("No", null)
                     .show();
         }
-        backToBrowseHome();
-    }
-
-    private void backToBrowseHome() {
-        Intent intent = new Intent(this, BrowseViewActivity.class);
-        startActivity(intent);
+        else {
+            new AlertDialog.Builder(this)
+                    .setIcon(R.drawable.icon_good_job)
+                    .setTitle("Congratulations!!")
+                    .setMessage("You finished this tour! Do you want to save this tour?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            saveTourToMyTourOnDB();
+                            //finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .show();
+        }
     }
 
     private void movetoNextCheckpoint(){
@@ -392,6 +413,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         //To avoid out of index errors
         if(upComingCheckpoint >= activePointList.size()-1){
+            ExitFromTakeTour(true);
             return;
         }
 
@@ -463,6 +485,18 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .title((activePointList.get(upComingCheckpoint+1)).getTitle())
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_gray)));
         }
+    }
+
+
+    private void saveTourToMyTourOnDB(){
+        AlertDialog.Builder SaveBuilder = new AlertDialog.Builder(this);
+        SaveBuilder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        }).setMessage(tourTitle + " is successfully saved into your tour list").show();
+                /* call post to DB and save the tour to user taken */
     }
 
 
