@@ -10,16 +10,19 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.cs110.lit.adventour.model.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -46,9 +49,6 @@ public class CreateTourMetadataFragment extends DialogFragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment CreateTourMetadataFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -67,13 +67,20 @@ public class CreateTourMetadataFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        getDialog().setTitle("Tell us about this tour!");
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_create_tour_metadata, container, false);
+
+        final EditText tourTitleInput = (EditText) v.findViewById(R.id.create_tour_title_input);
+        final EditText tourSummaryInput = (EditText) v.findViewById(R.id.create_tour_summary_input);
 
         Button cancelBtn = (Button) v.findViewById(R.id.create_tour_cancel);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +90,48 @@ public class CreateTourMetadataFragment extends DialogFragment {
             }
         });
 
+        Button continueBtn = (Button) v.findViewById(R.id.create_tour_continue);
+        continueBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validateInput(tourTitleInput, tourSummaryInput)) {
+                    mListener.onTourMetadataFinish(new Tour(
+                        0,
+                        new User(),
+                        tourTitleInput.getText().toString(),
+                        tourSummaryInput.getText().toString(),
+                        new ArrayList<Checkpoint>()
+                    ));
+                }
+            }
+        });
+
         return v;
+    }
+
+    private boolean validateInput(EditText tourTitleInput, EditText tourSummaryInput) {
+        boolean valid = true;
+
+        String tourTitle = tourTitleInput.getText().toString();
+        String tourSummary = tourSummaryInput.getText().toString();
+
+        if (TextUtils.isEmpty(tourTitle)) {
+            tourTitleInput.setError("Title is required.");
+            valid = false;
+        } else if (tourTitle.length() < 10) {
+            tourTitleInput.setError("Title should be a bit longer.");
+            valid = false;
+        }
+
+        if (TextUtils.isEmpty(tourSummary)) {
+            tourSummaryInput.setError("Summary is required.");
+            valid = false;
+        } else if (tourSummary.length() < 50) {
+            tourSummaryInput.setError("Summary should be more detailed.");
+            valid = false;
+        }
+
+        return valid;
     }
 
     @Override
@@ -143,7 +191,7 @@ public class CreateTourMetadataFragment extends DialogFragment {
      */
     public interface CreateTourMetadataListener {
         // TODO: Update argument type and name
-        void onFinish(Tour t);
+        void onTourMetadataFinish(Tour t);
         void onBackPressed();
     }
 }
