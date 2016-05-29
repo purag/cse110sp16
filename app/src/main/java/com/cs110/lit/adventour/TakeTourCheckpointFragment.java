@@ -88,7 +88,7 @@ public class TakeTourCheckpointFragment extends DialogFragment {
         int height = metrics.heightPixels;
         getDialog().getWindow().setLayout(9 * width / 10, 9 * height / 10);
         getDialog().setCanceledOnTouchOutside(true);
-        setCancelable(false);
+        setCancelable(true);
 
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener()
         {
