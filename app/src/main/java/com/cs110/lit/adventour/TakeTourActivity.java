@@ -59,6 +59,8 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     private int tourID;
     private String tourTitle;
 
+    private String photo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -287,8 +289,29 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         }
         ft.addToBackStack(null);
 
+
+        /* Check to see which photo to display.
+           If a photo exists, display that one. Otherwise display google maps
+         */
+        photo = (activePointList.get(upComingCheckpoint)).getPhoto();
+
+        System.err.println("the current photo is\n " + photo);
+
+        if(photo.equals("http://placehold.it/250x250")){
+            //Get the photo from the first checkpoint to load as background
+            photo = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                    Double.toString((activePointList.get(upComingCheckpoint)).getLatitude()) +"," +
+                    Double.toString((activePointList.get(upComingCheckpoint)).getLongitude()) +
+                    "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
+        }
+
+
         // Create and show the dialog.
-        DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(this);
+        DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(
+                (activePointList.get(upComingCheckpoint)).getTitle(),
+                (activePointList.get(upComingCheckpoint)).getDescription(),
+                photo);
+
         newFragment.show(ft, "take_tour_checkpoint_dialog");
 
 

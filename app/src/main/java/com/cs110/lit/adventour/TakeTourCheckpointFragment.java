@@ -4,31 +4,31 @@ package com.cs110.lit.adventour;
  * Created by Anjali on 5/27/2016.
  */
 
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.cs110.lit.adventour.model.*;
+import com.bumptech.glide.Glide;
 
-import java.util.Map;
 public class TakeTourCheckpointFragment extends DialogFragment {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST = 1888;
     private Bitmap tourPhoto;
+
+    private String title;
+    private String summary;
+
+    private TextView checkpointTitle;
+    private TextView checkpointSummary;
+
 
     public TakeTourCheckpointFragment() {
         // Required empty public constructor
@@ -42,23 +42,39 @@ public class TakeTourCheckpointFragment extends DialogFragment {
      * @return A new instance of fragment TakeTourCheckpointFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TakeTourCheckpointFragment newInstance(TakeTourActivity title ) {
+    public static TakeTourCheckpointFragment newInstance(String title, String summary, String photo) {
+
         TakeTourCheckpointFragment fragment = new TakeTourCheckpointFragment();
         Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putString("summary", summary);
+        args.putString("photo", photo);
+
         fragment.setArguments(args);
         return fragment;
     }
-
+    /*
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
+    */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_take_tour_checkpoint, container, false);
+
+        Bundle b = this.getArguments();
+
+        checkpointSummary = (TextView) v.findViewById(R.id.checkpoint_metadata_summary);
+        checkpointTitle = (TextView) v.findViewById(R.id.checkpoint_metadata_title);
+
+        checkpointTitle.setText(String.format("Title: %s", b.get("title")));
+        checkpointSummary.setText(String.format("Summary: %s", b.get("summary")));
+
+        final ImageView imageView = (ImageView) v.findViewById(R.id.tour_metadata_img);
+        Glide.with(this).load( b.get("photo")).into(imageView);
 
         return v;
     }
