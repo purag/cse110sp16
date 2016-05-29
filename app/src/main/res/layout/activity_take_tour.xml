@@ -37,10 +37,11 @@
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        fab:menu_colorNormal="@color/colorTertiary"
-        fab:menu_colorPressed="@color/colorTertiaryDark"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
+        fab:menu_colorNormal="@color/colorPrimaryDark"
+        fab:menu_colorPressed="@color/colorPrimary"
+        fab:menu_icon="@drawable/ic_more_vert_white"
         fab:menu_labels_textColor="#333333"
         fab:menu_labels_cornerRadius="3dp"
         fab:menu_labels_colorNormal="#ffffff"
@@ -66,9 +67,9 @@
             android:layout_height="wrap_content"
             fab:fab_label="Skip A Checkpoint"
             fab:fab_size="mini"
-            fab:fab_colorNormal="#33BB33"
-            fab:fab_colorPressed="#009900"
-            android:src="@drawable/ic_done_white"
+            fab:fab_colorNormal="#009900"
+            fab:fab_colorPressed="#006400"
+            android:src="@drawable/ic_keyboard_arrow_right_white"
             android:id="@+id/skip_checkpoint_button"/>
 
         <com.github.clans.fab.FloatingActionButton
@@ -76,9 +77,9 @@
             android:layout_height="wrap_content"
             fab:fab_label="Back to Previous Checkpoint"
             fab:fab_size="mini"
-            fab:fab_colorNormal="#3333BB"
-            fab:fab_colorPressed="#000099"
-            android:src="@drawable/ic_add_location_white"
+            fab:fab_colorNormal="#4897e2"
+            fab:fab_colorPressed="#2c78bf"
+            android:src="@drawable/ic_keyboard_arrow_left_white"
             android:id="@+id/undo_skip_checkpoint"/>
 
     </com.github.clans.fab.FloatingActionMenu>

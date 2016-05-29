@@ -149,11 +149,16 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
             }
         });*/
 
-        // Searches
-        // Check if there is intent for search request.
-        /*handleIntent(getIntent());*/
     }
 
+    @Override
+    public void onResume () {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences("Login", -1);
+        if (!prefs.getBoolean("auth", false)) {
+            finish();
+        }
+    }
     /**
      * Function to setup navigation.
      */
@@ -178,51 +183,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         email.setText(prefs.getString("uemail", "user@example.com"));
     }
 
-    /* Functions to handle searches. */
-
-//    /**
-//     * Function to handle intents. Used for searches.
-//     */
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        setIntent(intent);
-//        handleIntent(intent);
-//    }
-//
-//    /**
-//     * Function to handle intent, used for searches.
-//     *
-//     */
-//    private void handleIntent(Intent intent) {
-//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-//            searchQuery = intent.getStringExtra(SearchManager.QUERY);
-//            searchLocation = getLocationFromAddress(searchQuery);
-//            // If null, refresh the view.
-//            if (searchLocation != null) {
-//                RefreshView(searchLocation.getLatitude(), searchLocation.getLongitude());
-//            }
-//        }
-//    }
-
-//    /**
-//     * Get's Address object given string of the address. Used for search.
-//     */
-//    public Address getLocationFromAddress(String strAddress) {
-//        Geocoder coder = new Geocoder(this);
-//        List<Address> address;
-//
-//        try {
-//            address = coder.getFromLocationName(strAddress, 5);
-//
-//            if (address.size() == 0)
-//                return null;
-//
-//            return address.get(0);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 
     /*List View Related functions */
 
@@ -320,11 +280,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_mytours_actions, menu);
 
-//        // Associate searchable configuration with the SearchView
-//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
         // Configure the search info and add any event listeners...
         return super.onCreateOptionsMenu(menu);
     }
@@ -405,6 +360,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
 
     private void launchBrowseView(){
         Intent intent = new Intent(this, BrowseViewActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
@@ -587,34 +543,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
                         System.out.println("On failure happened\n");
                     }
                 });
-
-        /*DB.getToursNearLoc(myLocation.latitude, myLocation.longitude, 50, 10, this, new DB.Callback<ArrayList<Tour>>() {
-            @Override
-            public void onSuccess(ArrayList<Tour> tours) {
-                System.out.println("success\n");
-
-                markerTable = new HashMap<String, Integer>();
-
-                // Display them
-                for (Tour t : tours) {
-                    // System.out.println("Let's drop some pins");
-                    LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
-
-                    Marker newMarker = mMap.addMarker(new MarkerOptions().position(location)
-                            .title(t.getTitle())
-                            .snippet(t.getSummary())
-                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
-                    markerTable.put(newMarker.getId(), t.getTour_id());
-
-                }
-            }
-
-            @Override
-            public void onFailure(ArrayList<Tour> tours) {
-                System.out.println("On failure happened\n");
-            }
-        });*/
-
     }
 
     /* Functions for Permissions checking. */
