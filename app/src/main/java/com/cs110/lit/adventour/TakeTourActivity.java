@@ -1,19 +1,21 @@
 package com.cs110.lit.adventour;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,6 +66,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     private String tourTitle;
 
     private String photo;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -494,15 +497,41 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
 
     private void saveTourToMyTourOnDB(){
-        AlertDialog.Builder SaveBuilder = new AlertDialog.Builder(this);
-        SaveBuilder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+        SharedPreferences myPrefs = getSharedPreferences("Login", -1);
+        int userID = myPrefs.getInt("uid", 0);
+        System.out.println("the user id is:" + userID);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading Tour...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+
+        DB.saveTourTakenByUser (userID,tourID, TakeTourActivity.this, new DB.Callback<Integer>() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
+            public void onSuccess(Integer tour_id) {
+                progressDialog.dismiss();
+                new AlertDialog.Builder(TakeTourActivity.this)
+                        .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        }).setMessage(tourTitle + " is successfully saved into your tour list").show();
             }
-        }).setMessage(tourTitle + " is successfully saved into your tour list").show();
-                /* call post to DB and save the tour to user taken */
+
+            @Override
+            public void onFailure(Integer integer) {
+                progressDialog.dismiss();
+                new AlertDialog.Builder(TakeTourActivity.this)
+                        .setTitle("Upload Failed.")
+                        .setMessage("Please try again soon!")
+                        .setPositiveButton("OK", null)
+                        .show();
+            }
+        });
     }
+
 
 
     /**
