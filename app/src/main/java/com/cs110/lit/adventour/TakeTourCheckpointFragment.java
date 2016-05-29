@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +30,8 @@ public class TakeTourCheckpointFragment extends DialogFragment {
     private TextView checkpointTitle;
     private TextView checkpointSummary;
 
+    private TakeTourCheckpointListener tListener;
+
 
     public TakeTourCheckpointFragment() {
         // Required empty public constructor
@@ -42,16 +45,20 @@ public class TakeTourCheckpointFragment extends DialogFragment {
      * @return A new instance of fragment TakeTourCheckpointFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TakeTourCheckpointFragment newInstance(String title, String summary, String photo) {
+    public static TakeTourCheckpointFragment newInstance(String title, String summary, String photo, TakeTourCheckpointListener tListener) {
 
         TakeTourCheckpointFragment fragment = new TakeTourCheckpointFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
         args.putString("summary", summary);
         args.putString("photo", photo);
-
+        fragment.settListener(tListener);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void settListener(TakeTourCheckpointListener tListener) {
+        this.tListener = tListener;
     }
     /*
     @Override
@@ -75,6 +82,15 @@ public class TakeTourCheckpointFragment extends DialogFragment {
 
         final ImageView imageView = (ImageView) v.findViewById(R.id.tour_metadata_img);
         Glide.with(this).load( b.get("photo")).into(imageView);
+
+        Button continueBtn = (Button) v.findViewById(R.id.take_tour_continue);
+        continueBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("clicked continue");
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
 
         return v;
     }
@@ -123,6 +139,11 @@ public class TakeTourCheckpointFragment extends DialogFragment {
     public void onDetach() {
         super.onDetach();
         /*mListener = null;*/
+    }
+
+    public interface TakeTourCheckpointListener {
+        // TODO: Update argument type and name
+
     }
 
 }
