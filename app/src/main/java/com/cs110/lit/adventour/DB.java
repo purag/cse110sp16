@@ -2,14 +2,12 @@ package com.cs110.lit.adventour;
 
 import android.content.Context;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
@@ -92,37 +90,9 @@ public class DB {
     public static void saveTourTakenByUser (int tour_id, int user_id, Context c, final Callback<Integer> cb) {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "users/" + user_id + "/tours/taken";
-
-        /* Prepare the request body. */
-        JSONObject body;
-        try {
-            body = new JSONObject("{tour_id: " + tour_id + "}");
-        } catch (Exception e) {
-            body = null;
-        }
-
-        /* Prepare the request with the POST method */
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, reqUrl, body, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    Integer tourId = response.getInt("tour_id");
-                    cb.onSuccess(tourId);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                cb.onFailure(null);
-            }
-        });
-
-        /* Actually make the request */
-        requestQueue.add(req);
+        String tourJson = "{tour_id: " + tour_id + "}";
+        postTourToDBServer(cb, requestQueue, reqUrl, tourJson);
     }
-
 
     /**
      * Will send the tour data to the database
@@ -135,7 +105,11 @@ public class DB {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "tours";
 
-        /* Prepare the request body. */
+        postTourToDBServer(cb, requestQueue, reqUrl, tourJson);
+    }
+
+    private static void postTourToDBServer(final Callback<Integer> cb, RequestQueue requestQueue, String reqUrl, String tourJson) {
+    /* Prepare the request body. */
         JSONObject body;
         try {
             body = new JSONObject(tourJson);
@@ -157,6 +131,7 @@ public class DB {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                System.out.println("Error with tour request");
                 cb.onFailure(null);
             }
         });
