@@ -2,12 +2,14 @@ package com.cs110.lit.adventour;
 
 import android.content.Context;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
@@ -83,38 +85,68 @@ public class DB {
     /**
      * Will send the tour data to the database
      *
-     * @param user the user who created the tour
-     * @param title the title of the tour
-     * @param summary the summary of the tour
-     * @param start_Lat the starting latitude of the tour
-     * @param start_Long the starting longitude of the tour
+     * @param tourJson the JSON encoding of the tour to upload
+     * @param c the context (activity) from which this database access is being made
+     * @param cb the callback object (implementing the onSuccess method)
      */
-    public static void createTourData(final User user, final String title,
-                                      final String summary, final double start_Lat, final double start_Long,
-                                    Context c, final Callback<Tour> cb){
+    public static void uploadTour(String tourJson, Context c, final Callback<Integer> cb){
         RequestQueue requestQueue = Volley.newRequestQueue(c);
 
         /* Prepare the request body. */
         JSONObject body;
         try {
-            body = new JSONObject("{'userID':'" + user.getUser_id() + "', 'title':'" + title + "', 'summary':'" + summary + "'}");
+            body = new JSONObject(tourJson);
         } catch (Exception e) {
             body = null;
         }
 
         /* Prepare the request with the POST method */
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "setTour", body, new Response.Listener<JSONObject>() {
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "tours", body, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    cb.onSuccess(new Tour(
-                            response.getInt("tour_id"),
-                            user,
-                            response.getString("title"),
-                            response.getString("summary"),
-                            0.0,
-                            0.0
-                    ));
+                    Integer tourId = response.getInt("tour_id");
+                    cb.onSuccess(tourId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                cb.onFailure(null);
+            }
+        });
+
+        /* Actually make the request */
+        requestQueue.add(req);
+    }
+
+    /**
+     * Upload a photo to the server and retrieve its public URL.
+     *
+     * @param photo
+     * @param c
+     * @param cb
+     */
+    public static void uploadPhoto(final String photo, Context c, final Callback<String> cb){
+        RequestQueue requestQueue = Volley.newRequestQueue(c);
+        System.out.println(photo.length());
+
+        JSONObject body;
+        try {
+            body = new JSONObject("{image: '" + photo + "'}");
+        } catch (Exception e) {
+            body = null;
+        }
+
+        /* Prepare the request with the POST method */
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, base + "upload", body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String photoUrl = response.getString("url");
+                    cb.onSuccess(photoUrl);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

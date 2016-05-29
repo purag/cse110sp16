@@ -1,12 +1,25 @@
 package com.cs110.lit.adventour;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -14,10 +27,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.cs110.lit.adventour.model.Checkpoint;
 import com.cs110.lit.adventour.model.Tour;
 import com.cs110.lit.adventour.model.User;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 
 /**
@@ -30,12 +51,22 @@ import com.cs110.lit.adventour.model.User;
  */
 public class CreateCheckpointMetadataFragment extends DialogFragment {
 
-    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-    private static final int CAMERA_REQUEST = 1888;
-    private Bitmap tourPhoto;
+    private Bitmap checkpointPhoto;
+
+    final private int PICK_IMAGE = 1;
+    final private int CAPTURE_IMAGE = 2;
+    ImageView imgView;
+    private String cameraPhotoPath;
+
+    private boolean checkpointPhotoSet = false;
+
     private boolean cancelable;
 
     private CreateCheckpointMetadataListener mListener;
+
+    private ProgressDialog progressDialog;
+    private String checkpointTitle;
+    private String checkpointDesc;
 
     public CreateCheckpointMetadataFragment() {
         // Required empty public constructor
@@ -50,6 +81,7 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
     public static CreateCheckpointMetadataFragment newInstance(CreateCheckpointMetadataListener mListener, boolean cancelable) {
         CreateCheckpointMetadataFragment fragment = new CreateCheckpointMetadataFragment();
         fragment.setmListener(mListener);
+        fragment.cancelable = cancelable;
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -74,14 +106,23 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_create_checkpoint_metadata, container, false);
 
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+
         final EditText checkpointTitleInput = (EditText) v.findViewById(R.id.create_checkpoint_title_input);
         final EditText checkpointDescInput = (EditText) v.findViewById(R.id.create_checkpoint_summary_input);
+
+        imgView = (ImageView) v.findViewById(R.id.checkpoint_metadata_img);
 
         Button cancelBtn = (Button) v.findViewById(R.id.create_tour_cancel);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onBackPressed();
+                if (cancelable)
+                    dismiss();
+                else
+                    mListener.onBackPressed();
             }
         });
 
@@ -90,24 +131,90 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (validateInput(checkpointTitleInput, checkpointDescInput)) {
-                    mListener.onCheckpointMetadataFinish(new Checkpoint(
-                        0, 0.0, 0.0, 0,
-                        checkpointTitleInput.getText().toString(),
-                        checkpointDescInput.getText().toString(),
-                        "", 0
-                    ));
+                    progressDialog.setMessage("Uploading photo...");
+                    progressDialog.show();
+                    new CheckpointPhotoUpload().execute(checkpointPhoto);
                 }
+            }
+        });
+
+        if (ActivityCompat.checkSelfPermission(
+                getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+
+        if (ActivityCompat.checkSelfPermission(
+                getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+
+        FloatingActionButton cameraFab = (FloatingActionButton) v.findViewById(R.id.fab_add_photo_camera);
+        cameraFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("here");
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, setImageUri());
+                getActivity().startActivityForResult(intent, CAPTURE_IMAGE);
+            }
+        });
+
+        FloatingActionButton galleryFab = (FloatingActionButton) v.findViewById(R.id.fab_add_photo_gallery);
+        galleryFab.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.putExtra("return-data", true);
+                getActivity().startActivityForResult(Intent.createChooser(intent, "Select a Photo"), PICK_IMAGE);
             }
         });
 
         return v;
     }
 
+    private Uri setImageUri() {
+        File file = new File(Environment.getExternalStorageDirectory(),
+                "adventour_" + System.currentTimeMillis() + ".jpg");
+        Uri imgUri = Uri.fromFile(file);
+        this.cameraPhotoPath = file.getAbsolutePath();
+        return imgUri;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_CANCELED) {
+            if (requestCode == PICK_IMAGE) {
+                try {
+                    InputStream is = getActivity().getContentResolver().openInputStream(data.getData());
+                    System.out.println(data.getData());
+                    checkpointPhoto = BitmapFactory.decodeStream(is);
+                    imgView.setImageBitmap(checkpointPhoto);
+                    checkpointPhotoSet = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (requestCode == CAPTURE_IMAGE) {
+                System.out.println("image captured");
+                checkpointPhoto = BitmapFactory.decodeFile(cameraPhotoPath);
+                imgView.setImageBitmap(checkpointPhoto);
+                checkpointPhotoSet = true;
+
+            } else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
     private boolean validateInput(EditText checkpointTitleInput, EditText checkpointDescInput) {
         boolean valid = true;
 
-        String checkpointTitle = checkpointTitleInput.getText().toString();
-        String checkpointDesc = checkpointDescInput.getText().toString();
+        checkpointTitle = checkpointTitleInput.getText().toString();
+        checkpointDesc = checkpointDescInput.getText().toString();
 
         if (TextUtils.isEmpty(checkpointTitle)) {
             checkpointTitleInput.setError("Title is required.");
@@ -122,6 +229,15 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
             valid = false;
         } else if (checkpointDesc.length() < 50) {
             checkpointDescInput.setError("Description should be more detailed.");
+            valid = false;
+        }
+
+        if (valid && !checkpointPhotoSet) {
+            new AlertDialog.Builder(getActivity())
+                    .setIcon(R.drawable.ic_warning_black)
+                    .setTitle("Checkpoint photo is required.")
+                    .setPositiveButton("OK", null)
+                    .show();
             valid = false;
         }
 
@@ -187,5 +303,43 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
         // TODO: Update argument type and name
         void onCheckpointMetadataFinish(Checkpoint c);
         void onBackPressed();
+    }
+
+    private class CheckpointPhotoUpload extends AsyncTask<Bitmap, Void, String> {
+
+        @Override
+        protected String doInBackground(Bitmap... params) {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            params[0].compress(Bitmap.CompressFormat.PNG, 50, byteArrayOutputStream);
+            byte [] byteArray = byteArrayOutputStream.toByteArray();
+            return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            DB.uploadPhoto(s, getActivity(), new DB.Callback<String> () {
+                @Override
+                public void onSuccess(String photoUrl) {
+                    progressDialog.dismiss();
+                    System.out.println(photoUrl);
+                    Checkpoint c = new Checkpoint(0, 0.0, 0.0, 0, checkpointTitle, checkpointDesc, "", 0);
+                    c.setPhoto(photoUrl);
+                    mListener.onCheckpointMetadataFinish(c);
+                }
+
+                @Override
+                public void onFailure(String photoUrl) {
+                    progressDialog.dismiss();
+                    new AlertDialog.Builder(getActivity())
+                        .setTitle("Couldn't upload photo.")
+                        .setMessage("Please try again soon!")
+                        .setPositiveButton("OK", null)
+                        .show();
+                }
+            });
+        }
+
+        @Override protected void onPreExecute() {}
+        @Override protected void onProgressUpdate(Void... values) {}
     }
 }

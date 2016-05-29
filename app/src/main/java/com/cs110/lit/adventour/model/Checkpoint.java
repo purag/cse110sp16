@@ -1,6 +1,10 @@
 package com.cs110.lit.adventour.model;
 
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.util.Base64;
+
+import java.io.ByteArrayOutputStream;
 
 public class Checkpoint {
 	
@@ -13,6 +17,7 @@ public class Checkpoint {
 	private String title;
 	private String description;
 	private String photo;
+	private String photoBitmap;
 	private int order_num; 
 
     // Default Constructor
@@ -65,9 +70,14 @@ public class Checkpoint {
 	   this.order_num = order_num;
 	}
 
+	public void setPhotoBitmap(Bitmap photoBitmap) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		photoBitmap.compress(Bitmap.CompressFormat.PNG, 75, byteArrayOutputStream);
+		byte [] byteArray = byteArrayOutputStream.toByteArray();
+		this.photoBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
+	}
 
-	
-	/* Public Getters */
+/* Public Getters */
 	
 	public int getCheckpoint_id(){
 	   return checkpoint_id;
