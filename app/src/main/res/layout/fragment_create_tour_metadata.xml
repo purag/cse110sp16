@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="16dp"
     android:orientation="vertical"
     tools:context="com.cs110.lit.adventour.CreateTourMetadataFragment"
     android:id="@+id/tour_metadata_form"
@@ -31,7 +32,7 @@
     </RelativeLayout>
 
     <EditText
-        android:id="@+id/tour_title"
+        android:id="@+id/create_tour_title_input"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:background="@null"
@@ -50,7 +51,7 @@
         android:background="#8f8f8f" />
 
     <EditText
-        android:id="@+id/tour_summary"
+        android:id="@+id/create_tour_summary_input"
         android:layout_height="fill_parent"
         android:layout_width="match_parent"
         android:background="@null"
