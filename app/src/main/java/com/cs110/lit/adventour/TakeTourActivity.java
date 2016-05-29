@@ -11,6 +11,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +39,7 @@ import java.util.ArrayList;
 /**
  * Created by Izhikevich on 5/20/16.
  */
-public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCallback,  TakeTourCheckpointFragment.TakeTourCheckpointListener{
 
     // Request Constant.
     private static final int LOCATION_REQUEST_CODE = 0;
@@ -60,6 +63,8 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     private int tourID;
     private String tourTitle;
 
+    private String photo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +80,19 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         tourID = intent.getIntExtra(TOUR_ID, -1);
         tourTitle = intent.getStringExtra(TOUR_TITLE);
         getSupportActionBar().setTitle(tourTitle);
+
+        /*
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("take_tour_checkpoint_dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(this);
+        newFragment.show(ft, "take_tour_checkpoint_dialog");
+        */
 
     }
 
@@ -230,12 +248,17 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 (activePointList.get(upComingCheckpoint)).getLongitude(), results);
 
         //TODO: figure out which distance we need to be away from to get a notification
-        if (results[0] < LOCATION_REFRESH_DISTANCE &&
+        if (results[0] < /*LOCATION_REFRESH_DISTANCE*/20 &&
                 !((activePointList.get(upComingCheckpoint).getReachedPoint()))) {
 
             movetoNextCheckpoint();
             //reset the distance
             results[0] = 0;
+
+        }
+        else{
+            System.out.println("too far, reuslt[0] was " + results[0]);
+            System.out.println("min distance is " +LOCATION_REFRESH_DISTANCE);
 
         }
     }
@@ -257,7 +280,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_warning_black)
                 .setTitle("Ending Tour")
-                .setMessage("Are you sure you want to end this tour? It won't be saved!\n Press Exit on the floating menu to save it")
+                .setMessage("Are you sure you want to end this tour without saving?\nPress Exit on floating menu to save it")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -282,12 +305,14 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
     /* button listener for the  floating action bar */
     private void actionsForFABs() {
+
         FloatingActionButton skipFab = (FloatingActionButton) findViewById(R.id.skip_checkpoint_button);
         if (skipFab != null)
             skipFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     movetoNextCheckpoint();
+                    //floatingActionsMenu.close(true);
                 }
             });
 
@@ -297,6 +322,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 @Override
                 public void onClick(View view) {
                     movetoBackACheckpoint();
+                    //floatingActionsMenu.close(true);
                 }
             });
 
@@ -319,27 +345,80 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            backToOverviewView(tourID);
+                            saveTourToMyTourOnDB();
+                            //finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
                     })
-                    .setNegativeButton("No", null)
                     .show();
         }
-        backToBrowseHome();
-    }
-
-    private void backToBrowseHome() {
-        Intent intent = new Intent(this, BrowseViewActivity.class);
-        startActivity(intent);
+        else {
+            new AlertDialog.Builder(this)
+                    .setIcon(R.drawable.icon_good_job)
+                    .setTitle("Congratulations!!")
+                    .setMessage("You finished this tour! Do you want to save this tour?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            saveTourToMyTourOnDB();
+                            //finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .show();
+        }
     }
 
     private void movetoNextCheckpoint(){
         //notify the user they are approaching a checkpoint
         //TODO: Insert pop up fragment here to display checkpoint info
 
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("take_tour_checkpoint_dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+
+        /* Check to see which photo to display.
+           If a photo exists, display that one. Otherwise display google maps
+         */
+        photo = (activePointList.get(upComingCheckpoint)).getPhoto();
+
+        System.err.println("the current photo is\n " + photo);
+
+        if(photo.equals("http://placehold.it/250x250")){
+            //Get the photo from the first checkpoint to load as background
+            photo = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                    Double.toString((activePointList.get(upComingCheckpoint)).getLatitude()) +"," +
+                    Double.toString((activePointList.get(upComingCheckpoint)).getLongitude()) +
+                    "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
+        }
+
+
+        // Create and show the dialog.
+        DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(
+                (activePointList.get(upComingCheckpoint)).getTitle(),
+                (activePointList.get(upComingCheckpoint)).getDescription(),
+                photo, this);
+
+        newFragment.show(ft, "take_tour_checkpoint_dialog");
+
+
         //To avoid out of index errors
         if(upComingCheckpoint >= activePointList.size()-1){
+            ExitFromTakeTour(true);
             return;
         }
 
@@ -411,6 +490,18 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .title((activePointList.get(upComingCheckpoint+1)).getTitle())
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_gray)));
         }
+    }
+
+
+    private void saveTourToMyTourOnDB(){
+        AlertDialog.Builder SaveBuilder = new AlertDialog.Builder(this);
+        SaveBuilder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        }).setMessage(tourTitle + " is successfully saved into your tour list").show();
+                /* call post to DB and save the tour to user taken */
     }
 
 
