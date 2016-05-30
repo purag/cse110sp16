@@ -14,7 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cs110.lit.adventour.model.Checkpoint;
@@ -24,8 +23,6 @@ import com.cs110.lit.adventour.model.User;
 import java.util.ArrayList;
 
 public class OverviewActivity extends AppCompatActivity {
-    private CollapsingToolbarLayout collapsingToolbarLayout = null;
-    private OverviewActivity thisActivity = this;
 
     public static final String TOUR_ID = "tour_id";
     private int tourID;
@@ -33,15 +30,10 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_tour_overview);
-//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
-//        if (getSupportActionBar() != null)
-//            getSupportActionBar().hide();
 
         setSupportActionBar((Toolbar) findViewById(R.id.collapsing_toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         //get the tour id entered, -1 for bad input
         Intent intent = getIntent();
@@ -136,4 +128,5 @@ public class OverviewActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
 }
