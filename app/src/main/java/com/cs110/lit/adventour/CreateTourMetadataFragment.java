@@ -9,12 +9,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -29,18 +29,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
-import com.cs110.lit.adventour.model.*;
+import com.cs110.lit.adventour.model.Checkpoint;
+import com.cs110.lit.adventour.model.Tour;
 import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
 
 
 /**
@@ -128,6 +125,12 @@ public class CreateTourMetadataFragment extends DialogFragment {
                 if (validateInput(tourTitleInput, tourSummaryInput)) {
                     progressDialog.setMessage("Uploading photo...");
                     progressDialog.show();
+
+                    if(tourPhoto != null && tourPhoto.getWidth() < tourPhoto.getHeight()){
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(0);
+                        Bitmap.createBitmap(tourPhoto, 0, 0, tourPhoto.getWidth(), tourPhoto.getHeight(), matrix, true);
+                    }
                     new TourPhotoUpload().execute(tourPhoto);
                 }
             }

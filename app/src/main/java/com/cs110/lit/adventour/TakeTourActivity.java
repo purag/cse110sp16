@@ -67,6 +67,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
     private String photo;
     private ProgressDialog progressDialog;
+    private DialogFragment checkpointFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -408,16 +409,19 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     Double.toString((activePointList.get(upComingCheckpoint)).getLongitude()) +
                     "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
         }
-
+        
 
         // Create and show the dialog.
-        DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(
+        checkpointFragment = TakeTourCheckpointFragment.newInstance(
                 (activePointList.get(upComingCheckpoint)).getTitle(),
                 (activePointList.get(upComingCheckpoint)).getDescription(),
                 photo, this);
 
-        newFragment.show(ft, "take_tour_checkpoint_dialog");
+        checkpointFragment.show(ft, "take_tour_checkpoint_dialog");
 
+        //edit info for that checkpoint
+        (activePointList.get(upComingCheckpoint)).setReachedPoint(true);
+        (activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
 
         //To avoid out of index errors
         if(upComingCheckpoint >= activePointList.size()-1){
@@ -425,16 +429,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             return;
         }
 
-        System.out.println("Suh' dude you're near " +
-                (activePointList.get(upComingCheckpoint)).getTitle() +
-                ". It's getting LIT fam! ");
-
-
         //Only update the markers if they are not the starting or end ones
-
-        //edit info for that checkpoint
-        (activePointList.get(upComingCheckpoint)).setReachedPoint(true);
-        (activePointList.get(upComingCheckpoint)).setuUpcomingPoint(false);
 
         // move the view camera to the next checkpoint
         LatLng upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint+1)).getLatitude(), (activePointList.get(upComingCheckpoint+1)).getLongitude());
