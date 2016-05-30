@@ -42,7 +42,6 @@ import java.util.ArrayList;
  * Created by Izhikevich on 5/20/16.
  */
 public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCallback,  TakeTourCheckpointFragment.TakeTourCheckpointListener{
-
     // Request Constant.
     private static final int LOCATION_REQUEST_CODE = 0;
     // Distance change before refresh (meters).
@@ -68,6 +67,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     private String photo;
     private ProgressDialog progressDialog;
     private DialogFragment checkpointFragment;
+    public boolean backpressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,20 +84,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         tourID = intent.getIntExtra(TOUR_ID, -1);
         tourTitle = intent.getStringExtra(TOUR_TITLE);
         getSupportActionBar().setTitle(tourTitle);
-
-        /*
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment prev = getSupportFragmentManager().findFragmentByTag("take_tour_checkpoint_dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        DialogFragment newFragment = TakeTourCheckpointFragment.newInstance(this);
-        newFragment.show(ft, "take_tour_checkpoint_dialog");
-        */
-
     }
 
 
@@ -105,10 +91,10 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
+        //mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
         //check fine
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             return;
         }
@@ -183,12 +169,8 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             public void onSuccess(Tour tour) {
                 //fill up the checkpoint lists
                 populateCheckpointLists(tour);
-
                 // Create lines.
                 PolylineOptions lineOptions = new PolylineOptions();
-
-                boolean startPoint = false;
-                boolean endPoint = false;
 
                 // Display markers.
                 for(ActiveTourCheckpoint points : activePointList) {
@@ -273,11 +255,17 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                backpressed = true;
                 alertWhenPressBackButton();
-                //backToOverviewView(tourID);
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        backpressed = true;
+        alertWhenPressBackButton();
     }
 
     private void alertWhenPressBackButton() {
@@ -296,15 +284,11 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 .show();
     }
 
-    @Override
-    public void onBackPressed() {
-        alertWhenPressBackButton();
-    }
-
     public void backToOverviewView(Integer tourID) {
         Intent intent = new Intent(this, OverviewActivity.class);
         intent.putExtra(OverviewActivity.TOUR_ID, tourID.intValue());
         startActivity(intent);
+        finish();
     }
 
     /* button listener for the  floating action bar */
@@ -341,6 +325,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     private void ExitFromTakeTour(boolean finishedLastCheckpoint){
+        backpressed = true;
         if (!finishedLastCheckpoint) {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_warning_black)
@@ -386,6 +371,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     private void movetoNextCheckpoint(){
         //notify the user they are approaching a checkpoint
         //TODO: Insert pop up fragment here to display checkpoint info
+        if(backpressed) return;
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag("take_tour_checkpoint_dialog");
@@ -409,7 +395,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     Double.toString((activePointList.get(upComingCheckpoint)).getLongitude()) +
                     "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
         }
-        
+
 
         // Create and show the dialog.
         checkpointFragment = TakeTourCheckpointFragment.newInstance(
@@ -417,7 +403,9 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 (activePointList.get(upComingCheckpoint)).getDescription(),
                 photo, this);
 
-        checkpointFragment.show(ft, "take_tour_checkpoint_dialog");
+        if(checkpointFragment != null) {
+            checkpointFragment.show(ft, "take_tour_checkpoint_dialog");
+        }
 
         //edit info for that checkpoint
         (activePointList.get(upComingCheckpoint)).setReachedPoint(true);
@@ -564,10 +552,6 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         //Now add this marker into a marker array so we can later update it
         markerList.add(marker);
-
-        // zoom in to the current location in camera view
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
-        System.err.println("The checkpoint you just added is at " + latLng);
     }
 
 }

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Address;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -53,7 +52,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
     private ActionBarDrawerToggle navigationToggle;
     private ViewFlipper viewFlipper;
 
-
     // Attributes for the list view
     ListView list;
     private final ArrayList<String> TourTitles = new ArrayList<>();
@@ -78,10 +76,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
 
     private TextView NoToursMap;
     private TextView NoToursList;
-
-    // Attributes for search
-    private String searchQuery;
-    private Address searchLocation;
 
 
     /**
@@ -136,18 +130,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         }
 
         // Get tours
-        getUserTakenTours(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-        /* Allow user to refresh the list */
-        /*final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
-        assert refreshLayout != null;
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                refreshLayout.setRefreshing(false);
-            }
-        });*/
+        getUserTakenTours();
 
     }
 
@@ -189,7 +172,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
     /**
      * Function to get tours taken given user id. TODO: Add user id parse.
      */
-    private void getUserTakenTours(double latitude, double longitude) {
+    private void getUserTakenTours() {
         SharedPreferences myPrefs = getSharedPreferences("Login", -1);
         int uid = myPrefs.getInt("uid", 0);
         System.out.println("My id is" + uid);
@@ -223,7 +206,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
-                    //Toast.makeText(BrowseViewActivity.this, "You Clicked at " + TourTitles.get(+position), Toast.LENGTH_SHORT).show();
                     showOverviewView(TourIDs.get(+position));
 
                 }
@@ -290,11 +272,9 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (navigationToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.action_map_view:
@@ -305,13 +285,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.map);
                 mapFragment.getMapAsync(this);
-                return true;
-            case R.id.action_refresh:
-                // refresh
-                RefreshView(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                return true;
-            case R.id.action_help:
-                // help action
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -375,26 +348,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         startActivity(intent);
     }
 
-
-    /**
-     * Function that handles refreshing data when user wants to refresh list.
-     */
-    private void RefreshView(double latitude, double longitude) {
-        TourTitles.clear();
-        TourDescriptions.clear();
-        imageIds.clear();
-        TourIDs.clear();
-        TourUsers.clear();
-        // refresh List
-        getUserTakenTours(latitude, longitude);
-        // refresh Map
-        LatLng searchLatLng = new LatLng(latitude, longitude);
-        displayMyToursInMap(searchLatLng, mMap);
-    }
-
-
     /* Map View Code */
-
     /**
      * Required function called by google maps when maps is done loading.
      * Due to call back method design, the function houses
@@ -408,87 +362,68 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         NoToursMap = (TextView) findViewById(R.id.NoMyToursMap);
         NoToursMap.setVisibility(View.GONE);
 
-        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
+        setInfoWindowListenerForMap();
+        setUpZoomButtonsOnMap();
 
-        /**
-         * Function for on map marker click in the map view.
-         */
+        // Check fine GPS permissions and then coarse GPS permissions
+
+        mMap.setMyLocationEnabled(true);
+
+        if (lastKnownLocation == null) {
+            LatLng myLocation = new LatLng(33.812, -117.919);
+            // Grab data
+            displayMyToursInMap(myLocation, mMap);
+        } else {
+            ////----------- display the map with marker on current location -----------//
+            // Add a marker in current location, and move the camera.
+            LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            // Grab data
+            displayMyToursInMap(myLocation, mMap);
+        }
+    }
+
+    private void setInfoWindowListenerForMap() {
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Integer tourId;
-                System.out.println("Clicked" + marker.getId());
                 if (markerTable == null) {
-                    System.out.println("No marker table");
                     return;
                 } else {
                     tourId = markerTable.get(marker.getId());
-
                     //check validity of ID
                     if (tourId == null) {
-                        System.out.println("Tour Id not found");
                         return;
                     } else {
-                        System.out.println("Tour Id is: " + tourId);
                         showOverviewView(tourId);
                     }
-
                 }
             }
         });
+    }
 
-
+    private void setUpZoomButtonsOnMap() {
         // Zoom in and Zoom out buttons.
         ImageButton zoomIn = (ImageButton) findViewById(R.id.zoomIn);
         ImageButton zoomOut = (ImageButton) findViewById(R.id.zoomOut);
 
         // Listeners for zoom and zoom out buttons.
+        assert zoomIn != null;
         zoomIn.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 mMap.animateCamera(CameraUpdateFactory.zoomIn());
             }
         });
 
+        assert zoomOut != null;
         zoomOut.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 mMap.animateCamera(CameraUpdateFactory.zoomOut());
             }
         });
-
-        // Check fine GPS permissions and then coarse GPS permissions
-        if (!hasMapPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_REQUEST_CODE);
-            return;
-        }
-        else if (!hasMapPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            requestPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE);
-            return;
-        }
-        else {
-            mMap.setMyLocationEnabled(true);
-        }
-
-        //TODO: Need a better way to do this check (or dont even bother to check this at all)
-        if (lastKnownLocation == null) {
-            System.out.println("NULL location");
-            ////----------- display the map with marker on current location -----------//
-            // Add a marker in current location, and move the camera.
-            LatLng myLocation = new LatLng(33.812, -117.919);
-            // Grab data
-            displayMyToursInMap(myLocation, mMap);
-        } else {
-
-            ////----------- display the map with marker on current location -----------//
-            // Add a marker in current location, and move the camera.
-            LatLng myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-            // Grab data
-            displayMyToursInMap(myLocation, mMap);
-        }
     }
 
     /**
@@ -502,9 +437,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
 
         SharedPreferences myPrefs = getSharedPreferences("Login", -1);
         int uid = myPrefs.getInt("uid", 0);
-        System.out.println("My id is" + uid);
 
-        System.out.println("attempting to grab data\n");
         // Data base call for near tours.
         DB.getToursTakenByUserId (uid, this,  new DB.Callback<ArrayList<Tour>>(){
                     @Override
@@ -521,7 +454,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
                         else {
                             NoToursMap.setVisibility(View.GONE);
                             for (Tour t : tours) {
-                                System.out.println("Let's drop some pins");
                                 LatLng location = new LatLng(t.getStarting_lat(), t.getStarting_lon());
 
                                 Marker newMarker = mMap.addMarker(new MarkerOptions().position(location)
@@ -532,8 +464,6 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
 
                             }
                         }
-
-
                     }
 
                     @Override

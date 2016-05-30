@@ -61,21 +61,11 @@
         <activity
             android:name=".MyToursActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="My Tours"
-            android:launchMode="singleTop">
-        <intent-filter>
-            <action android:name="android.intent.action.SEARCH" />
-        </intent-filter>
-
-        <meta-data
-            android:name="android.app.searchable"
-            android:resource="@xml/searchable" />
-        </activity>
+            android:label="My Tours" />
 
         <activity
             android:name=".OverviewActivity"
             android:label="@string/text_content"
-            android:parentActivityName=".BrowseViewActivity"
             android:theme="@style/NoActionBar"/>
 
         <meta-data

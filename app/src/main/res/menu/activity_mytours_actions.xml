@@ -8,16 +8,4 @@
         android:title="Map"
         app:showAsAction="always" />
 
-    <!-- Refresh -->
-    <item android:id="@+id/action_refresh"
-        android:icon="@drawable/ic_action_refresh"
-        android:title="Refresh"
-        android:showAsAction="ifRoom" />
-
-    <!-- Help -->
-    <item android:id="@+id/action_help"
-        android:icon="@drawable/ic_action_help"
-        android:title="Help"
-        android:showAsAction="never"/>
-
 </menu>
