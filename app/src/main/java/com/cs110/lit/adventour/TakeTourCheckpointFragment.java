@@ -32,6 +32,8 @@ public class TakeTourCheckpointFragment extends DialogFragment {
 
     private TakeTourCheckpointListener tListener;
 
+    public boolean continueClicked = false;
+
 
     public TakeTourCheckpointFragment() {
         // Required empty public constructor
@@ -88,11 +90,17 @@ public class TakeTourCheckpointFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 System.out.println("clicked continue");
-                getActivity().getSupportFragmentManager().popBackStack();
+                dismiss();
+                //getActivity().getSupportFragmentManager().popBackStack();
+
             }
         });
 
         return v;
+    }
+
+    public boolean getContinueClicked() {
+        return continueClicked;
     }
 
     @Override
