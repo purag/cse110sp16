@@ -252,11 +252,11 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         TourIDs.add(tour.getTour_id());
 
         String TourPhoto;
-        if ( tour.getListOfCheckpoints() != null &&  tour.getListOfCheckpoints().get(0) != null && tour.getListOfCheckpoints().get(0).getPhoto() !=null) {
-            TourPhoto = tour.getListOfCheckpoints().get(0).getPhoto();
+        if ( tour.getPhoto() != null &&  tour.getPhoto().compareTo("http://placehold.it/250x250") != 0) {
+            TourPhoto = tour.getPhoto();
         }
         else {
-            TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+            TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=1200x600&location=" +
                     Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
                     "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
         }
