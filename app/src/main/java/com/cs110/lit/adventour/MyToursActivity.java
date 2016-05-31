@@ -18,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +52,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
     private DrawerLayout navigationDrawer;
     private ActionBarDrawerToggle navigationToggle;
     private ViewFlipper viewFlipper;
+    private SwipeRefreshLayout refreshLayout;
 
     // Attributes for the list view
     ListView list;
@@ -95,6 +97,10 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
 
         viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
 
+        //disable refresh
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
+        refreshLayout.setEnabled(false);
+
         // Create list view
         list = (ListView) findViewById(R.id.browse_list);
         NoToursList = (TextView) findViewById(R.id.NoMyToursList);
@@ -102,7 +108,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_tour);
         fab.setVisibility(View.GONE);
 
-        // Set up the navigatino
+        // Set up the navigation
         NavigationSetUp();
 
         // Get User location
@@ -245,12 +251,16 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         TourUsers.add(tour_user);
         TourIDs.add(tour.getTour_id());
 
-        //if (tours.get(i).getImage() != null)
-        //  imageIds.add(tours.get(i).getImage());
-        //else
-        imageIds.add("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
-                Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
-                "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
+        String TourPhoto;
+        if ( tour.getListOfCheckpoints() != null &&  tour.getListOfCheckpoints().get(0) != null && tour.getListOfCheckpoints().get(0).getPhoto() !=null) {
+            TourPhoto = tour.getListOfCheckpoints().get(0).getPhoto();
+        }
+        else {
+            TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                    Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
+                    "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
+        }
+        imageIds.add(TourPhoto);
     }
 
 

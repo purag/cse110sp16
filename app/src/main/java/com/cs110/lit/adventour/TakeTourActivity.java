@@ -84,6 +84,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         tourID = intent.getIntExtra(TOUR_ID, -1);
         tourTitle = intent.getStringExtra(TOUR_TITLE);
         getSupportActionBar().setTitle(tourTitle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
 
@@ -334,7 +335,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            saveTourToMyTourOnDB();
+                            checkIfSaveTakenTour();
                             //finish();
                         }
                     })
@@ -354,7 +355,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            saveTourToMyTourOnDB();
+                            checkIfSaveTakenTour();
                             //finish();
                         }
                     })
@@ -479,18 +480,8 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
 
-    private void saveTourToMyTourOnDB(){
-        SharedPreferences myPrefs = getSharedPreferences("Login", -1);
-        int userID = myPrefs.getInt("uid", 0);
-        System.out.println("the user id is:" + userID);
-
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Uploading Tour...");
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.show();
-
-        DB.saveTourTakenByUser (userID,tourID, TakeTourActivity.this, new DB.Callback<Integer>() {
+    private void saveTourToMyTourOnDB(int userID){
+        DB.saveTourTakenByUser (tourID, userID, TakeTourActivity.this, new DB.Callback<Integer>() {
             @Override
             public void onSuccess(Integer tour_id) {
                 progressDialog.dismiss();
@@ -515,7 +506,48 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         });
     }
 
+    private void checkIfSaveTakenTour() {
+        SharedPreferences myPrefs = getSharedPreferences("Login", -1);
+        final int userId = myPrefs.getInt("uid", 0);
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading Tour...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        final boolean[] done = {false};
+
+        // Changing to just new function call.
+        DB.getToursTakenByUserId (userId, this,  new DB.Callback<ArrayList<Tour>>(){
+            @Override
+            public void onSuccess(ArrayList<Tour> tours) {
+                for (int i = 0; i < tours.size(); i++) {
+                    if (!done[0] && tours.get(i).getTour_id() == tourID) {
+                        progressDialog.dismiss();
+                        done[0] = true;
+                        new AlertDialog.Builder(TakeTourActivity.this)
+                                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        finish();
+                                    }
+                                }).setMessage(tourTitle + " has already been saved in your tour list").show();
+                    }
+                }
+
+                if(!done[0]) {
+                    saveTourToMyTourOnDB(userId);
+                }
+            }
+
+            @Override
+            public void onFailure(ArrayList<Tour> tours) {
+                //saveTourToMyTourOnDB(userId);
+                System.out.println("On failure happened\n");
+            }
+        });
+
+    }
 
     /**
      * Simple helper function to set a marker at your current location.
