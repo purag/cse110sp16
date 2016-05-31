@@ -273,7 +273,8 @@ public class DB {
                             ),
                             response.getString("tour_title"),
                             response.getString("tour_summary"),
-                            checkpoints
+                            checkpoints,
+                            response.getString("tour_photo")
                     );
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -329,7 +330,8 @@ public class DB {
                                 tour.getString("tour_title"),
                                 tour.getString("tour_summary"),
                                 tour.getDouble("starting_lat"),
-                                tour.getDouble("starting_lng")
+                                tour.getDouble("starting_lng"),
+                                tour.getString("tour_photo")
                         ));
                     }
                 } catch (JSONException e) {
@@ -382,7 +384,8 @@ public class DB {
                                 tour.getString("tour_title"),
                                 tour.getString("tour_summary"),
                                 tour.getDouble("starting_lat"),
-                                tour.getDouble("starting_lng")
+                                tour.getDouble("starting_lng"),
+                                tour.getString("tour_photo")
                         ));
                     }
                 } catch (JSONException e) {

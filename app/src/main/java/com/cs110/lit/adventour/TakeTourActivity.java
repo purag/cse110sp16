@@ -391,12 +391,12 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         if(photo.equals("http://placehold.it/250x250")){
             //Get the photo from the first checkpoint to load as background
-            photo = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+            photo = "https://maps.googleapis.com/maps/api/streetview?size=1200x600&location=" +
                     Double.toString((activePointList.get(upComingCheckpoint)).getLatitude()) +"," +
                     Double.toString((activePointList.get(upComingCheckpoint)).getLongitude()) +
                     "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
         }
-        
+
         // Create and show the dialog.
         checkpointFragment = TakeTourCheckpointFragment.newInstance(
                 (activePointList.get(upComingCheckpoint)).getTitle(),
