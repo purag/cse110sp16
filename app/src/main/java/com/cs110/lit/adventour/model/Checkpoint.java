@@ -1,27 +1,34 @@
 package com.cs110.lit.adventour.model;
 
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.util.Base64;
+
+import java.io.ByteArrayOutputStream;
 
 public class Checkpoint {
 	
 	/* Private member variables */
 	
-	private String checkpoint_id;
-	private Location location;
-	private String tour_id;
+	private int checkpoint_id;
+	private double checkpoint_lat;
+	private double checkpoint_lng;
+	private int tour_id;
 	private String title;
 	private String description;
 	private String photo;
+	private String photoBitmap;
 	private int order_num; 
 
     // Default Constructor
-    Checkpoint() { }
+    public Checkpoint() { }
 
     // Intializer Constructor
-    Checkpoint(String checkpoint_id, Location location, String tour_id, String title,
-               String description, String photo, int order_num) {
+    public Checkpoint(int checkpoint_id, double checkpoint_lat, double checkpoint_lng, int tour_id,
+					  String title, String description, String photo, int order_num) {
         this.checkpoint_id = checkpoint_id;
-        this.location = location;
+        this.checkpoint_lat = checkpoint_lat;
+		this.checkpoint_lng = checkpoint_lng;
         this.tour_id = tour_id;
         this.title = title;
         this.description = description;
@@ -31,15 +38,19 @@ public class Checkpoint {
 
 	/* Public Setters */
 
-	public void setCheckpoint_id(String checkpoint_id){
+	public void setCheckpoint_id(int checkpoint_id){
 	   this.checkpoint_id = checkpoint_id;
 	}
 	
-	public void setLocation(Location location){
-	   this.location = location;
+	public void setLatitude(double lat){
+	   this.checkpoint_lat = lat;
+	}
+
+	public void setLongitude (double lon) {
+		this.checkpoint_lng = lon;
 	}
 	
-	public void setTour_id(String tour_id){
+	public void setTour_id(int tour_id){
 	   this.tour_id = tour_id;
 	}
 	
@@ -58,18 +69,27 @@ public class Checkpoint {
 	public void setOrder_num(int order_num){
 	   this.order_num = order_num;
 	}
+
+	public void setPhotoBitmap(Bitmap photoBitmap) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		photoBitmap.compress(Bitmap.CompressFormat.PNG, 75, byteArrayOutputStream);
+		byte [] byteArray = byteArrayOutputStream.toByteArray();
+		this.photoBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
+	}
+
+/* Public Getters */
 	
-	/* Public Getters */
-	
-	public String getCheckpoint_id(){
+	public int getCheckpoint_id(){
 	   return checkpoint_id;
 	}
 	
-	public Location getLocation(){
-	   return location;
+	public double getLatitude(){
+	   return checkpoint_lat;
 	}
+
+	public double getLongitude() { return checkpoint_lng; }
 	
-	public String getTour_id(){
+	public int getTour_id(){
 	   return tour_id;
 	}
 	
