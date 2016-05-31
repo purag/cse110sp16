@@ -100,11 +100,14 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
         });
 
         String photo = checkpoint.getPhoto();
-        if (photo == null) {
+        System.out.println(checkpoint.getPhoto());
+        if (photo.compareTo("http://placehold.it/250x250") == 0) {
             photo = ("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
                     Double.toString(checkpoint.getLatitude()) +"," + Double.toString(checkpoint.getLongitude()) +
                     "&heading=15&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
+            System.out.println("This wasnt being called?????");
         }
+        System.out.println(photo);
         Glide.with(vHolder.mImageView.getContext()).load(photo)
                 .fitCenter().into(vHolder.mImageView);
     }
