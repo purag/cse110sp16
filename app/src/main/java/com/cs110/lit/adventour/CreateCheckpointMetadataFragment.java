@@ -190,8 +190,23 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
             if (requestCode == PICK_IMAGE) {
                 try {
                     InputStream is = getActivity().getContentResolver().openInputStream(data.getData());
-                    System.out.println(data.getData());
-                    checkpointPhoto = BitmapFactory.decodeStream(is);
+
+                    /* get the bounds of the image without loading it */
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(is, null, options);
+
+                    /* calculate the sample size so we can load it in downsized */
+                    options.inSampleSize = calculateInSampleSize(options, 300, 200);
+                    is.close();
+                    is = getActivity().getContentResolver().openInputStream(data.getData());
+                    options.inJustDecodeBounds = false;
+                    checkpointPhoto = BitmapFactory.decodeStream(is, null, options);
+                    is.close();
+
+                    System.out.println(options.outWidth);
+                    System.out.println(options.outHeight);
+
                     imgView.setImageBitmap(checkpointPhoto);
                     checkpointPhotoSet = true;
                 } catch (Exception e) {
@@ -199,8 +214,19 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
                 }
 
             } else if (requestCode == CAPTURE_IMAGE) {
-                System.out.println("image captured");
-                checkpointPhoto = BitmapFactory.decodeFile(cameraPhotoPath);
+                /* get the bounds of the image without loading it */
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(cameraPhotoPath, options);
+
+                /* calculate the sample size so we can load it in downsized */
+                options.inSampleSize = calculateInSampleSize(options, 300, 200);
+                options.inJustDecodeBounds = false;
+                checkpointPhoto = BitmapFactory.decodeFile(cameraPhotoPath, options);
+
+                System.out.println(options.outWidth);
+                System.out.println(options.outHeight);
+
                 imgView.setImageBitmap(checkpointPhoto);
                 checkpointPhotoSet = true;
 
@@ -208,6 +234,26 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
                 super.onActivityResult(requestCode, resultCode, data);
             }
         }
+    }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
     private boolean validateInput(EditText checkpointTitleInput, EditText checkpointDescInput) {
@@ -219,18 +265,18 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
         if (TextUtils.isEmpty(checkpointTitle)) {
             checkpointTitleInput.setError("Title is required.");
             valid = false;
-        } else if (checkpointTitle.length() < 10) {
+        } /*else if (checkpointTitle.length() < 10) {
             checkpointTitleInput.setError("Title should be a bit longer.");
             valid = false;
-        }
+        }*/
 
         if (TextUtils.isEmpty(checkpointDesc)) {
             checkpointDescInput.setError("Description is required.");
             valid = false;
-        } else if (checkpointDesc.length() < 50) {
+        } /*else if (checkpointDesc.length() < 50) {
             checkpointDescInput.setError("Description should be more detailed.");
             valid = false;
-        }
+        }*/
 
         if (valid && !checkpointPhotoSet) {
             new AlertDialog.Builder(getActivity())

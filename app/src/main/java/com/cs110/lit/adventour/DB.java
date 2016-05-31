@@ -90,7 +90,7 @@ public class DB {
     public static void saveTourTakenByUser (int tour_id, int user_id, Context c, final Callback<Integer> cb) {
         RequestQueue requestQueue = Volley.newRequestQueue(c);
         String reqUrl = base + "users/" + user_id + "/tours/taken";
-        String tourJson = "{" + "  \"tour_id\": " + tour_id + "}";
+        String tourJson = "{tour_id:" + tour_id + "}";
         postTourToDBServer(cb, requestQueue, reqUrl, tourJson);
     }
 
@@ -113,6 +113,7 @@ public class DB {
         JSONObject body;
         try {
             body = new JSONObject(tourJson);
+            System.out.println(body.toString());
         } catch (Exception e) {
             body = null;
         }
