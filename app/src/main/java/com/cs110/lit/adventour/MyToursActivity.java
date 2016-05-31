@@ -108,7 +108,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_tour);
         fab.setVisibility(View.GONE);
 
-        // Set up the navigatino
+        // Set up the navigation
         NavigationSetUp();
 
         // Get User location
