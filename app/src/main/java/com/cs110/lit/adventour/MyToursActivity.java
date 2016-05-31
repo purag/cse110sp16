@@ -18,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +52,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
     private DrawerLayout navigationDrawer;
     private ActionBarDrawerToggle navigationToggle;
     private ViewFlipper viewFlipper;
+    private SwipeRefreshLayout refreshLayout;
 
     // Attributes for the list view
     ListView list;
@@ -94,6 +96,10 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
 
 
         viewFlipper = (ViewFlipper) findViewById(R.id.browse_view_flipper);
+
+        //disable refresh
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.browse_refresh);
+        refreshLayout.setEnabled(false);
 
         // Create list view
         list = (ListView) findViewById(R.id.browse_list);
