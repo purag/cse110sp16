@@ -251,12 +251,16 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         TourUsers.add(tour_user);
         TourIDs.add(tour.getTour_id());
 
-        //if (tours.get(i).getImage() != null)
-        //  imageIds.add(tours.get(i).getImage());
-        //else
-        imageIds.add("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
-                Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
-                "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
+        String TourPhoto;
+        if ( tour.getListOfCheckpoints() != null &&  tour.getListOfCheckpoints().get(0) != null && tour.getListOfCheckpoints().get(0).getPhoto() !=null) {
+            TourPhoto = tour.getListOfCheckpoints().get(0).getPhoto();
+        }
+        else {
+            TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                    Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
+                    "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
+        }
+        imageIds.add(TourPhoto);
     }
 
 

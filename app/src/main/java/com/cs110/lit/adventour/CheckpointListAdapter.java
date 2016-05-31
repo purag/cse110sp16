@@ -98,12 +98,14 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
                 context.startActivity(intent);*/
             }
         });
-    
-        String google_testString = ("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
-                Double.toString(checkpoint.getLatitude()) +"," + Double.toString(checkpoint.getLongitude()) +
-                "&heading=15&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
-        String photo_string = checkpoint.getPhoto();
-        Glide.with(vHolder.mImageView.getContext()).load(google_testString)
+
+        String photo = checkpoint.getPhoto();
+        if (photo == null) {
+            photo = ("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                    Double.toString(checkpoint.getLatitude()) +"," + Double.toString(checkpoint.getLongitude()) +
+                    "&heading=15&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
+        }
+        Glide.with(vHolder.mImageView.getContext()).load(photo)
                 .fitCenter().into(vHolder.mImageView);
     }
 
