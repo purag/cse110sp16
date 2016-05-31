@@ -379,7 +379,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         if (prev != null) {
             ft.remove(prev);
         }
-        ft.addToBackStack(null);
+        //ft.addToBackStack(null);
 
 
         /* Check to see which photo to display.
@@ -396,8 +396,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     Double.toString((activePointList.get(upComingCheckpoint)).getLongitude()) +
                     "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
         }
-
-
+        
         // Create and show the dialog.
         checkpointFragment = TakeTourCheckpointFragment.newInstance(
                 (activePointList.get(upComingCheckpoint)).getTitle(),

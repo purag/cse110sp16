@@ -92,7 +92,6 @@ public class TakeTourCheckpointFragment extends DialogFragment {
                 System.out.println("clicked continue");
                 dismiss();
                 //getActivity().getSupportFragmentManager().popBackStack();
-
             }
         });
 
