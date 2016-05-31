@@ -523,9 +523,9 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
                 System.out.println("Dont think it is this one!!");
                 return true;
-            case R.id.action_help:
-                // help action
-                return true;
+//            case R.id.action_help:
+//                // help action
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -545,11 +545,12 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         } else if (id == R.id.nav_log_out) {
             // handle log out
             logOutFromBrowseView();
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
+//        else if (id == R.id.nav_share) {
+//
+//        } else if (id == R.id.nav_send) {
+//
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

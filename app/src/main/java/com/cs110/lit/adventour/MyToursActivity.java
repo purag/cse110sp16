@@ -252,7 +252,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         TourIDs.add(tour.getTour_id());
 
         String TourPhoto;
-        if ( tour.getPhoto() != null &&  tour.getPhoto().compareTo("http://placehold.it/250x250") != 0) {
+        if ( tour.getPhoto() != null && tour.getPhoto().compareTo("http://placehold.it/250x250") != 0) {
             TourPhoto = tour.getPhoto();
         }
         else {
@@ -329,11 +329,11 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
                 finish();
                 break;
 
-            case R.id.nav_share:
-                break;
-
-            case R.id.nav_send:
-                break;
+//            case R.id.nav_share:
+//                break;
+//
+//            case R.id.nav_send:
+//                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
