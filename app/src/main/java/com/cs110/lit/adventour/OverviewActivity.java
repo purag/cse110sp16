@@ -53,19 +53,18 @@ public class OverviewActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(tourTitle);
                 setSummaryCard(tourCreatorName, tourSummary);
 
-                String photo = checkpoints.get(0).getPhoto();
-                if(photo != null) {
-                    loadBackdrop(photo);
+                String TourPhoto;
+                System.out.println(checkpoints.get(0).getPhoto());
+                if ( checkpoints.get(0).getPhoto().compareTo("http://placehold.it/250x250") != 0) {
+                    TourPhoto = checkpoints.get(0).getPhoto();
                 }
                 else {
-                    //Get the photo from the first checkpoint to load as background
-                    String firstPhoto = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                    TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
                             Double.toString(checkpoints.get(0).getLatitude()) +"," +
                             Double.toString(checkpoints.get(0).getLongitude()) +
                             "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
-                    loadBackdrop(firstPhoto);
                 }
-
+                loadBackdrop(TourPhoto);
                 displayCheckpoints(checkpoints);
             }
 
