@@ -106,7 +106,7 @@ public class OverviewActivity extends AppCompatActivity {
      */
     private void loadBackdrop(String photo) {
         final ImageView imageView = (ImageView) findViewById(R.id.tour_metadata_bg_image);
-        Glide.with(this).load(photo).into(imageView);
+        Glide.with(this).load(photo).centerCrop().into(imageView);
     }
 
     /**
