@@ -54,12 +54,12 @@ public class OverviewActivity extends AppCompatActivity {
                 setSummaryCard(tourCreatorName, tourSummary);
 
                 String TourPhoto;
-                System.out.println(checkpoints.get(0).getPhoto());
-                if ( checkpoints.get(0).getPhoto().compareTo("http://placehold.it/250x250") != 0) {
-                    TourPhoto = checkpoints.get(0).getPhoto();
+                if ( tour.getPhoto()!= null && tour.getPhoto().compareTo("http://placehold.it/250x250")!= 0) {
+                    TourPhoto = tour.getPhoto();
+                    System.out.println("Tour photo boolean !!!!!!!" + (TourPhoto == null));
                 }
                 else {
-                    TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+                    TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=1200x600&location=" +
                             Double.toString(checkpoints.get(0).getLatitude()) +"," +
                             Double.toString(checkpoints.get(0).getLongitude()) +
                             "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
@@ -106,7 +106,7 @@ public class OverviewActivity extends AppCompatActivity {
      */
     private void loadBackdrop(String photo) {
         final ImageView imageView = (ImageView) findViewById(R.id.tour_metadata_bg_image);
-        Glide.with(this).load(photo).into(imageView);
+        Glide.with(this).load(photo).centerCrop().into(imageView);
     }
 
     /**

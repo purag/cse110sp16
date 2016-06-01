@@ -72,44 +72,21 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
     public void onBindViewHolder(final CheckpointListAdapter.ViewHolder vHolder, int position) {
         // Get the data model based on position
         Checkpoint checkpoint = mCheckpoints.get(position);
-        vHolder.mCheckpointID = checkpoint.getCheckpoint_id();
-
-        //TODO: fix this gross workaround for not having knowing how to get the checkpoint by id
-        vHolder.title = checkpoint.getTitle();
-        vHolder.summary = checkpoint.getDescription();
 
         // Set item views based on the data model
         TextView textView = vHolder.nameTextView;
         textView.setText(checkpoint.getTitle());
 
-        //add a click listener
-        vHolder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Context context = v.getContext();
-                Toast.makeText(context, "You clicked at " + vHolder.title, Toast.LENGTH_SHORT).show();
-
-                //TODO Fix this broken code
-                /*Intent intent = new Intent(context, CheckpointActivity.class);
-                intent.putExtra(CheckpointActivity.CHECKPOINT_ID, vHolder.mCheckpointID);
-
-                integnt.putExtra(CheckpointActivity.TITLE_ID, vHolder.title);
-                intent.putExtra(CheckpointActivity.SUMMARY_ID, vHolder.summary);
-                context.startActivity(intent);*/
-            }
-        });
 
         String photo = checkpoint.getPhoto();
-        System.out.println(checkpoint.getPhoto());
-        if (photo.compareTo("http://placehold.it/250x250") == 0) {
-            photo = ("https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+        if (photo == null || photo.compareTo("http://placehold.it/250x250") == 0) {
+            photo = ("https://maps.googleapis.com/maps/api/streetview?size=600x500&location=" +
                     Double.toString(checkpoint.getLatitude()) +"," + Double.toString(checkpoint.getLongitude()) +
                     "&heading=15&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
             System.out.println("This wasnt being called?????");
         }
         System.out.println(photo);
-        Glide.with(vHolder.mImageView.getContext()).load(photo)
-                .fitCenter().into(vHolder.mImageView);
+        Glide.with(vHolder.mImageView.getContext()).load(photo).centerCrop().into(vHolder.mImageView);
     }
 
     // Return the total count of items

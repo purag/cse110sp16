@@ -35,6 +35,9 @@
     <!-- Navigation drawer strings -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_browse">BROWSE TOURS</string>
+    <string name="navigation_drawer_my_tour">MY TOURS</string>
+    <string name="navigation_drawer_log_out">LOG OUT</string>
 
     <string name="action_settings">Settings</string>
 
@@ -45,4 +48,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_create_tour">Create Tour</string>
+
+    <!-- String related to action bar-->
+    <string name="action_bar_reset_loc">Reset Location</string>
+    <string name="action_bar_list_to_map">List/Map</string>
+
 </resources>

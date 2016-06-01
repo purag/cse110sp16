@@ -369,7 +369,7 @@ public class CreateTourMetadataFragment extends DialogFragment {
                 public void onSuccess(String photoUrl) {
                     progressDialog.dismiss();
                     System.out.println(photoUrl);
-                    Tour t = new Tour(0, null, tourTitle, tourSummary, new ArrayList<Checkpoint>());
+                    Tour t = new Tour(0, null, tourTitle, tourSummary, new ArrayList<Checkpoint>(), photoUrl);
                     t.setPhoto(photoUrl);
                     mListener.onTourMetadataFinish(t);
                 }

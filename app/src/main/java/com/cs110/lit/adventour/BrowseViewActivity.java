@@ -366,11 +366,11 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         TourIDs.add(tour.getTour_id());
 
         String TourPhoto;
-        if ( tour.getListOfCheckpoints() != null &&  tour.getListOfCheckpoints().get(0) != null && tour.getListOfCheckpoints().get(0).getPhoto() !=null) {
-            TourPhoto = tour.getListOfCheckpoints().get(0).getPhoto();
+        if ( tour.getPhoto() != null && tour.getPhoto().compareTo("http://placehold.it/250x250") != 0) {
+            TourPhoto = tour.getPhoto();
         }
         else {
-            TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+            TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=1200x600&location=" +
                     Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
                     "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
         }
@@ -523,9 +523,9 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
                 RefreshView(currentLocation.getLatitude(), currentLocation.getLongitude());
                 System.out.println("Dont think it is this one!!");
                 return true;
-            case R.id.action_help:
-                // help action
-                return true;
+//            case R.id.action_help:
+//                // help action
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -545,11 +545,12 @@ public class BrowseViewActivity extends AppCompatActivity implements NavigationV
         } else if (id == R.id.nav_log_out) {
             // handle log out
             logOutFromBrowseView();
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
+//        else if (id == R.id.nav_share) {
+//
+//        } else if (id == R.id.nav_send) {
+//
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

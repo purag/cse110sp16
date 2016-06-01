@@ -5,7 +5,7 @@
     <!-- Map View -->
     <item android:id="@+id/action_map_view"
         android:icon="@drawable/ic_map_white"
-        android:title="Map"
+        android:title="@string/action_bar_list_to_map"
         app:showAsAction="always" />
 
 </menu>

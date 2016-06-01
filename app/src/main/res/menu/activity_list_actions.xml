@@ -12,19 +12,19 @@
     <!-- Map View -->
     <item android:id="@+id/action_map_view"
         android:icon="@drawable/ic_map_white"
-        android:title="Map"
+        android:title="@string/action_bar_list_to_map"
         app:showAsAction="always" />
 
     <!-- Refresh -->
     <item android:id="@+id/action_refresh"
         android:icon="@drawable/ic_action_refresh"
-        android:title="Refresh"
+        android:title="@string/action_bar_reset_loc"
         android:showAsAction="ifRoom" />
 
-    <!-- Help -->
+    <!-- Help
     <item android:id="@+id/action_help"
         android:icon="@drawable/ic_action_help"
         android:title="Help"
-        android:showAsAction="never"/>
+        android:showAsAction="never"/> -->
 
 </menu>

@@ -5,17 +5,18 @@
         <item
             android:id="@+id/nav_browse"
             android:icon="@drawable/ic_near_me_white"
-            android:title="BROWSE TOURS" />
+            android:title="@string/navigation_drawer_browse" />
         <item
             android:id="@+id/nav_my_tours"
             android:icon="@drawable/backpack_icon"
-            android:title="MY TOURS" />
+            android:title="@string/navigation_drawer_my_tour" />
         <item
             android:id="@+id/nav_log_out"
             android:icon="@drawable/log_out"
-            android:title="LOG OUT" />
+            android:title="@string/navigation_drawer_log_out" />
     </group>
 
+    <!--
     <item android:title="Communicate">
         <menu>
             <item
@@ -27,6 +28,6 @@
                 android:icon="@drawable/ic_menu_send"
                 android:title="Send" />
         </menu>
-    </item>
+    </item> -->
 
 </menu>

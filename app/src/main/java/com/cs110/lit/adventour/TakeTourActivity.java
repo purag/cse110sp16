@@ -128,7 +128,8 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                 // Called when a new location is found by the network location provider.
                 System.err.println("Location listener was used!!");
 
-                checkUsersLocation(location);
+                if(upComingCheckpoint >= 0 && upComingCheckpoint < activePointList.size())
+                    checkUsersLocation(location);
             }
             public void onStatusChanged(String provider, int status, Bundle extras) {}
 
@@ -300,7 +301,10 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             skipFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    movetoNextCheckpoint();
+                    if(upComingCheckpoint < activePointList.size())
+                        movetoNextCheckpoint();
+                    else
+                        upComingCheckpoint = activePointList.size()-1;
                     //floatingActionsMenu.close(true);
                 }
             });
@@ -310,7 +314,10 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
             undoFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    movetoBackACheckpoint();
+                    if(upComingCheckpoint >= 0)
+                        movetoBackACheckpoint();
+                    else
+                        upComingCheckpoint = 0;
                     //floatingActionsMenu.close(true);
                 }
             });
@@ -326,7 +333,8 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     private void ExitFromTakeTour(boolean finishedLastCheckpoint){
-        backpressed = true;
+        upComingCheckpoint = activePointList.size();
+        //backpressed = true;
         if (!finishedLastCheckpoint) {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_warning_black)
@@ -335,6 +343,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            backpressed = true;
                             checkIfSaveTakenTour();
                             //finish();
                         }
@@ -342,6 +351,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            backpressed = true;
                             finish();
                         }
                     })
@@ -391,12 +401,12 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         if(photo.equals("http://placehold.it/250x250")){
             //Get the photo from the first checkpoint to load as background
-            photo = "https://maps.googleapis.com/maps/api/streetview?size=2400x1200&location=" +
+            photo = "https://maps.googleapis.com/maps/api/streetview?size=1200x600&location=" +
                     Double.toString((activePointList.get(upComingCheckpoint)).getLatitude()) +"," +
                     Double.toString((activePointList.get(upComingCheckpoint)).getLongitude()) +
                     "&heading=200&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc";
         }
-        
+
         // Create and show the dialog.
         checkpointFragment = TakeTourCheckpointFragment.newInstance(
                 (activePointList.get(upComingCheckpoint)).getTitle(),
@@ -460,17 +470,17 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
 
         // move the view camera back to the previous upcoming checkpoint
         LatLng previous_latLng = new LatLng((activePointList.get(upComingCheckpoint)).getLatitude(), (activePointList.get(upComingCheckpoint)).getLongitude());
-        LatLng up_upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint+1)).getLatitude(), (activePointList.get(upComingCheckpoint+1)).getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(previous_latLng, 16));
 
         //Rerender the map with the updated checkpoints (Whether visited or not)
-        if(upComingCheckpoint != 0) {
+        if(upComingCheckpoint != 0 && upComingCheckpoint != activePointList.size()-1 ) {
             (markerList.get(upComingCheckpoint)).remove();
             mMap.addMarker(new MarkerOptions().position(previous_latLng)
                     .title((activePointList.get(upComingCheckpoint)).getTitle())
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_start)));
         }
         if(upComingCheckpoint < activePointList.size()-2) {
+            LatLng up_upcoming_latLng = new LatLng((activePointList.get(upComingCheckpoint+1)).getLatitude(), (activePointList.get(upComingCheckpoint+1)).getLongitude());
             (markerList.get(upComingCheckpoint+1)).remove();
             mMap.addMarker(new MarkerOptions().position(up_upcoming_latLng)
                     .title((activePointList.get(upComingCheckpoint+1)).getTitle())

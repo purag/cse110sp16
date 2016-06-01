@@ -1,9 +1,5 @@
 package com.cs110.lit.adventour.model;
 
-import android.graphics.Bitmap;
-import android.util.Base64;
-
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class Tour {
@@ -23,22 +19,24 @@ public class Tour {
 	public Tour() {}
 
 	public Tour(int tour_id, User user, String title, String summary,
-				 double starting_lat, double starting_lng) {
+				 double starting_lat, double starting_lng, String photo) {
 		this.tour_id = tour_id;
 		this.user = user;
 		this.title = title;
 		this.summary = summary;
 		this.starting_lat = starting_lat;
 		this.starting_lng = starting_lng;
+		this.photo = photo;
 	}
 
 	public Tour(int tour_id, User user, String title, String summary,
-		 ArrayList<Checkpoint> listOfCheckpoints) {
+		 ArrayList<Checkpoint> listOfCheckpoints, String photo) {
 		this.tour_id = tour_id;
 		this.user = user;
 		this.title = title;
 		this.summary = summary;
         this.listOfCheckpoints = listOfCheckpoints;
+		this.photo = photo;
 	}
 
 	/* Public Setters */
@@ -91,6 +89,8 @@ public class Tour {
     public double getStarting_lon() {
         return starting_lng;
     }
+
+	public String getPhoto() { return photo; }
 
     public ArrayList<Checkpoint> getListOfCheckpoints(){
         return listOfCheckpoints;
