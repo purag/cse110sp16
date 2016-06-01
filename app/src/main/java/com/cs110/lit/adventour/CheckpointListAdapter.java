@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cs110.lit.adventour.model.Checkpoint;
@@ -82,7 +81,7 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
         if (photo == null || photo.compareTo("http://placehold.it/250x250") == 0) {
             photo = ("https://maps.googleapis.com/maps/api/streetview?size=600x500&location=" +
                     Double.toString(checkpoint.getLatitude()) +"," + Double.toString(checkpoint.getLongitude()) +
-                    "&heading=15&pitch=10&key=AIzaSyBCQ8q5n2-swQNVzQtxvY8eZv-G7c9DiLc");
+                    "&heading=15&pitch=10&key=" + R.string.google_street_view);
             System.out.println("This wasnt being called?????");
         }
         System.out.println(photo);
