@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import com.github.clans.fab.FloatingActionButton;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -222,6 +224,28 @@ public class CreateTourMetadataFragment extends DialogFragment {
                 options.inJustDecodeBounds = false;
                 tourPhoto = BitmapFactory.decodeFile(cameraPhotoPath, options);
 
+                try {
+                    ExifInterface ei = new ExifInterface(cameraPhotoPath);
+                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            tourPhoto = rotateImage(tourPhoto, 90);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            tourPhoto = rotateImage(tourPhoto, 180);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            tourPhoto = rotateImage(tourPhoto, 270);
+                            break;
+                        case ExifInterface.ORIENTATION_NORMAL:
+                            // don't need to rotate?
+                            break;
+                    }
+                } catch (Exception e) {
+                    // We'll just deal with an unrotated image.
+                }
+
                 System.out.println(options.outWidth);
                 System.out.println(options.outHeight);
 
@@ -252,6 +276,16 @@ public class CreateTourMetadataFragment extends DialogFragment {
         }
 
         return inSampleSize;
+    }
+
+    public static Bitmap rotateImage (Bitmap source, float angle) {
+        Bitmap rotated;
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        rotated = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+
+        return rotated;
     }
 
     private boolean validateInput(EditText tourTitleInput, EditText tourSummaryInput) {

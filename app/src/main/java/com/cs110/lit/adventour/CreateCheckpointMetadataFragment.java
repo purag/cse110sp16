@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -224,6 +226,28 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
                 options.inJustDecodeBounds = false;
                 checkpointPhoto = BitmapFactory.decodeFile(cameraPhotoPath, options);
 
+                try {
+                    ExifInterface ei = new ExifInterface(cameraPhotoPath);
+                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            checkpointPhoto = rotateImage(checkpointPhoto , 90);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            checkpointPhoto = rotateImage(checkpointPhoto , 180);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            checkpointPhoto = rotateImage(checkpointPhoto , 270);
+                            break;
+                        case ExifInterface.ORIENTATION_NORMAL:
+                            // don't need to rotate?
+                            break;
+                    }
+                } catch (Exception e) {
+                    // We'll just deal with an unrotated image.
+                }
+
                 System.out.println(options.outWidth);
                 System.out.println(options.outHeight);
 
@@ -254,6 +278,16 @@ public class CreateCheckpointMetadataFragment extends DialogFragment {
         }
 
         return inSampleSize;
+    }
+
+    public static Bitmap rotateImage (Bitmap source, float angle) {
+        Bitmap rotated;
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        rotated = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+
+        return rotated;
     }
 
     private boolean validateInput(EditText checkpointTitleInput, EditText checkpointDescInput) {
