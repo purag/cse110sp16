@@ -258,7 +258,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
         switch (item.getItemId()) {
             case android.R.id.home:
                 backpressed = true;
-                alertWhenPressBackButton();
+                ExitFromTakeTour(false);
                 break;
         }
         return true;
@@ -267,7 +267,7 @@ public class TakeTourActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onBackPressed() {
         backpressed = true;
-        alertWhenPressBackButton();
+        ExitFromTakeTour(false);
     }
 
     private void alertWhenPressBackButton() {
