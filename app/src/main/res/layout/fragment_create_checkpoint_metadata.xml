@@ -83,7 +83,7 @@
         android:paddingBottom="20dp"
         android:textSize="18sp"
         android:minLines="1"
-        android:hint="Tour Summary"
+        android:hint="Checkpoint Description"
         android:layout_weight="1"
         android:paddingLeft="?listPreferredItemPaddingLeft"
         android:paddingRight="?listPreferredItemPaddingRight"/>
