@@ -62,7 +62,7 @@ public class OverviewActivity extends AppCompatActivity {
                     TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=1200x600&location=" +
                             Double.toString(checkpoints.get(0).getLatitude()) +"," +
                             Double.toString(checkpoints.get(0).getLongitude()) +
-                            "&heading=200&pitch=10&key="+ R.string.google_street_view;
+                            "&heading=200&pitch=10&key="+ getString(R.string.google_street_view);
                 }
                 loadBackdrop(TourPhoto);
                 displayCheckpoints(checkpoints);
@@ -117,7 +117,7 @@ public class OverviewActivity extends AppCompatActivity {
                 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 
         RecyclerView checkpointList = (RecyclerView) findViewById(R.id.tour_metadata_checkpoints_list);
-        CheckpointListAdapter adapter = new CheckpointListAdapter(checkpoints);
+        CheckpointListAdapter adapter = new CheckpointListAdapter(this, checkpoints);
         checkpointList.setAdapter(adapter);
         checkpointList.setLayoutManager(layoutManager);
 

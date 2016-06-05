@@ -1,5 +1,6 @@
 package com.cs110.lit.adventour;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
  * Created by achen on 5/19/16.
  */
 public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAdapter.ViewHolder> {
+
+    private final Activity context;
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
@@ -48,8 +51,9 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
     private ArrayList<Checkpoint> mCheckpoints;
 
     // Pass in the contact array into the constructor
-    public CheckpointListAdapter(ArrayList<Checkpoint> checkpoints) {
+    public CheckpointListAdapter(Activity context, ArrayList<Checkpoint> checkpoints) {
         mCheckpoints = checkpoints;
+        this.context = context;
     }
 
     // Usually involves inflating a layout from XML and returning the holder
@@ -81,8 +85,7 @@ public class CheckpointListAdapter extends RecyclerView.Adapter<CheckpointListAd
         if (photo == null || photo.compareTo("http://placehold.it/250x250") == 0) {
             photo = ("https://maps.googleapis.com/maps/api/streetview?size=600x500&location=" +
                     Double.toString(checkpoint.getLatitude()) +"," + Double.toString(checkpoint.getLongitude()) +
-                    "&heading=15&pitch=10&key=" + R.string.google_street_view);
-            System.out.println("This wasnt being called?????");
+                    "&heading=15&pitch=10&key=" + context.getString(R.string.google_street_view));
         }
         System.out.println(photo);
         Glide.with(vHolder.mImageView.getContext()).load(photo).centerCrop().into(vHolder.mImageView);

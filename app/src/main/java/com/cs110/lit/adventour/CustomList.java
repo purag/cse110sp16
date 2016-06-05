@@ -59,17 +59,6 @@ public class CustomList extends ArrayAdapter<String>{
 
         txtDescription.setText(TourDescription.get(position));
 
-        // imageView.setImageResource(imageId[position]);
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inDither = false;
-//        options.inJustDecodeBounds = false;
-//        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//        options.inSampleSize = 5;
-//
-//        Bitmap icon = BitmapFactory.decodeResource(context.getResources(), imageId.get(position),options);
-//
-//        imageView.setImageBitmap(icon);
-
         return rowView;
     }
 }

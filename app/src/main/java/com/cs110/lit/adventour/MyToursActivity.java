@@ -258,7 +258,7 @@ public class MyToursActivity extends AppCompatActivity implements NavigationView
         else {
             TourPhoto = "https://maps.googleapis.com/maps/api/streetview?size=1200x600&location=" +
                     Double.toString(tour.getStarting_lat()) +"," + Double.toString(tour.getStarting_lon()) +
-                    "&heading=200&pitch=10&key="+ R.string.google_street_view;
+                    "&heading=200&pitch=10&key="+ getString(R.string.google_street_view);
         }
         imageIds.add(TourPhoto);
     }
